@@ -80,6 +80,7 @@ const StyleAssistant = lazy(() => import("./pages/StyleAssistant"));
 const Closet = lazy(() => import("./pages/Closet"));
 const OutfitDetail = lazy(() => import("./pages/OutfitDetail"));
 const Landing = lazy(() => import("./pages/Landing"));
+const InfiniteCloset = lazy(() => import("./pages/InfiniteCloset"));
 
 // ── Suspense fallback (minimal, matches app background) ───────────────
 const RouteFallback = () => <div className="min-h-screen bg-background" />;
@@ -182,6 +183,7 @@ const AnimatedRoutes = () => {
           <Route path="/outfit/:outfitId" element={<PageTransition><OutfitDetail /></PageTransition>} />
           <Route path="/style-assistant" element={<PageTransition><StyleAssistant /></PageTransition>} />
           <Route path="/closet" element={<PageTransition><Closet /></PageTransition>} />
+          <Route path="/infinite-closet" element={<PageTransition><InfiniteCloset /></PageTransition>} />
           <Route path="/landing" element={<GuestOnlyLanding><PageTransition><Landing /></PageTransition></GuestOnlyLanding>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
