@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { X, Flame, Heart, ShoppingBag, SlidersHorizontal } from 'lucide-react';
+import { X, Flame, Heart, ShoppingBag, SlidersHorizontal, Layers, ArrowRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useProductCatalog, type CatalogProduct } from '@/hooks/useProductCatalog';
 import { useUserGender } from '@/hooks/useUserGender';
@@ -183,6 +183,21 @@ export default function Closet() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [exitDir, setExitDir] = useState<'left' | 'right'>('right');
   const [showFilters, setShowFilters] = useState(false);
+  const [sessionCops, setSessionCops] = useState(0);
+
+  // Total wardrobe count (for footer link)
+  const { data: wardrobeCount = 0 } = useQuery({
+    queryKey: ['wardrobe-count', user?.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('clothing_wardrobe')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user!.id);
+      return count ?? 0;
+    },
+    enabled: !!user?.id,
+    staleTime: 60_000,
+  });
 
   // Sync profile gender on load
   useEffect(() => {
@@ -270,6 +285,7 @@ export default function Closet() {
 
     if (dir === 'right' && currentProduct) {
       saveToWardrobe(currentProduct);
+      setSessionCops(prev => prev + 1);
       toast({ title: `🔥 ${currentProduct.brand} copped!`, duration: 1500 });
     }
 
@@ -311,7 +327,23 @@ export default function Closet() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title="The Closet" backTo="/home" />
+      <PageHeader
+        title="The Closet"
+        backTo="/home"
+        actions={
+          sessionCops > 0 ? (
+            <button
+              onClick={() => navigate('/profile?tab=wardrobe')}
+              className="flex items-center gap-1.5 px-3 h-8 rounded-full bg-primary/10 border border-primary/25 text-primary text-[11px] font-bold tracking-wide active:scale-95 transition-transform"
+              aria-label={`View ${sessionCops} copped items`}
+            >
+              <Flame className="h-3 w-3" />
+              {sessionCops} COPPED
+              <ArrowRight className="h-3 w-3" />
+            </button>
+          ) : undefined
+        }
+      />
 
       {/* Gender toggle */}
       <div className="px-4 pt-2 flex items-center gap-2">
@@ -374,11 +406,30 @@ export default function Closet() {
         {loading ? (
           <div className="absolute inset-0 rounded-2xl skeleton-gold" />
         ) : isEmpty ? (
-          <div className="absolute inset-0 rounded-2xl border border-border flex flex-col items-center justify-center gap-3 text-center px-6">
-            <Heart className="h-10 w-10 text-muted-foreground" />
-            <p className="text-muted-foreground text-sm">
-              No more items! Change your genre filter or check back later.
-            </p>
+          <div className="absolute inset-0 rounded-2xl border border-border flex flex-col items-center justify-center gap-4 text-center px-6">
+            <Heart className="h-9 w-9 text-muted-foreground" />
+            <div className="space-y-1">
+              <p className="font-display text-base text-foreground">
+                {sessionCops > 0 ? `You copped ${sessionCops} this session.` : 'That\'s the rack.'}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {sessionCops > 0 ? 'Take it to the next step.' : 'Adjust filters or check back later.'}
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 w-full max-w-[240px] pt-1">
+              <button
+                onClick={() => navigate('/profile?tab=wardrobe')}
+                className="h-11 rounded-full bg-primary text-primary-foreground text-[13px] font-bold tracking-wide flex items-center justify-center gap-2 active:scale-95 transition-transform"
+              >
+                <Flame className="h-4 w-4" /> View Your Closet
+              </button>
+              <button
+                onClick={() => navigate('/outfits')}
+                className="h-11 rounded-full border border-border bg-card text-foreground text-[13px] font-bold tracking-wide flex items-center justify-center gap-2 active:scale-95 transition-transform"
+              >
+                <Layers className="h-4 w-4" /> Build an Outfit
+              </button>
+            </div>
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
@@ -432,6 +483,25 @@ export default function Closet() {
         <p className="text-center text-[11px] text-muted-foreground mt-3">
           {currentIndex + 1} / {products.length}
         </p>
+      )}
+
+      {/* Footer text-link CTAs */}
+      {!loading && (
+        <div className="flex items-center justify-center gap-6 mt-4 px-6">
+          <button
+            onClick={() => navigate('/profile?tab=wardrobe')}
+            className="text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+          >
+            View Closet{wardrobeCount > 0 ? ` (${wardrobeCount})` : ''}
+          </button>
+          <span className="h-3 w-px bg-border" />
+          <button
+            onClick={() => navigate('/outfits')}
+            className="text-[11px] font-bold tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+          >
+            Build Outfit
+          </button>
+        </div>
       )}
 
       <BottomTabBar />
