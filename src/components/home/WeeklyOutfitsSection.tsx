@@ -31,7 +31,12 @@ function handleShare(title: string, e: React.MouseEvent) {
   }
 }
 
-const WeeklyOutfitsSection = () => {
+interface WeeklyOutfitsSectionProps {
+  /** 'compact' = 280px carousel cards (default). 'large' = near full-width hero cards to match the auth swipe feed. */
+  size?: 'compact' | 'large';
+}
+
+const WeeklyOutfitsSection = ({ size = 'compact' }: WeeklyOutfitsSectionProps = {}) => {
   const navigate = useNavigate();
   const { userGender, genderLoaded, loading: authLoading } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
