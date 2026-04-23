@@ -224,7 +224,8 @@ type FunnelEvent =
   | 'tryon_shop_item_preview'
   | 'infinite_closet_hero_start'
   | 'infinite_closet_step_click'
-  | 'next_step_bar_click';
+  | 'next_step_bar_click'
+  | 'home_infinite_closet_click';
 
 export function trackEvent(event: FunnelEvent, meta?: Record<string, unknown>) {
   try {
