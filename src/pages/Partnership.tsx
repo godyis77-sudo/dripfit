@@ -66,28 +66,6 @@ const Partnership = () => {
         </div>
       </section>
 
-      {/* ── P3 Editorial lookbook (placeholder, swap when shot delivered) ── */}
-      <section
-        data-placeholder="p3-lookbook-photo"
-        className="relative max-w-3xl mx-auto px-6 pt-12 pb-2"
-      >
-        <figure className="relative overflow-hidden rounded-2xl border border-border/40">
-          <img
-            src={editorialLookbookImg}
-            alt="Model wearing perfectly fitted editorial styling — quiet luxury reference"
-            loading="lazy"
-            width={1280}
-            height={896}
-            className="w-full h-auto object-cover"
-          />
-          <figcaption className="absolute bottom-0 left-0 right-0 px-5 py-3 bg-gradient-to-t from-black/60 to-transparent">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/80">
-              The right size · the first time
-            </p>
-          </figcaption>
-        </figure>
-      </section>
-
       {/* ── The Problem ──────────────────────────────────── */}
       <section className="max-w-3xl mx-auto px-6 py-14">
         <div className="bg-destructive/8 border border-destructive/20 rounded-2xl p-6 sm:p-8">
