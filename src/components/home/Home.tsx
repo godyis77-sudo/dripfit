@@ -49,34 +49,67 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [hasScan, setHasScan] = useState(false);
+  const [scanChecked, setScanChecked] = useState(false);
+  const [browseRetryKey, setBrowseRetryKey] = useState(0);
   const [, setScanCount] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+
+    // Scan-count is non-critical: failure is silent (it only feeds an unused setter today).
     supabase
       .from('app_config')
       .select('value')
       .eq('key', 'total_scan_count')
       .single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.warn('[Home] scan count fetch failed', error.message);
+          return;
+        }
         if (data?.value) setScanCount(parseInt(data.value, 10) || 0);
       });
-    if (!user) return;
+
+    // Guests have nothing to check — mark resolved so the layout commits immediately.
+    if (!user) {
+      setScanChecked(true);
+      setHasScan(false);
+      return;
+    }
+
+    // Authenticated: probe body_scans. On error, degrade gracefully (assume no scan)
+    // rather than trapping a returning user in a permanent loading state.
+    setScanChecked(false);
     supabase
       .from('body_scans')
       .select('id')
       .eq('user_id', user.id)
       .limit(1)
-      .then(({ data }) => {
-        if (data && data.length > 0) setHasScan(true);
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.warn('[Home] body_scans probe failed', error.message);
+          setHasScan(false);
+        } else {
+          setHasScan(!!(data && data.length > 0));
+        }
+        setScanChecked(true);
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
-  // Derive view state from auth + scan
-  const viewState: HomeViewState = useMemo(() => {
+  // Derive view state from auth + scan. Returns null until the scan probe resolves
+  // for authenticated users, so we don't flash the wrong layout.
+  const viewState: HomeViewState | null = useMemo(() => {
     if (forceState) return forceState;
     if (!user) return 'guest';
+    if (!scanChecked) return null;
     return hasScan ? 'returning' : 'new-user';
-  }, [forceState, user, hasScan]);
+  }, [forceState, user, scanChecked, hasScan]);
 
   const visibleCategories = useMemo(
     () => HERO_CATEGORIES.filter(c => !(c.key === 'dress' && userGender === 'male')),
@@ -92,6 +125,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
 
   const showHeroScan = viewState === 'guest' || viewState === 'new-user';
   const showReturningStack = viewState === 'returning';
+  const isResolvingViewState = viewState === null;
 
   return (
     <div ref={ref} className="relative bg-background pb-safe-tab">
