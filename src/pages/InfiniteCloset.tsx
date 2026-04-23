@@ -181,7 +181,7 @@ const InfiniteCloset = () => {
         {/* Loop reminder */}
         <div className="mt-6 px-4 py-3 rounded-xl border border-dashed border-border text-center">
           <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted-foreground">
-            ↻ Then back to step 1
+            Then back to step 1
           </p>
           <p className="text-[11px] text-muted-foreground mt-1">
             That's why it's infinite.
