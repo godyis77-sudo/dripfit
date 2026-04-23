@@ -325,7 +325,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
             >
               <div className="text-left flex-1 min-w-0">
                 <p className="font-serif text-[24px] font-bold italic text-foreground tracking-tight leading-tight">
-                  The Drape
+                  The Drape Studio
                 </p>
                 <p className="font-sans text-[12px] text-muted-foreground mt-1">
                   Infinite Try-On Studio
