@@ -26,12 +26,18 @@ export default function LandingHero() {
               className="type-display-editorial leading-[1.05] mb-8 text-foreground"
               style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
             >
-              YOUR FIT. YOUR STYLE. YOURS.
+              YOUR BODY. MAPPED.
+              <span
+                className="type-display-editorial block text-foreground mt-1"
+                style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
+              >
+                EVERY BRAND. FITTED.
+              </span>
               <span
                 className="type-display-editorial type-display-editorial--italic block text-primary mt-1"
                 style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
               >
-                DRIP CERTIFIED.
+                EVERY FIT. VERIFIED.
               </span>
             </h1>
           </FadeIn>
@@ -39,15 +45,15 @@ export default function LandingHero() {
           <FadeIn delay={0.08}>
             <div className="mb-2 flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-1.5">
               <span className="type-data text-foreground/90">
-                <span className="text-primary">YOUR BODY.</span> MAPPED.
+                <span className="text-primary">YOUR FIT.</span>
               </span>
               <span className="hidden sm:inline text-primary/60" aria-hidden>·</span>
               <span className="type-data text-foreground/90">
-                <span className="text-primary">EVERY BRAND.</span> FITTED.
+                <span className="text-primary">YOUR STYLE.</span>
               </span>
               <span className="hidden sm:inline text-primary/60" aria-hidden>·</span>
               <span className="type-data text-foreground/90">
-                <span className="text-primary">EVERY FIT.</span> VERIFIED.
+                <span className="text-primary">YOURS.</span> DRIP CERTIFIED.
               </span>
             </div>
           </FadeIn>
