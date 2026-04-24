@@ -22,9 +22,18 @@ export default function LandingHero() {
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
         <div>
           <FadeIn>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-8 rounded-full border border-border bg-secondary/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="type-data">LIVE · 9,158 PIECES · 186 BRANDS</span>
+            <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-1.5">
+              <span className="type-data text-foreground/90">
+                <span className="text-primary">YOUR BODY.</span> MAPPED.
+              </span>
+              <span className="hidden sm:inline text-primary/60" aria-hidden>·</span>
+              <span className="type-data text-foreground/90">
+                <span className="text-primary">EVERY BRAND.</span> FITTED.
+              </span>
+              <span className="hidden sm:inline text-primary/60" aria-hidden>·</span>
+              <span className="type-data text-foreground/90">
+                <span className="text-primary">EVERY FIT.</span> VERIFIED.
+              </span>
             </div>
           </FadeIn>
 
@@ -33,19 +42,19 @@ export default function LandingHero() {
               className="type-display-editorial leading-[1.05] mb-2 text-foreground"
               style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
             >
-              KNOW YOUR FIT.
+              YOUR FIT. YOUR STYLE. YOURS.
               <span
                 className="type-display-editorial type-display-editorial--italic block text-primary mt-1"
                 style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
               >
-                OWN YOUR DRIP.
+                DRIP CERTIFIED.
               </span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.16}>
             <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 mt-7 font-light">
-              One scan. Your exact size from Arc'teryx to Zara — and 184 brands in between. No more guessing.
+              Scan once. Try on 9,000+ pieces across 186 brands. Verified by members built like you.
             </p>
           </FadeIn>
 
