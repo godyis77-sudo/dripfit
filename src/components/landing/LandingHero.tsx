@@ -22,6 +22,17 @@ export default function LandingHero() {
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
         <div>
           <FadeIn>
+            <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75 animate-ping" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+              </span>
+              <span className="text-xs text-white/70 tracking-widest uppercase font-mono">
+                Live · 9,158 Pieces · 186 Brands
+              </span>
+            </div>
+          </FadeIn>
+          <FadeIn>
             <h1
               className="type-display-editorial leading-[1.05] text-foreground"
               style={{ fontSize: 'clamp(36px, 7vw, 78px)' }}
