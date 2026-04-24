@@ -42,7 +42,7 @@ export default function LandingHero() {
               className="type-display-editorial leading-[1.05] mb-2 text-foreground"
               style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
             >
-              YOUR FIT. YOUR STYLE. YOURS.
+              YOUR BODY. YOUR FIT. YOUR STYLE.
               <span
                 className="type-display-editorial type-display-editorial--italic block text-primary mt-1"
                 style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
