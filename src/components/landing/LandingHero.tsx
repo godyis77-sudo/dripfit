@@ -22,38 +22,27 @@ export default function LandingHero() {
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
         <div>
           <FadeIn>
-            <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:flex-wrap gap-y-1.5 sm:gap-x-3 type-data text-foreground/85">
-              <span className="whitespace-nowrap">
-                YOUR BODY. <span className="text-primary">MAPPED.</span>
-              </span>
-              <span aria-hidden className="hidden sm:inline text-primary/60">·</span>
-              <span className="whitespace-nowrap">
-                EVERY BRAND. <span className="text-primary">FITTED.</span>
-              </span>
-              <span aria-hidden className="hidden sm:inline text-primary/60">·</span>
-              <span className="whitespace-nowrap">
-                EVERY FIT. <span className="text-primary">VERIFIED.</span>
-              </span>
-            </div>
-          </FadeIn>
-
-          <FadeIn delay={0.08}>
             <h1
-              className="type-display-editorial leading-[1.05] mb-2 text-foreground"
-              style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
+              className="type-display-editorial leading-[1.05] text-foreground"
+              style={{ fontSize: 'clamp(36px, 7vw, 78px)' }}
             >
-              YOUR BODY. YOUR FIT. YOUR STYLE.
-              <span
-                className="type-display-editorial type-display-editorial--italic block text-primary mt-1"
-                style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
-              >
-                DRIP CERTIFIED.
+              <span className="block">
+                YOUR BODY.{' '}
+                <span className="type-display-editorial--italic text-primary">MAPPED.</span>
+              </span>
+              <span className="block mt-1">
+                EVERY BRAND.{' '}
+                <span className="type-display-editorial--italic text-primary">FITTED.</span>
+              </span>
+              <span className="block mt-1">
+                EVERY STYLE.{' '}
+                <span className="type-display-editorial--italic text-primary">VERIFIED.</span>
               </span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.16}>
-            <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 mt-7 font-light">
+            <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 mt-6 font-light">
               Scan once. Try on 9,000+ pieces across 186 brands. Verified by members built like you.
             </p>
           </FadeIn>
