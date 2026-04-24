@@ -24,8 +24,8 @@ export default function LandingHero() {
           <FadeIn>
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+                <span className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping" style={{ backgroundColor: '#D4AE2A' }} />
+                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: '#D4AE2A', boxShadow: '0 0 6px #D4AE2A' }} />
               </span>
               <span className="text-xs text-white/70 tracking-widest uppercase font-mono">
                 Live · 9,158 Pieces · 186 Brands
