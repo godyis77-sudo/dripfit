@@ -43,7 +43,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 mt-6 font-light">
-              Scan once. Try on 9,000+ pieces across 186 brands. Verified by members built like you.
+              Scan once. Try on 9,000+ pieces. Size matched across 186 brands. Community Verified Drip.
             </p>
           </FadeIn>
 
