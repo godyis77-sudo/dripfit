@@ -82,7 +82,7 @@ function clearScanState() {
   } catch {}
 }
 
-import DecorativeSilhouette from '@/components/ui/DecorativeSilhouette';
+import BiometricScanShowcase from '@/components/ui/BiometricScanShowcase';
 import bodySilhouetteFrontMask from '@/assets/body-silhouette-mask.png';
 import bodySilhouetteSideMask from '@/assets/body-silhouette-side-mask.png';
 import CaptureViewfinder from '@/components/capture/CaptureViewfinder';
@@ -507,7 +507,7 @@ const Capture = () => {
           {/* ─── STEP 1: INTRO ─── */}
           {flowStep === 'intro' && (
             <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center text-center pt-2">
-              <DecorativeSilhouette height={240} />
+              <BiometricScanShowcase height={320} />
 
               <h2 className="type-headline mt-4 mb-1 uppercase">
                 Your Biometric Scan.
