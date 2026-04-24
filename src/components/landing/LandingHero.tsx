@@ -42,8 +42,10 @@ export default function LandingHero() {
           </FadeIn>
 
           <FadeIn delay={0.16}>
-            <p className="type-body text-base md:text-lg leading-relaxed max-w-md mb-10 mt-6 font-light">
-              Scan once. Try on 9,000+ pieces. Size matched across 186 brands. Community Verified Drip.
+            <p className="type-body text-[15px] md:text-lg leading-[1.55] tracking-[-0.005em] max-w-[19rem] md:max-w-md mb-10 mt-6 font-light text-balance">
+              Scan once. Try on 9,000+ pieces.<br className="sm:hidden" />
+              {' '}Size matched across 186 brands.<br className="sm:hidden" />
+              {' '}Community Verified Drip.
             </p>
           </FadeIn>
 
