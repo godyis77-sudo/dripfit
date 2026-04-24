@@ -43,7 +43,7 @@ export default function LandingHero() {
               </span>
               <span className="block mt-1">
                 EVERY BRAND.{' '}
-                <span className="type-display-editorial--italic text-primary">FITTED.</span>
+                <span className="type-display-editorial--italic text-primary">SIZED.</span>
               </span>
               <span className="block mt-1">
                 EVERY STYLE.{' '}
