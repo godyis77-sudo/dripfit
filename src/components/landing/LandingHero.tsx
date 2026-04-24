@@ -22,22 +22,6 @@ export default function LandingHero() {
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
         <div>
           <FadeIn>
-            <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-1.5">
-              <span className="type-data text-foreground/90">
-                <span className="text-primary">YOUR BODY.</span> MAPPED.
-              </span>
-              <span className="hidden sm:inline text-primary/60" aria-hidden>·</span>
-              <span className="type-data text-foreground/90">
-                <span className="text-primary">EVERY BRAND.</span> FITTED.
-              </span>
-              <span className="hidden sm:inline text-primary/60" aria-hidden>·</span>
-              <span className="type-data text-foreground/90">
-                <span className="text-primary">EVERY FIT.</span> VERIFIED.
-              </span>
-            </div>
-          </FadeIn>
-
-          <FadeIn delay={0.08}>
             <h1
               className="type-display-editorial leading-[1.05] mb-2 text-foreground"
               style={{ fontSize: 'clamp(44px, 7vw, 78px)' }}
@@ -50,6 +34,22 @@ export default function LandingHero() {
                 DRIP CERTIFIED.
               </span>
             </h1>
+          </FadeIn>
+
+          <FadeIn delay={0.08}>
+            <div className="mt-7 mb-2 flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-1.5">
+              <span className="type-data text-foreground/90">
+                <span className="text-primary">YOUR BODY.</span> MAPPED.
+              </span>
+              <span className="hidden sm:inline text-primary/60" aria-hidden>·</span>
+              <span className="type-data text-foreground/90">
+                <span className="text-primary">EVERY BRAND.</span> FITTED.
+              </span>
+              <span className="hidden sm:inline text-primary/60" aria-hidden>·</span>
+              <span className="type-data text-foreground/90">
+                <span className="text-primary">EVERY FIT.</span> VERIFIED.
+              </span>
+            </div>
           </FadeIn>
 
           <FadeIn delay={0.16}>
