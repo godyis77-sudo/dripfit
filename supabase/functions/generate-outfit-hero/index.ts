@@ -472,7 +472,8 @@ async function uploadHero(
 /* ── Process single outfit ────────────────────────────────────── */
 
 async function processOutfit(
-  sb: ReturnType<typeof createClient>,
+  // deno-lint-ignore no-explicit-any
+  sb: any,
   outfitId: string,
   apiKey: string,
   regenerate = false,
@@ -489,7 +490,7 @@ async function processOutfit(
   }
 
   if (outfit.hero_image_url && !regenerate) {
-    return { success: true, outfit_id: outfitId, hero_url: outfit.hero_image_url, skipped: true };
+    return { success: true, outfit_id: outfitId, hero_url: String(outfit.hero_image_url), skipped: true };
   }
 
   const { data: items } = await sb
@@ -504,7 +505,8 @@ async function processOutfit(
 
   console.log(`Generating v3 hero for "${outfit.title}" (${items.length} items, ${outfit.gender || "unisex"}, occasion: ${outfit.occasion})`);
 
-  const prompt = buildPrompt(items, outfit.occasion, outfit.gender, poseIndex);
+  // deno-lint-ignore no-explicit-any
+  const prompt = buildPrompt(items as any, outfit.occasion, outfit.gender, poseIndex);
   const base64 = await generateHeroImage(prompt, apiKey);
 
   if (!base64) {
