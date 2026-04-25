@@ -1,6 +1,9 @@
 import { getCorsHeaders } from "../_shared/validation.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
+// deno-lint-ignore no-explicit-any
+declare const EdgeRuntime: any;
+
 /**
  * generate-outfit-hero v3 — Campaign-referenced editorial image generation.
  * Uses waitUntil pattern to avoid edge function timeouts.
