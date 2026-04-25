@@ -212,6 +212,7 @@ Deno.serve(async (req) => {
   const retailerFilter: string | null = body.retailer || null;
   const batchSize: number = body.batch_size || 200;
   const skipAi: boolean = body.skip_ai === true;
+  const useFirecrawl: boolean = body.use_firecrawl === true;
 
   let query = supabase
     .from('product_catalog')
