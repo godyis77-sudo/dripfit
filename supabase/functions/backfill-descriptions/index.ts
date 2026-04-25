@@ -243,107 +243,122 @@ Deno.serve(async (req) => {
     byRetailer[r].push(p as BackfillItem);
   }
 
-  let totalUpdated = 0;
-  const retailerResults: Record<string, number> = {};
+  const runWork = async () => {
+    let totalUpdated = 0;
+    const retailerResults: Record<string, number> = {};
 
-  for (const [retailer, items] of Object.entries(byRetailer)) {
-    const shopifyBase = SHOPIFY_DOMAINS[retailer];
+    for (const [retailer, items] of Object.entries(byRetailer)) {
+      const shopifyBase = SHOPIFY_DOMAINS[retailer];
 
-    // Firecrawl-first path for non-Shopify retailers (or when explicitly forced)
-    if (useFirecrawl && !shopifyBase) {
-      const updated = await scrapeViaFirecrawl(supabase, items.slice(0, 100));
-      retailerResults[retailer] = updated;
-      totalUpdated += updated;
-      continue;
-    }
-
-    if (shopifyBase) {
-      try {
-        const allShopifyProducts: any[] = [];
-        for (let page = 1; page <= 10; page++) {
-          const url = `${shopifyBase}/products.json?limit=250&page=${page}`;
-          const resp = await fetch(url, { headers: { 'User-Agent': HTTP_UA }, signal: AbortSignal.timeout(10000) });
-          if (!resp.ok) break;
-          const json = await resp.json();
-          if (!json.products || json.products.length === 0) break;
-          allShopifyProducts.push(...json.products);
-          if (json.products.length < 250) break;
-          await new Promise(r => setTimeout(r, 500));
-        }
-
-        console.log(`[backfill] ${retailer}: fetched ${allShopifyProducts.length} Shopify products`);
-
-        const descMap = new Map<string, string>();
-        for (const sp of allShopifyProducts) {
-          if (sp.body_html) {
-            const desc = stripHtml(sp.body_html);
-            if (desc) {
-              if (sp.handle) descMap.set(sp.handle.toLowerCase(), desc);
-              descMap.set(sp.title?.toLowerCase()?.trim(), desc);
-            }
-          }
-        }
-
-        let updated = 0;
-        const unmatchedItems: BackfillItem[] = [];
-        for (const item of items) {
-          let desc: string | null = null;
-
-          if (item.product_url) {
-            try {
-              const u = new URL(item.product_url);
-              const segments = u.pathname.split('/').filter(Boolean);
-              const handle = segments[segments.length - 1]?.toLowerCase();
-              if (handle) desc = descMap.get(handle) || null;
-            } catch {}
-          }
-
-          if (!desc) {
-            desc = descMap.get(item.name?.toLowerCase()?.trim()) || null;
-          }
-
-          if (desc) {
-            const { error: upErr } = await supabase
-              .from('product_catalog')
-              .update({ description: desc })
-              .eq('id', item.id);
-            if (!upErr) updated++;
-          } else {
-            unmatchedItems.push(item);
-          }
-        }
-
-        if (unmatchedItems.length > 0) {
-          console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back`);
-          const fallbackUpdated = useFirecrawl
-            ? await scrapeViaFirecrawl(supabase, unmatchedItems.slice(0, 50))
-            : await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50), skipAi);
-          updated += fallbackUpdated;
-        }
-
+      if (useFirecrawl && !shopifyBase) {
+        const updated = await scrapeViaFirecrawl(supabase, items.slice(0, 100));
         retailerResults[retailer] = updated;
         totalUpdated += updated;
-      } catch (err) {
-        console.error(`[backfill] ${retailer} error:`, (err as Error).message);
-        if (useFirecrawl) {
-          const fcUpdated = await scrapeViaFirecrawl(supabase, items.slice(0, 50));
-          retailerResults[retailer] = fcUpdated;
-          totalUpdated += fcUpdated;
-        } else if (!skipAi) {
-          const aiUpdated = await generateDescriptionsViaAI(supabase, items.slice(0, 40));
-          retailerResults[retailer] = aiUpdated;
-          totalUpdated += aiUpdated;
-        } else {
-          retailerResults[retailer] = 0;
-        }
+        continue;
       }
-    } else {
-      const updated = await scrapeDescriptionsFromPages(supabase, items.slice(0, 50), skipAi);
-      retailerResults[retailer] = updated;
-      totalUpdated += updated;
+
+      if (shopifyBase) {
+        try {
+          const allShopifyProducts: any[] = [];
+          for (let page = 1; page <= 10; page++) {
+            const url = `${shopifyBase}/products.json?limit=250&page=${page}`;
+            const resp = await fetch(url, { headers: { 'User-Agent': HTTP_UA }, signal: AbortSignal.timeout(10000) });
+            if (!resp.ok) break;
+            const json = await resp.json();
+            if (!json.products || json.products.length === 0) break;
+            allShopifyProducts.push(...json.products);
+            if (json.products.length < 250) break;
+            await new Promise(r => setTimeout(r, 500));
+          }
+
+          console.log(`[backfill] ${retailer}: fetched ${allShopifyProducts.length} Shopify products`);
+
+          const descMap = new Map<string, string>();
+          for (const sp of allShopifyProducts) {
+            if (sp.body_html) {
+              const desc = stripHtml(sp.body_html);
+              if (desc) {
+                if (sp.handle) descMap.set(sp.handle.toLowerCase(), desc);
+                descMap.set(sp.title?.toLowerCase()?.trim(), desc);
+              }
+            }
+          }
+
+          let updated = 0;
+          const unmatchedItems: BackfillItem[] = [];
+          for (const item of items) {
+            let desc: string | null = null;
+
+            if (item.product_url) {
+              try {
+                const u = new URL(item.product_url);
+                const segments = u.pathname.split('/').filter(Boolean);
+                const handle = segments[segments.length - 1]?.toLowerCase();
+                if (handle) desc = descMap.get(handle) || null;
+              } catch {}
+            }
+
+            if (!desc) {
+              desc = descMap.get(item.name?.toLowerCase()?.trim()) || null;
+            }
+
+            if (desc) {
+              const { error: upErr } = await supabase
+                .from('product_catalog')
+                .update({ description: desc })
+                .eq('id', item.id);
+              if (!upErr) updated++;
+            } else {
+              unmatchedItems.push(item);
+            }
+          }
+
+          if (unmatchedItems.length > 0) {
+            console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back`);
+            const fallbackUpdated = useFirecrawl
+              ? await scrapeViaFirecrawl(supabase, unmatchedItems.slice(0, 50))
+              : await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50), skipAi);
+            updated += fallbackUpdated;
+          }
+
+          retailerResults[retailer] = updated;
+          totalUpdated += updated;
+        } catch (err) {
+          console.error(`[backfill] ${retailer} error:`, (err as Error).message);
+          if (useFirecrawl) {
+            const fcUpdated = await scrapeViaFirecrawl(supabase, items.slice(0, 50));
+            retailerResults[retailer] = fcUpdated;
+            totalUpdated += fcUpdated;
+          } else if (!skipAi) {
+            const aiUpdated = await generateDescriptionsViaAI(supabase, items.slice(0, 40));
+            retailerResults[retailer] = aiUpdated;
+            totalUpdated += aiUpdated;
+          } else {
+            retailerResults[retailer] = 0;
+          }
+        }
+      } else {
+        const updated = await scrapeDescriptionsFromPages(supabase, items.slice(0, 50), skipAi);
+        retailerResults[retailer] = updated;
+        totalUpdated += updated;
+      }
     }
+
+    console.log(`[backfill] DONE total=${totalUpdated}`, retailerResults);
+    return { totalUpdated, retailerResults };
+  };
+
+  if (background) {
+    // @ts-ignore - EdgeRuntime is available in Deno Deploy
+    EdgeRuntime.waitUntil(runWork());
+    return new Response(JSON.stringify({
+      message: 'Backfill started in background',
+      products_queued: products.length,
+      retailers: Object.keys(byRetailer),
+    }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
 
+  const { totalUpdated, retailerResults } = await runWork();
   return new Response(JSON.stringify({
     message: `Backfilled ${totalUpdated} descriptions`,
     total_updated: totalUpdated,
