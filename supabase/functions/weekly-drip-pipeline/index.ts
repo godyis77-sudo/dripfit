@@ -196,6 +196,6 @@ Deno.serve(async (req) => {
     }, 200, cors);
   } catch (err) {
     console.error("weekly-drip-pipeline error:", err);
-    return errorResponse(err.message || "Internal error", "PIPELINE_ERROR", 500, cors);
+    return errorResponse((err as Error)?.message || "Internal error", "PIPELINE_ERROR", 500, cors);
   }
 });
