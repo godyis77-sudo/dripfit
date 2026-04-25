@@ -248,6 +248,14 @@ Deno.serve(async (req) => {
   for (const [retailer, items] of Object.entries(byRetailer)) {
     const shopifyBase = SHOPIFY_DOMAINS[retailer];
 
+    // Firecrawl-first path for non-Shopify retailers (or when explicitly forced)
+    if (useFirecrawl && !shopifyBase) {
+      const updated = await scrapeViaFirecrawl(supabase, items.slice(0, 100));
+      retailerResults[retailer] = updated;
+      totalUpdated += updated;
+      continue;
+    }
+
     if (shopifyBase) {
       try {
         const allShopifyProducts: any[] = [];
@@ -304,10 +312,11 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Fallback for unmatched Shopify items: scrape pages then optionally AI
         if (unmatchedItems.length > 0) {
           console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back`);
-          const fallbackUpdated = await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50), skipAi);
+          const fallbackUpdated = useFirecrawl
+            ? await scrapeViaFirecrawl(supabase, unmatchedItems.slice(0, 50))
+            : await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50), skipAi);
           updated += fallbackUpdated;
         }
 
@@ -315,7 +324,11 @@ Deno.serve(async (req) => {
         totalUpdated += updated;
       } catch (err) {
         console.error(`[backfill] ${retailer} error:`, (err as Error).message);
-        if (!skipAi) {
+        if (useFirecrawl) {
+          const fcUpdated = await scrapeViaFirecrawl(supabase, items.slice(0, 50));
+          retailerResults[retailer] = fcUpdated;
+          totalUpdated += fcUpdated;
+        } else if (!skipAi) {
           const aiUpdated = await generateDescriptionsViaAI(supabase, items.slice(0, 40));
           retailerResults[retailer] = aiUpdated;
           totalUpdated += aiUpdated;
