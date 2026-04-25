@@ -124,9 +124,10 @@ async function scrapeViaFirecrawl(supabase: any, items: BackfillItem[]): Promise
           url: item.product_url,
           formats: ['summary'],
           onlyMainContent: true,
-          timeout: 45000,
+          waitFor: 2000,
+          timeout: 90000,
         }),
-        signal: AbortSignal.timeout(55000),
+        signal: AbortSignal.timeout(100000),
       });
       const data = await resp.json().catch(() => null);
       if (!resp.ok || !data?.success) {
