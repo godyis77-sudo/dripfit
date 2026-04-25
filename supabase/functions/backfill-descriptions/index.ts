@@ -112,7 +112,7 @@ async function scrapeViaFirecrawl(supabase: any, items: BackfillItem[]): Promise
     return 0;
   }
   let updated = 0;
-  const CONCURRENCY = 8;
+  const CONCURRENCY = 4;
 
   async function processOne(item: BackfillItem) {
     if (!item.product_url) return;
