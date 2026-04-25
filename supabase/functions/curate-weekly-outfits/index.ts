@@ -1422,6 +1422,6 @@ Deno.serve(async (req) => {
     }, 200, cors);
   } catch (err) {
     console.error("curate-weekly-outfits error:", err);
-    return errorResponse(err.message || "Internal error", "CURATION_ERROR", 500, cors);
+    return errorResponse((err as Error)?.message || "Internal error", "CURATION_ERROR", 500, cors);
   }
 });
