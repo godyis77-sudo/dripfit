@@ -207,7 +207,6 @@ const BRAND_CATEGORIES: Record<string, string[]> = {
   theory:         ['t-shirts', 'shirts', 'sweaters', 'pants', 'jackets', 'blazers', 'dresses'],
   reiss:          ['t-shirts', 'shirts', 'sweaters', 'pants', 'jackets', 'coats', 'dresses'],
   'ted baker':    ['t-shirts', 'shirts', 'sweaters', 'pants', 'jackets', 'dresses', 'bags'],
-  "arc'teryx":    ['jackets', 'coats', 'vests', 'hoodies', 'pants', 'shorts', 'hats'],
 };
 
 Deno.serve(async (req) => {
