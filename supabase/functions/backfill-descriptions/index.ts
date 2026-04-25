@@ -105,7 +105,7 @@ async function generateDescriptionsViaAI(supabase: any, items: BackfillItem[]): 
   }
 }
 
-async function scrapeDescriptionsFromPages(supabase: any, items: BackfillItem[]): Promise<number> {
+async function scrapeDescriptionsFromPages(supabase: any, items: BackfillItem[], skipAi = false): Promise<number> {
   let updated = 0;
   const unscrapeableItems: BackfillItem[] = [];
 
@@ -145,10 +145,12 @@ async function scrapeDescriptionsFromPages(supabase: any, items: BackfillItem[])
   }
 
   // AI fallback for items that couldn't be scraped
-  if (unscrapeableItems.length > 0) {
+  if (unscrapeableItems.length > 0 && !skipAi) {
     console.log(`[backfill] ${unscrapeableItems.length} items unscrapeable, using AI fallback`);
     const aiUpdated = await generateDescriptionsViaAI(supabase, unscrapeableItems.slice(0, 40));
     updated += aiUpdated;
+  } else if (unscrapeableItems.length > 0) {
+    console.log(`[backfill] ${unscrapeableItems.length} items unscrapeable, AI fallback skipped`);
   }
 
   return updated;
@@ -165,6 +167,7 @@ Deno.serve(async (req) => {
   const body = await req.json().catch(() => ({}));
   const retailerFilter: string | null = body.retailer || null;
   const batchSize: number = body.batch_size || 200;
+  const skipAi: boolean = body.skip_ai === true;
 
   let query = supabase
     .from('product_catalog')
@@ -256,10 +259,10 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Fallback for unmatched Shopify items: scrape pages then AI
+        // Fallback for unmatched Shopify items: scrape pages then optionally AI
         if (unmatchedItems.length > 0) {
           console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back`);
-          const fallbackUpdated = await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50));
+          const fallbackUpdated = await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50), skipAi);
           updated += fallbackUpdated;
         }
 
@@ -267,13 +270,16 @@ Deno.serve(async (req) => {
         totalUpdated += updated;
       } catch (err) {
         console.error(`[backfill] ${retailer} error:`, (err as Error).message);
-        // If Shopify totally failed, try AI directly
-        const aiUpdated = await generateDescriptionsViaAI(supabase, items.slice(0, 40));
-        retailerResults[retailer] = aiUpdated;
-        totalUpdated += aiUpdated;
+        if (!skipAi) {
+          const aiUpdated = await generateDescriptionsViaAI(supabase, items.slice(0, 40));
+          retailerResults[retailer] = aiUpdated;
+          totalUpdated += aiUpdated;
+        } else {
+          retailerResults[retailer] = 0;
+        }
       }
     } else {
-      const updated = await scrapeDescriptionsFromPages(supabase, items.slice(0, 50));
+      const updated = await scrapeDescriptionsFromPages(supabase, items.slice(0, 50), skipAi);
       retailerResults[retailer] = updated;
       totalUpdated += updated;
     }
