@@ -105,6 +105,50 @@ async function generateDescriptionsViaAI(supabase: any, items: BackfillItem[]): 
   }
 }
 
+async function scrapeViaFirecrawl(supabase: any, items: BackfillItem[]): Promise<number> {
+  const apiKey = Deno.env.get('FIRECRAWL_API_KEY');
+  if (!apiKey) {
+    console.error('[backfill] FIRECRAWL_API_KEY missing');
+    return 0;
+  }
+  let updated = 0;
+  const CONCURRENCY = 5;
+
+  async function processOne(item: BackfillItem) {
+    if (!item.product_url) return;
+    try {
+      const resp = await fetch('https://api.firecrawl.dev/v2/scrape', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: item.product_url,
+          formats: ['summary'],
+          onlyMainContent: true,
+          timeout: 45000,
+        }),
+        signal: AbortSignal.timeout(60000),
+      });
+      const data = await resp.json().catch(() => null);
+      if (!resp.ok || !data?.success) {
+        console.log(`[firecrawl] FAIL ${item.retailer} ${item.id}: ${data?.error || resp.status}`);
+        return;
+      }
+      const summary = String(data.data?.summary || data.summary || '').trim().slice(0, 600);
+      if (summary.length < 30) return;
+      const { error } = await supabase.from('product_catalog').update({ description: summary }).eq('id', item.id);
+      if (!error) updated++;
+    } catch (e) {
+      console.log(`[firecrawl] ERR ${item.id}: ${(e as Error).message}`);
+    }
+  }
+
+  for (let i = 0; i < items.length; i += CONCURRENCY) {
+    await Promise.all(items.slice(i, i + CONCURRENCY).map(processOne));
+  }
+  console.log(`[firecrawl] updated ${updated}/${items.length}`);
+  return updated;
+}
+
 async function scrapeDescriptionsFromPages(supabase: any, items: BackfillItem[], skipAi = false): Promise<number> {
   let updated = 0;
   const unscrapeableItems: BackfillItem[] = [];
@@ -168,6 +212,7 @@ Deno.serve(async (req) => {
   const retailerFilter: string | null = body.retailer || null;
   const batchSize: number = body.batch_size || 200;
   const skipAi: boolean = body.skip_ai === true;
+  const useFirecrawl: boolean = body.use_firecrawl === true;
 
   let query = supabase
     .from('product_catalog')
@@ -202,6 +247,14 @@ Deno.serve(async (req) => {
 
   for (const [retailer, items] of Object.entries(byRetailer)) {
     const shopifyBase = SHOPIFY_DOMAINS[retailer];
+
+    // Firecrawl-first path for non-Shopify retailers (or when explicitly forced)
+    if (useFirecrawl && !shopifyBase) {
+      const updated = await scrapeViaFirecrawl(supabase, items.slice(0, 100));
+      retailerResults[retailer] = updated;
+      totalUpdated += updated;
+      continue;
+    }
 
     if (shopifyBase) {
       try {
@@ -259,10 +312,11 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Fallback for unmatched Shopify items: scrape pages then optionally AI
         if (unmatchedItems.length > 0) {
           console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back`);
-          const fallbackUpdated = await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50), skipAi);
+          const fallbackUpdated = useFirecrawl
+            ? await scrapeViaFirecrawl(supabase, unmatchedItems.slice(0, 50))
+            : await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50), skipAi);
           updated += fallbackUpdated;
         }
 
@@ -270,7 +324,11 @@ Deno.serve(async (req) => {
         totalUpdated += updated;
       } catch (err) {
         console.error(`[backfill] ${retailer} error:`, (err as Error).message);
-        if (!skipAi) {
+        if (useFirecrawl) {
+          const fcUpdated = await scrapeViaFirecrawl(supabase, items.slice(0, 50));
+          retailerResults[retailer] = fcUpdated;
+          totalUpdated += fcUpdated;
+        } else if (!skipAi) {
           const aiUpdated = await generateDescriptionsViaAI(supabase, items.slice(0, 40));
           retailerResults[retailer] = aiUpdated;
           totalUpdated += aiUpdated;

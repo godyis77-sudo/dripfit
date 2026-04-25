@@ -170,10 +170,11 @@ Deno.serve(async (req) => {
             await new Promise(r => setTimeout(r, 5000));
           }
         } catch (err) {
-          log.push(`[Step 3] ❌ Error: ${err.message}`);
+          const msg = (err as Error)?.message || String(err);
+          log.push(`[Step 3] ❌ Error: ${msg}`);
           failed++;
 
-          if (err.message === "RATE_LIMITED") {
+          if (msg === "RATE_LIMITED") {
             log.push(`[Step 3] Rate limited — waiting 30s...`);
             await new Promise(r => setTimeout(r, 30000));
           }
@@ -195,6 +196,6 @@ Deno.serve(async (req) => {
     }, 200, cors);
   } catch (err) {
     console.error("weekly-drip-pipeline error:", err);
-    return errorResponse(err.message || "Internal error", "PIPELINE_ERROR", 500, cors);
+    return errorResponse((err as Error)?.message || "Internal error", "PIPELINE_ERROR", 500, cors);
   }
 });

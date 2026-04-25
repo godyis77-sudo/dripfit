@@ -1,6 +1,9 @@
 import { getCorsHeaders } from "../_shared/validation.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
+// deno-lint-ignore no-explicit-any
+declare const EdgeRuntime: any;
+
 /**
  * generate-outfit-hero v3 — Campaign-referenced editorial image generation.
  * Uses waitUntil pattern to avoid edge function timeouts.
@@ -472,7 +475,8 @@ async function uploadHero(
 /* ── Process single outfit ────────────────────────────────────── */
 
 async function processOutfit(
-  sb: ReturnType<typeof createClient>,
+  // deno-lint-ignore no-explicit-any
+  sb: any,
   outfitId: string,
   apiKey: string,
   regenerate = false,
@@ -489,7 +493,7 @@ async function processOutfit(
   }
 
   if (outfit.hero_image_url && !regenerate) {
-    return { success: true, outfit_id: outfitId, hero_url: outfit.hero_image_url, skipped: true };
+    return { success: true, outfit_id: outfitId, hero_url: String(outfit.hero_image_url), skipped: true };
   }
 
   const { data: items } = await sb
@@ -504,7 +508,8 @@ async function processOutfit(
 
   console.log(`Generating v3 hero for "${outfit.title}" (${items.length} items, ${outfit.gender || "unisex"}, occasion: ${outfit.occasion})`);
 
-  const prompt = buildPrompt(items, outfit.occasion, outfit.gender, poseIndex);
+  // deno-lint-ignore no-explicit-any
+  const prompt = buildPrompt(items as any, outfit.occasion, outfit.gender, poseIndex);
   const base64 = await generateHeroImage(prompt, apiKey);
 
   if (!base64) {

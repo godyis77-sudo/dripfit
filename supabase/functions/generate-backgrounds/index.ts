@@ -175,7 +175,8 @@ async function generateImage(prompt: string, apiKey: string): Promise<string | n
 }
 
 async function uploadToStorage(
-  sb: ReturnType<typeof createClient>,
+  // deno-lint-ignore no-explicit-any
+  sb: any,
   base64Data: string,
   fileName: string
 ): Promise<string | null> {
