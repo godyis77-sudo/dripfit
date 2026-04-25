@@ -362,6 +362,7 @@ Deno.serve(async (req) => {
           const spread = DEFAULT_SPREAD[measurement] ?? 3;
           if (sMin != null && sMax == null) sMax = sMin + spread;
           if (sMin == null && sMax != null) sMin = sMax - spread;
+          if (sMin == null || sMax == null) continue;
 
           let adjusted = userVal;
           if (FIT_ADJUSTABLE.has(measurement) && offset !== 0) {
