@@ -88,6 +88,22 @@ export default function LandingHero() {
             )}
           </FadeIn>
 
+          {/* Phone mockup — mobile only, shown below CTAs */}
+          <FadeIn delay={0.28}>
+            <div className="md:hidden relative mx-auto w-full max-w-[260px] mt-10 animate-float">
+              <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
+              <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_hsl(var(--primary)/0.4)] overflow-hidden">
+                <img
+                  src={heroPhoneMockup}
+                  alt="DripFit My Sizes screen showing verified size cards for multiple brands"
+                  className="w-full block"
+                  loading="eager"
+                  fetchPriority="high"
+                />
+              </div>
+            </div>
+          </FadeIn>
+
           <FadeIn delay={0.32}>
             <div className="flex gap-10 mt-8 pt-8 border-t border-border/30">
               {STATS.map((s) => (
