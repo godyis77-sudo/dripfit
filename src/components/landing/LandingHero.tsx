@@ -37,17 +37,17 @@ export default function LandingHero() {
               className="type-display-editorial leading-[1.05] text-foreground"
               style={{ fontSize: 'clamp(36px, 7vw, 78px)' }}
             >
-              <span className="block">
-                YOUR BODY.{' '}
-                <span className="type-display-editorial--italic text-primary">MAPPED.</span>
+              <span className="block">YOUR BODY.</span>
+              <span className="type-display-editorial--italic text-primary block mt-1">
+                MAPPED.
               </span>
-              <span className="block mt-1">
-                EVERY BRAND.{' '}
-                <span className="type-display-editorial--italic text-primary">SIZED.</span>
+              <span className="block mt-3">EVERY BRAND.</span>
+              <span className="type-display-editorial--italic text-primary block mt-1">
+                SIZED.
               </span>
-              <span className="block mt-1">
-                EVERY STYLE.{' '}
-                <span className="type-display-editorial--italic text-primary">VERIFIED.</span>
+              <span className="block mt-3">EVERY STYLE.</span>
+              <span className="type-display-editorial--italic text-primary block mt-1">
+                VERIFIED.
               </span>
             </h1>
           </FadeIn>
