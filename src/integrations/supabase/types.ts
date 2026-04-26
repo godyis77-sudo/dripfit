@@ -1952,6 +1952,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_tryon_funnel_metrics: { Args: { p_days?: number }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
