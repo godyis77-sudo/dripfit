@@ -19,8 +19,8 @@ export default function LandingHero() {
       <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full pointer-events-none bg-primary/5 blur-[160px]" />
       <div className="absolute bottom-[-20%] left-[-10%] w-[400px] h-[400px] rounded-full pointer-events-none bg-primary/[0.03] blur-[160px]" />
 
-      <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
-        <div>
+      <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center relative z-10">
+        <div className="md:flex-1">
           <FadeIn>
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10">
               <span className="relative flex h-2 w-2">
@@ -100,9 +100,9 @@ export default function LandingHero() {
           </FadeIn>
         </div>
 
-        {/* Phone mockup */}
+        {/* Phone mockup — hidden on mobile to keep CTAs above the fold */}
         <FadeIn delay={0.15}>
-          <div className="relative mx-auto w-full max-w-[280px] lg:max-w-[360px] animate-float">
+          <div className="hidden md:block relative mx-auto w-full max-w-[280px] lg:max-w-[360px] animate-float">
             <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
             <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_hsl(var(--primary)/0.4)] overflow-hidden">
               <img
