@@ -54,6 +54,17 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // ── ATTEMPT TELEMETRY ──
+  const attemptStart = Date.now();
+  let attemptId: string | null = null;
+  let attemptLogger: {
+    finish: (
+      status: "succeeded" | "failed" | "rejected",
+      errorCode?: string,
+      errorMessage?: string,
+    ) => Promise<void>;
+  } | null = null;
+
   try {
     let raw: Record<string, unknown>;
     try {
