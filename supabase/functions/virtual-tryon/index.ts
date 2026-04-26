@@ -225,6 +225,48 @@ Deno.serve(async (req) => {
       ? "Use the background/environment from Image B (the clothing/product photo). Place the model into that scene."
       : "Keep the EXACT same background, environment, and scene from Image A. Do NOT replace it with a studio backdrop.";
 
+    // ── LOG ATTEMPT START ──
+    try {
+      const itemTypeForLog = typeof raw.itemType === "string"
+        ? raw.itemType
+        : "clothing";
+      const { data: attemptRow } = await supabaseAdmin
+        .from("tryon_attempts")
+        .insert({
+          user_id: userId,
+          guest_uuid: userId ? null : guestUuid,
+          user_tier: userTier,
+          status: "started",
+          item_type: itemTypeForLog,
+          background_source: backgroundSource,
+          started_at: new Date(attemptStart).toISOString(),
+        })
+        .select("id")
+        .maybeSingle();
+      attemptId = attemptRow?.id ?? null;
+      attemptLogger = {
+        finish: async (status, errorCode, errorMessage) => {
+          if (!attemptId) return;
+          try {
+            await supabaseAdmin
+              .from("tryon_attempts")
+              .update({
+                status,
+                error_code: errorCode ?? null,
+                error_message: errorMessage ? errorMessage.slice(0, 500) : null,
+                latency_ms: Date.now() - attemptStart,
+                completed_at: new Date().toISOString(),
+              })
+              .eq("id", attemptId);
+          } catch (logErr) {
+            console.warn("attempt finish log failed:", logErr);
+          }
+        },
+      };
+    } catch (logErr) {
+      console.warn("attempt start log failed:", logErr);
+    }
+
     // ── CLASSIFY ITEM ──
     const itemType: string = (raw.itemType as string) || "clothing";
     const normalizedItemType = itemType
