@@ -123,7 +123,7 @@ const OneTapPlayground = () => {
 
   return (
     <>
-    <section className="mb-4 rounded-2xl border border-white/5 glass-dark overflow-hidden">
+    <section className="mb-4 rounded-2xl border border-border/5 glass-dark overflow-hidden">
       {/* Hidden inputs */}
       <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileSelect} className="hidden" />
       <input ref={cameraRef} type="file" accept="image/jpeg,image/png,image/webp" capture="user" onChange={handleFileSelect} className="hidden" />
@@ -131,24 +131,24 @@ const OneTapPlayground = () => {
       {/* Split screen layout */}
       <div className="grid grid-cols-[1fr_1.5fr]">
         {/* Left: User photo / camera prompt */}
-        <div className="relative border-r border-white/5 flex flex-col items-center justify-center p-3 border-dashed border-white/[0.08] rounded-2xl m-2">
+        <div className="relative border-r border-border/5 flex flex-col items-center justify-center p-3 border-dashed border-border/[0.08] rounded-2xl m-2">
           <AnimatePresence mode="wait">
             {userPhoto ? (
               <motion.div
                 key="photo"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="relative w-full aspect-[3/4] rounded-xl overflow-hidden border border-white/10"
+                className="relative w-full aspect-[3/4] rounded-xl overflow-hidden border border-border/10"
               >
                 <img src={userPhoto} alt="You" className="w-full h-full object-cover" />
                 <button
                   onClick={() => setUserPhoto(null)}
-                  className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-[10px] font-bold text-white/70"
+                  className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-[10px] font-bold text-foreground/70"
                 >
                   ✕
                 </button>
                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-                  <p className="text-[10px] font-bold text-white text-center">Now tap a fit →</p>
+                  <p className="text-[10px] font-bold text-foreground text-center">Now tap a fit →</p>
                 </div>
               </motion.div>
             ) : (
@@ -158,11 +158,11 @@ const OneTapPlayground = () => {
                 animate={{ opacity: 1 }}
                 className="flex flex-col items-center gap-2 text-center"
               >
-                <div className="h-14 w-14 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-                  <Camera className="h-6 w-6 text-white/30" />
+                <div className="h-14 w-14 rounded-2xl bg-white/[0.04] border border-border/[0.06] flex items-center justify-center">
+                  <Camera className="h-6 w-6 text-foreground/30" />
                 </div>
-                <p className="text-[12px] font-bold text-white/70">Your Photo</p>
-                <p className="text-[10px] text-white/30 leading-tight">Snap or upload a photo. Tap any piece to try on.</p>
+                <p className="text-[12px] font-bold text-foreground/70">Your Photo</p>
+                <p className="text-[10px] text-foreground/30 leading-tight">Snap or upload a photo. Tap any piece to try on.</p>
                 <div className="flex gap-1.5 w-full max-w-[140px]">
                   <button
                     onClick={() => {
@@ -170,10 +170,10 @@ const OneTapPlayground = () => {
                       else cameraRef.current?.click();
                     }}
                     disabled={uploading}
-                    className="flex-1 py-1.5 rounded-lg glass border border-white/10 active:scale-95 transition-transform flex items-center justify-center gap-1"
+                    className="flex-1 py-1.5 rounded-lg glass border border-border/10 active:scale-95 transition-transform flex items-center justify-center gap-1"
                   >
-                    <Camera className="h-3 w-3 text-white/60" />
-                    <span className="text-[10px] font-bold text-white/60">Snap</span>
+                    <Camera className="h-3 w-3 text-foreground/60" />
+                    <span className="text-[10px] font-bold text-foreground/60">Snap</span>
                   </button>
                   <button
                     onClick={() => {
@@ -181,10 +181,10 @@ const OneTapPlayground = () => {
                       else fileRef.current?.click();
                     }}
                     disabled={uploading}
-                    className="flex-1 py-1.5 rounded-lg glass border border-white/10 active:scale-95 transition-transform flex items-center justify-center gap-1"
+                    className="flex-1 py-1.5 rounded-lg glass border border-border/10 active:scale-95 transition-transform flex items-center justify-center gap-1"
                   >
-                    <ImageIcon className="h-3 w-3 text-white/60" />
-                    <span className="text-[10px] font-bold text-white/60">Pick</span>
+                    <ImageIcon className="h-3 w-3 text-foreground/60" />
+                    <span className="text-[10px] font-bold text-foreground/60">Pick</span>
                   </button>
                 </div>
               </motion.div>
@@ -196,7 +196,7 @@ const OneTapPlayground = () => {
         <div className="flex flex-col min-h-0">
           <div className="flex items-center justify-between px-3 pt-2.5 pb-1 shrink-0">
             <div className="flex items-center gap-1">
-              <span className="text-[11px] font-display font-bold text-white">Tap a Fit</span>
+              <span className="text-[11px] font-display font-bold text-foreground">Tap a Fit</span>
             </div>
             <button
               onClick={() => navigate('/browse/all')}
@@ -219,7 +219,7 @@ const OneTapPlayground = () => {
                     key={product.id}
                     whileTap={{ scale: 0.93 }}
                     onClick={() => handleTapItem(product)}
-                    className="relative rounded-2xl overflow-hidden border border-white/5 glass-dark active:border-primary/30 transition-colors h-full bg-secondary"
+                    className="relative rounded-2xl overflow-hidden border border-border/5 glass-dark active:border-primary/30 transition-colors h-full bg-secondary"
                   >
                     <img
                       src={product.image_url}
@@ -228,7 +228,7 @@ const OneTapPlayground = () => {
                       className="w-full h-full object-cover"
                     />
                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 py-1">
-                       <p className="font-mono text-[8px] tracking-widest uppercase text-zinc-400 truncate">{product.brand}</p>
+                       <p className="type-data text-[8px] tracking-widest uppercase text-zinc-400 truncate">{product.brand}</p>
                      </div>
                   </motion.button>
                 ))}
@@ -238,8 +238,8 @@ const OneTapPlayground = () => {
 
       {/* Bottom prompt when no photo */}
       {!userPhoto && (
-        <div className="px-3 py-2 border-t border-white/5">
-          <p className="text-[10px] text-center text-white/70 flex items-center justify-center gap-1">
+        <div className="px-3 py-2 border-t border-border/5">
+          <p className="text-[10px] text-center text-foreground/70 flex items-center justify-center gap-1">
             Tap any piece. Try it on your body.
             <ChevronDown className="h-3 w-3 text-primary inline-block" />
           </p>

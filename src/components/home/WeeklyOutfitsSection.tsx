@@ -132,7 +132,7 @@ function OccasionPill({ active, onClick, label }: { active: boolean; onClick: ()
       className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium border backdrop-blur-md transition-colors whitespace-nowrap flex items-center gap-1.5 ${
         active
           ? 'bg-primary/8 border-primary/20 text-primary'
-          : 'bg-white/5 border-white/10 text-white/50'
+          : 'bg-white/5 border-border/10 text-foreground/50'
       }`}
     >
       <span className={`inline-block w-[5px] h-[5px] rounded-full shrink-0 ${active ? 'bg-primary' : 'bg-white/20'}`} />
@@ -169,7 +169,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
         {/* Share button */}
         <button
           onClick={(e) => handleShare(outfit.title, e)}
-          className="absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white transition-colors"
+          className="absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors"
           aria-label="Share"
         >
           <Share2 size={16} />
@@ -188,13 +188,13 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
               </span>
             )}
             {outfit.occasion_label && (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-white/[0.1] backdrop-blur-sm border border-white/[0.1] text-white">
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-white/[0.1] backdrop-blur-sm border border-border/[0.1] text-foreground">
                 {outfit.occasion_label}
               </span>
             )}
           </div>
           {brands.length > 0 && (
-            <p className="text-[9px] tracking-[0.2em] uppercase text-white/40 mt-1.5 truncate">
+            <p className="text-[9px] tracking-[0.2em] uppercase text-foreground/40 mt-1.5 truncate">
               {brands.join(' · ')}
             </p>
           )}
@@ -207,7 +207,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
   return (
     <motion.button
       onClick={onTap}
-      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-white/5 flex flex-col justify-end px-3.5 pb-6 relative"
+      className="snap-start shrink-0 w-[280px] aspect-[3/4] rounded-2xl overflow-hidden text-left active:scale-[0.97] transition-transform glass-dark border border-border/5 flex flex-col justify-end px-3.5 pb-6 relative"
       whileTap={{ scale: 0.97 }}
     >
       {/* COP score pill — top-left */}
@@ -218,7 +218,7 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
       </span>
       <button
         onClick={(e) => handleShare(outfit.title, e)}
-        className="absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white transition-colors"
+        className="absolute top-3 right-3 z-20 h-8 w-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-foreground/60 hover:text-foreground transition-colors"
         aria-label="Share"
       >
         <Share2 size={16} />
@@ -231,17 +231,17 @@ function HeroCard({ outfit, onTap }: { outfit: WeeklyOutfit; onTap: () => void }
           </span>
         )}
         {outfit.occasion_label && (
-          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-white/[0.1] backdrop-blur-sm border border-white/[0.1] text-white">
+          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium tracking-wider uppercase bg-white/[0.1] backdrop-blur-sm border border-border/[0.1] text-foreground">
             {outfit.occasion_label}
           </span>
         )}
       </div>
       {brands.length > 0 && (
-        <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-1.5 truncate">
+        <p className="text-[9px] tracking-[0.2em] uppercase text-foreground/30 mt-1.5 truncate">
           {brands.join(' · ')}
         </p>
       )}
-      <p className="text-[10px] italic text-white/20 mt-2">Editorial image generating…</p>
+      <p className="text-[10px] italic text-foreground/20 mt-2">Editorial image generating…</p>
     </motion.button>
   );
 }

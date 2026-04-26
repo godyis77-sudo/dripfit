@@ -155,7 +155,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
               <div className="h-3 w-48 rounded-md bg-white/[0.04] animate-pulse" />
             </div>
             {/* Hero card placeholder to reserve vertical space */}
-            <div className="mt-4 h-[260px] rounded-2xl bg-white/[0.03] border border-white/[0.04] animate-pulse" />
+            <div className="mt-4 h-[260px] rounded-2xl bg-white/[0.03] border border-border/[0.04] animate-pulse" />
           </div>
         ) : showReturningStack ? (
           // Returning user: centered editorial wordmark
@@ -310,7 +310,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
             {/* THE DROP · THIS WEEK — hero swipe (top placement) */}
             <SwipeFeedSection gender={mappedGender} />
 
-            <div className="border-t border-white/[0.06] my-3" />
+            <div className="border-t border-border/[0.06] my-3" />
 
             {/* THE DRAPE — Tier 1 editorial primary */}
             <motion.button
@@ -321,7 +321,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 trackEvent('gallery_hero_tryon');
                 navigate('/tryon');
               }}
-              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-md border border-white/[0.06] border-t-2 border-t-primary px-5 py-5 flex items-center justify-between active:scale-[0.97] transition-transform hover:bg-white/[0.05]"
+              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-md border border-border/[0.06] border-t-2 border-t-primary px-5 py-5 flex items-center justify-between active:scale-[0.97] transition-transform hover:bg-white/[0.05]"
             >
               <div className="text-left flex-1 min-w-0">
                 <p className="font-serif text-[24px] font-bold italic text-foreground tracking-tight leading-tight">
@@ -349,7 +349,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 trackEvent('home_infinite_closet_click');
                 navigate('/closet');
               }}
-              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-md border border-white/[0.06] border-t-2 border-t-primary px-5 py-5 flex items-center justify-between active:scale-[0.97] transition-transform hover:bg-white/[0.05]"
+              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-md border border-border/[0.06] border-t-2 border-t-primary px-5 py-5 flex items-center justify-between active:scale-[0.97] transition-transform hover:bg-white/[0.05]"
             >
               <div className="text-left flex-1 min-w-0">
                 <p className="font-serif text-[24px] font-bold italic text-foreground tracking-tight leading-tight">
@@ -414,7 +414,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 trackEvent('gallery_hero_tryon');
                 navigate('/tryon');
               }}
-              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-md border border-white/[0.06] border-t-2 border-t-primary px-5 py-5 flex items-center justify-between active:scale-[0.97] transition-transform hover:bg-white/[0.05]"
+              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-md border border-border/[0.06] border-t-2 border-t-primary px-5 py-5 flex items-center justify-between active:scale-[0.97] transition-transform hover:bg-white/[0.05]"
             >
               <div className="text-left flex-1 min-w-0">
                 <p className="font-serif text-[24px] font-bold italic text-foreground tracking-tight leading-tight">
@@ -483,7 +483,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                   className={`shrink-0 px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-colors min-h-[36px] backdrop-blur-md ${
                     activeCategory === cat.key
                       ? 'bg-primary/10 border border-primary/30 text-primary'
-                      : 'bg-white/5 border border-white/10 text-foreground/70'
+                      : 'bg-white/5 border border-border/10 text-foreground/70'
                   }`}
                 >
                   {cat.label}

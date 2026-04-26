@@ -217,12 +217,12 @@ export default function OnboardingOverlay() {
               transition={{ duration: 0.5, ease: 'easeOut' }}
               className="flex flex-col items-center gap-3"
             >
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-md">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border/20 bg-white/10 backdrop-blur-md">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="ml-1">
                   <path d="M8 5v14l11-7L8 5z" fill="white" />
                 </svg>
               </div>
-              <p className="font-sans text-xs font-medium tracking-widest uppercase text-white/50">
+              <p className="font-sans text-xs font-medium tracking-widest uppercase text-foreground/50">
                 Tap to start
               </p>
             </motion.div>
@@ -233,7 +233,7 @@ export default function OnboardingOverlay() {
       {!logoPhase && (
         <button
           onClick={(e) => { e.stopPropagation(); complete(); }}
-          className="absolute top-4 right-4 z-30 flex min-h-[44px] min-w-[44px] items-center justify-center pt-[env(safe-area-inset-top)] font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30"
+          className="absolute top-4 right-4 z-30 flex min-h-[44px] min-w-[44px] items-center justify-center pt-[env(safe-area-inset-top)] font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/30"
         >
           Skip
         </button>
@@ -260,7 +260,7 @@ export default function OnboardingOverlay() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
-                className="mx-auto mt-2 max-w-[260px] font-sans text-sm text-white/60"
+                className="mx-auto mt-2 max-w-[260px] font-sans text-sm text-foreground/60"
               >
                 {SLIDES[slide].sub}
               </motion.p>
@@ -283,7 +283,7 @@ export default function OnboardingOverlay() {
           {slide < SLIDES.length - 1 ? (
             <button
               onClick={(e) => { e.stopPropagation(); transitionToSlide(slide + 1); }}
-              className="btn-glass mb-4 h-12 w-full max-w-[280px] rounded-xl text-sm font-semibold text-white"
+              className="btn-glass mb-4 h-12 w-full max-w-[280px] rounded-xl text-sm font-semibold text-foreground"
             >
               Next
             </button>
@@ -297,7 +297,7 @@ export default function OnboardingOverlay() {
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); complete(); }}
-                className="btn-glass h-12 w-full rounded-xl text-sm font-semibold text-white"
+                className="btn-glass h-12 w-full rounded-xl text-sm font-semibold text-foreground"
               >
                 Enter the Closet
               </button>

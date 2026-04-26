@@ -92,7 +92,7 @@ export default function SwipeFeedSection({ gender }: SwipeFeedSectionProps) {
     return (
       <section className="mb-6">
         <SectionHeader navigate={navigate} />
-        <div className="w-full aspect-[3/4] rounded-2xl glass-dark border border-white/8 flex flex-col items-center justify-center text-center px-6">
+        <div className="w-full aspect-[3/4] rounded-2xl glass-dark border border-border/8 flex flex-col items-center justify-center text-center px-6">
           <Flame className="h-8 w-8 text-primary mb-3" />
           <p className={cn(TYPE.headlineSm, 'text-foreground mb-1')}>You're all caught up</p>
           <p className={cn(TYPE.body, 'text-muted-foreground text-[12px] mb-4')}>

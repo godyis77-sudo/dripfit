@@ -33,7 +33,7 @@ class HomeBrowseErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="mb-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] px-5 py-6 text-center">
+        <div className="mb-6 rounded-2xl bg-white/[0.02] border border-border/[0.06] px-5 py-6 text-center">
           <p className="font-sans text-[13px] font-semibold text-foreground/80 mb-1">
             Couldn't load the catalog
           </p>
