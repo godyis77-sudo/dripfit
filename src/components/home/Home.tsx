@@ -169,7 +169,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
               <h1 className="font-display text-[24px] font-extrabold uppercase tracking-tight leading-none text-foreground">
                 DRIPFIT <span className="text-primary text-[20px]">✔</span>
               </h1>
-              <p className="font-mono text-[10px] tracking-[0.18em] uppercase text-foreground/50">
+              <p className="type-data text-foreground/50">
                 Verified · 186 brands · 9,000+ pieces
               </p>
             </motion.div>
@@ -185,7 +185,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
             {!user && (
               <button
                 onClick={() => navigate('/auth')}
-                className="text-[12px] font-semibold text-white/70 tracking-[0.08em] uppercase border border-white/20 rounded-full px-3.5 py-1 bg-transparent hover:border-primary/40 hover:text-primary/80 transition-colors active:opacity-70 shrink-0 ml-2"
+                className="text-[12px] font-semibold text-foreground/60 tracking-[0.08em] uppercase border border-border rounded-full px-3.5 py-1 bg-transparent hover:border-primary/40 hover:text-primary/80 transition-colors active:opacity-70 shrink-0 ml-2"
               >
                 Sign In
               </button>
@@ -209,7 +209,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 style={{
                   padding: '1.5px',
                   background:
-                    'linear-gradient(135deg, #C8A951 0%, rgba(200,169,81,0.35) 35%, transparent 70%)',
+                    'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.35) 35%, transparent 70%)',
                   WebkitMask:
                     'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
                   WebkitMaskComposite: 'xor',
@@ -221,7 +221,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                   className="absolute left-0 right-0 h-px"
                   style={{
                     background:
-                      'linear-gradient(90deg, transparent 0%, #C8A951 50%, transparent 100%)',
+                      'linear-gradient(90deg, transparent 0%, hsl(var(--primary)) 50%, transparent 100%)',
                     opacity: 0.1,
                     animation: 'scanline-sweep 4.5s linear infinite',
                   }}
@@ -262,7 +262,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
               />
 
               <div className="relative z-10 px-6 py-7">
-                <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-primary/70 font-bold mb-3">
+                <p className="type-data text-primary/70 font-bold mb-3">
                   STEP 01 · YOUR SCAN
                 </p>
                 <h2
@@ -277,7 +277,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 >
                   YOUR BIOMETRIC SCAN.
                 </h2>
-                <p className="font-sans text-[14px] font-light text-white/75 leading-snug max-w-[300px] mb-4">
+                <p className="font-sans text-[14px] font-light text-foreground/75 leading-snug max-w-[300px] mb-4">
                   2 photos. 60 seconds. Your exact size across 186 brands — locked.
                 </p>
                 <button
@@ -289,7 +289,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 >
                   Start the Scan <ArrowRight className="h-4 w-4" />
                 </button>
-                <p className="font-mono text-[10px] tracking-[0.14em] uppercase text-white/40 text-center mt-3">
+                <p className="type-data text-foreground/40 text-center mt-3">
                   186 BRANDS · 389 SIZE CHARTS · 9,000+ PIECES
                 </p>
               </div>
