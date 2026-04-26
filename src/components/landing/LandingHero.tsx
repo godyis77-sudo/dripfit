@@ -24,10 +24,10 @@ export default function LandingHero() {
           <FadeIn>
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/10">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping" style={{ backgroundColor: '#D4AE2A' }} />
-                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: '#D4AE2A', boxShadow: '0 0 6px #D4AE2A' }} />
+                <span className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping bg-primary" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" style={{ boxShadow: '0 0 6px hsl(var(--primary))' }} />
               </span>
-              <span className="text-xs text-white/70 tracking-widest uppercase font-mono">
+              <span className="type-data text-foreground/70">
                 Live · 9,158 Pieces · 186 Brands
               </span>
             </div>
@@ -54,9 +54,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-[15px] md:text-lg leading-[1.55] tracking-[-0.005em] max-w-[19rem] md:max-w-md mb-10 mt-6 font-light text-balance">
-              Scan once. Try on 9,000+ pieces.<br className="sm:hidden" />
-              {' '}Size matched across 186 brands.<br className="sm:hidden" />
-              {' '}Community Verified Drip.
+              Scan once. Try on 9,000+ pieces. Sized across 186 brands. Community Verified Drip.
             </p>
           </FadeIn>
 

@@ -21,7 +21,7 @@ export default function LandingCommunityVerdict() {
                 <div key={d.label}>
                   <div className="flex justify-between mb-1.5">
                     <span className="text-sm text-muted-foreground">{d.label}</span>
-                    <span className="font-mono text-xs text-primary">{d.cop}% COP</span>
+                    <span className="type-data text-primary">{d.cop}% COP</span>
                   </div>
                   <div className="h-1 bg-border/30 rounded-full overflow-hidden">
                     <div

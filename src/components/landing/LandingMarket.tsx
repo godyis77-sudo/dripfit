@@ -37,7 +37,7 @@ export default function LandingMarket() {
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-14">
           <FadeIn>
-            <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground block mb-5">The Market</span>
+            <span className="type-data block mb-5 text-muted-foreground">The Market</span>
             <h2 className="font-display font-bold leading-tight" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
               $1.01 Trillion.{' '}
               <span className="text-muted-foreground/85">And Returns Are Eating It.</span>

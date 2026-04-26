@@ -71,7 +71,7 @@ export default function LandingPricing() {
               </span>
               <div className="font-display text-4xl font-bold mb-1">$4.17<span className="text-lg font-normal text-muted-foreground">/mo</span></div>
               <p className="text-xs text-muted-foreground/85 mb-2">$49.99 billed annually · $7.99 month-to-month</p>
-              <span className="inline-flex items-center self-start px-2.5 py-1 rounded-full bg-primary/15 border border-primary/30 text-primary text-[11px] font-mono tracking-[.16em] uppercase font-bold mb-8">
+              <span className="inline-flex items-center self-start px-2.5 py-1 rounded-full bg-primary/15 border border-primary/30 type-data font-bold text-primary mb-8">
                 Save 48%
               </span>
               <ul className="space-y-3 mb-10 flex-1">

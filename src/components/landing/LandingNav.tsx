@@ -82,7 +82,12 @@ export default function LandingNav() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <BrandLogo size="sm" />
+        <div className="flex flex-col">
+          <BrandLogo size="sm" />
+          <span className="hidden md:block text-[10px] tracking-[0.15em] uppercase text-muted-foreground/70 mt-0.5">
+            Try on anything. Sized by data. Styled by your community.
+          </span>
+        </div>
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-7">
