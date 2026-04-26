@@ -61,7 +61,7 @@ const HomeFAB = forwardRef<HTMLDivElement>((_, ref) => {
                 transition={{ delay: idx * 0.06, duration: 0.2 }}
                 className="flex items-center gap-2"
               >
-                <span className="text-[11px] font-semibold text-white glass-dark rounded-lg px-3 py-1.5 shadow-lg whitespace-nowrap">
+                <span className="text-[11px] font-semibold text-foreground glass-dark rounded-lg px-3 py-1.5 shadow-lg whitespace-nowrap">
                   {item.label}
                 </span>
                 <button
