@@ -1836,6 +1836,7 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
       const failHint = (isSwimwear || isUnderwear || isIntimate)
         ? "The AI could not generate this try-on from the current product photo. Try a full-body user photo plus a front-facing product-only or flat-lay garment image."
         : "The AI was unable to generate a try-on image. Try clearer, well-lit photos showing the full person and garment.";
+      await attemptLogger?.finish("failed", "NO_IMAGE", lastTextContent || failHint);
       return successResponse(
         { description: lastTextContent || failHint, resultImage: null },
         200,
