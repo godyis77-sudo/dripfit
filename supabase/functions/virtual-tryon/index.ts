@@ -1883,9 +1883,15 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
       }
     }
 
+    await attemptLogger?.finish("succeeded");
     return successResponse({ resultImage, userTier }, 200, corsHeaders);
   } catch (e) {
     console.error("virtual-tryon error:", e);
+    await attemptLogger?.finish(
+      "failed",
+      "INTERNAL_ERROR",
+      e instanceof Error ? e.message : "Try-on failed",
+    );
     return errorResponse(
       e instanceof Error ? e.message : "Try-on failed",
       "INTERNAL_ERROR",
