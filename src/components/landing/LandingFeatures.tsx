@@ -8,7 +8,7 @@ const FEATURES: Feature[] = [
   { icon: Scan, title: 'The Biometric Scan', desc: '2 photos. 60 seconds. Your exact geometry — measured. Cross-referenced against 389 size charts.' },
   { icon: Shirt, title: 'Infinite Drape Studio', desc: '9,000+ pieces. 186 brands. AR try-on renders the real fit on your silhouette. No model. Just you.' },
   { icon: Users, title: 'Body Twins', desc: 'Members with your exact proportions. If it works on them — it works on you.' },
-  { icon: Scale, title: 'COP or DROP', desc: 'The community verdict. Your Twins have spoken. Binary. Decisive. No ambiguity.' },
+  { icon: Scale, title: 'COP or DROP', desc: 'Swipe through fits worn by your Body Twins. Their verdict in real time — buy it, or skip it. No influencers. No paid placements. Just the people built like you.' },
   { icon: ShieldCheck, title: 'Locked-In Sizing', desc: 'Your exact size at every brand. Instantly. No more guessing between a Medium at Nike and a Large at Zara.' },
   { icon: Sparkles, title: 'AI Style Assistant', desc: 'Recommends pieces that fit your body, your taste, and your closet — not a generic algorithm.' },
 ];
