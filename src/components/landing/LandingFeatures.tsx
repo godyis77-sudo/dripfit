@@ -1,4 +1,4 @@
-import { Scan, Shirt, Users, Scale, ShieldCheck, MessageSquare, LucideIcon } from 'lucide-react';
+import { Scan, Shirt, Users, Scale, ShieldCheck, Sparkles, LucideIcon } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
 import bodyScanShowcase from '@/assets/body-scan-showcase.jpg';
 
@@ -10,7 +10,7 @@ const FEATURES: Feature[] = [
   { icon: Users, title: 'Body Twins', desc: 'Members with your exact proportions. If it works on them — it works on you.' },
   { icon: Scale, title: 'COP or DROP', desc: 'The community verdict. Your Twins have spoken. Binary. Decisive. No ambiguity.' },
   { icon: ShieldCheck, title: 'Locked-In Sizing', desc: 'Your exact size at every brand. Instantly. No more guessing between a Medium at Nike and a Large at Zara.' },
-  { icon: MessageSquare, title: 'AI Style Assistant', desc: 'Recommends pieces that fit your body, your taste, and your closet — not a generic algorithm.' },
+  { icon: Sparkles, title: 'AI Style Assistant', desc: 'Recommends pieces that fit your body, your taste, and your closet — not a generic algorithm.' },
 ];
 
 export default function LandingFeatures() {
@@ -63,7 +63,7 @@ export default function LandingFeatures() {
                 e.preventDefault();
                 document.querySelector('#pricing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
-              className="text-xs tracking-[.18em] uppercase font-mono text-primary/80 hover:text-primary transition-colors inline-flex items-center gap-2 border-b border-primary/30 hover:border-primary pb-1"
+              className="type-data text-primary/80 hover:text-primary transition-colors inline-flex items-center gap-2 border-b border-primary/30 hover:border-primary pb-1"
             >
               See all 186 brands →
             </a>

@@ -19,12 +19,12 @@ export default function LandingStatsTicker() {
           {[0, 1].map((dup) => (
             <span key={dup} className="flex items-center gap-0 shrink-0">
               {TICKER_ITEMS.map((t) => (
-                <span key={t} className="font-mono text-[11px] tracking-[.14em] uppercase px-6 text-primary">
+                <span key={t} className="type-data px-6 text-primary">
                   {t}
                   <span className="ml-6 opacity-50">·</span>
                 </span>
               ))}
-              <span className="font-mono text-[11px] tracking-[.14em] uppercase font-bold px-6 text-primary">
+              <span className="type-data font-bold px-6 text-primary">
                 DRIPFIT ENDS THE GUESSWORK <span className="text-primary font-extrabold">✓</span>
                 <span className="ml-6 opacity-50">·</span>
               </span>

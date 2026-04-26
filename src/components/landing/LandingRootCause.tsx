@@ -21,7 +21,7 @@ export default function LandingRootCause() {
         {/* Header */}
         <div className="text-center mb-14">
           <FadeIn>
-            <span className="font-mono text-xs tracking-[.18em] uppercase text-muted-foreground block mb-5">
+            <span className="type-data block mb-5 text-muted-foreground">
               The Root Cause
             </span>
             <h2
@@ -65,7 +65,7 @@ export default function LandingRootCause() {
                 {/* Center label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                   <span className="font-display font-bold text-primary" style={{ fontSize: 36 }}>70%</span>
-                  <span className="font-mono text-[11px] tracking-wider uppercase text-muted-foreground/85">fit-related returns</span>
+                  <span className="type-data text-muted-foreground/85">fit-related returns</span>
                 </div>
               </div>
               {/* Legend */}
@@ -73,7 +73,7 @@ export default function LandingRootCause() {
                 {DONUT_DATA.map((d) => (
                   <div key={d.name} className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: d.color }} />
-                    <span className="font-mono text-[11px] tracking-wider uppercase text-muted-foreground/85">{d.name}</span>
+                    <span className="type-data text-muted-foreground/85">{d.name}</span>
                   </div>
                 ))}
               </div>

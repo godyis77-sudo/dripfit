@@ -22,7 +22,7 @@ export default function LandingHowItWorks() {
             {STEPS.map((s, i) => (
               <FadeIn key={s.n} delay={i * 0.08}>
                 <div className="flex gap-5 items-start">
-                  <div className="shrink-0 pt-1.5 w-9 font-mono text-[10px] tracking-[.18em] uppercase text-primary/70">
+                  <div className="shrink-0 pt-1.5 w-9 type-data text-primary/70">
                     {s.n}
                   </div>
                   <div className="flex-1 border-l border-primary/15 pl-5">
@@ -53,7 +53,7 @@ export default function LandingHowItWorks() {
             {/* Verified badge */}
             <div className="flex flex-col items-center justify-center w-28 h-28 rounded-full border-[1.5px] border-primary animate-[pulse-ring_2s_ease-in-out_infinite]">
               <span className="text-primary text-5xl leading-none" style={{ fontFamily: 'monospace' }}>✓</span>
-              <span className="text-primary font-mono text-[9px] tracking-[.2em] uppercase mt-1">Verified</span>
+              <span className="text-primary type-data mt-1">Verified</span>
             </div>
             {/* Stat block */}
             <div className="text-center max-w-xs">

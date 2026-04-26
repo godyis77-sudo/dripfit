@@ -14,7 +14,7 @@ export default function LandingCommunity() {
           <div className="text-center mb-8 md:mb-10 max-w-lg mx-auto">
             <span className="type-data block mb-3 text-primary/70">The Community</span>
             <h2 className="type-headline leading-tight mb-3" style={{ fontSize: 'clamp(32px, 4vw, 48px)' }}>
-              Your Fit. <span className="text-primary">Confirmed by the Tribe.</span>
+              Your Fit. <span className="type-display-editorial--italic text-primary">Community Confirmed.</span>
             </h2>
             <p className="type-body text-base leading-relaxed">
               Find the heads who dress like you think. Share fits. Rate drape. Build your circle.
