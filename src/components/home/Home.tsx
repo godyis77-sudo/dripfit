@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronRight, Infinity as InfinityIcon } from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 
 import { useAuth } from '@/hooks/useAuth';
 import { trackEvent } from '@/lib/analytics';
@@ -386,23 +386,23 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 }}
               onClick={() => navigate('/infinite-closet')}
-              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-primary/[0.04] border border-primary/20 px-4 py-3.5 flex items-center gap-3 active:scale-[0.98] hover:bg-primary/[0.07] transition-all"
+              className="relative w-full mb-3 rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-md border border-border/[0.06] border-t-2 border-t-primary px-5 py-5 flex items-center justify-between active:scale-[0.97] transition-transform hover:bg-white/[0.05]"
             >
-              <div className="h-10 w-10 rounded-full border border-primary/30 bg-primary/10 flex items-center justify-center shrink-0">
-                <InfinityIcon className="h-4 w-4 text-primary" />
-              </div>
               <div className="text-left flex-1 min-w-0">
-                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary/80">
-                  HOW IT WORKS
-                </p>
-                <p className="text-[14px] font-bold text-foreground leading-tight mt-0.5">
+                <p className="font-serif text-[24px] font-bold italic text-foreground tracking-tight leading-tight">
                   The Infinite Closet
                 </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
+                <p className="font-sans text-[12px] text-muted-foreground mt-1">
                   Discover · Try · Verdict · Buy. On loop.
                 </p>
+                <span className="mt-3 inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-[12px] font-bold tracking-wide">
+                  How it works <ArrowRight className="h-3.5 w-3.5" />
+                </span>
               </div>
-              <ArrowRight className="h-4 w-4 text-primary shrink-0" />
+              <div
+                className="w-14 h-14 rounded-full bg-primary/[0.08] blur-xl pointer-events-none shrink-0 ml-2"
+                aria-hidden
+              />
             </motion.button>
 
             {/* THE DRAPE — Tier 1 editorial primary (guest entry to try-on) */}
