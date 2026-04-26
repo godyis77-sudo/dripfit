@@ -35,19 +35,19 @@ export default function LandingHero() {
           <FadeIn>
             <h1
               className="type-display-editorial leading-[1.05] text-foreground"
-              style={{ fontSize: 'clamp(36px, 7vw, 78px)' }}
+              style={{ fontSize: 'clamp(34px, 5.4vw, 64px)' }}
             >
-              <span className="block">YOUR BODY.</span>
-              <span className="type-display-editorial--italic text-primary block mt-1">
-                MAPPED.
+              <span className="block">
+                YOUR BODY.{' '}
+                <span className="type-display-editorial--italic text-primary">MAPPED.</span>
               </span>
-              <span className="block mt-3">EVERY BRAND.</span>
-              <span className="type-display-editorial--italic text-primary block mt-1">
-                SIZED.
+              <span className="block mt-1">
+                EVERY BRAND.{' '}
+                <span className="type-display-editorial--italic text-primary">SIZED.</span>
               </span>
-              <span className="block mt-3">EVERY STYLE.</span>
-              <span className="type-display-editorial--italic text-primary block mt-1">
-                VERIFIED.
+              <span className="block mt-1">
+                EVERY STYLE.{' '}
+                <span className="type-display-editorial--italic text-primary">VERIFIED.</span>
               </span>
             </h1>
           </FadeIn>
