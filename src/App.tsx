@@ -66,6 +66,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const AdminRetailers = lazy(() => import("./pages/AdminRetailers"));
 const AdminCommissions = lazy(() => import("./pages/AdminCommissions"));
+const AdminTryOnFunnel = lazy(() => import("./pages/AdminTryOnFunnel"));
 const CreatorDashboard = lazy(() => import("./pages/CreatorDashboard"));
 const Waitlist = lazy(() => import("./pages/Waitlist"));
 const Partnership = lazy(() => import("./pages/Partnership"));
@@ -171,6 +172,7 @@ const AnimatedRoutes = () => {
           <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
           <Route path="/admin/retailers" element={<ProtectedRoute><PageTransition><AdminRetailers /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/commissions" element={<ProtectedRoute><PageTransition><AdminCommissions /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/tryon-funnel" element={<ProtectedRoute><PageTransition><AdminTryOnFunnel /></PageTransition></ProtectedRoute>} />
           <Route path="/creator" element={<ProtectedRoute><PageTransition><CreatorDashboard /></PageTransition></ProtectedRoute>} />
           <Route path="/waitlist" element={<PageTransition><Waitlist /></PageTransition>} />
           <Route path="/partnership" element={<PageTransition><Partnership /></PageTransition>} />
