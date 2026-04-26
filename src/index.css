@@ -235,6 +235,7 @@
   }
   .type-display-editorial--italic {
     font-style: italic;
+    letter-spacing: 0.03em;
   }
   /* ── Gradients ── */
   .gradient-drip {
