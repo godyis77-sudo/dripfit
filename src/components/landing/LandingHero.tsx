@@ -88,8 +88,19 @@ export default function LandingHero() {
             )}
           </FadeIn>
 
-          {/* Phone mockup — mobile only, shown below CTAs */}
-          <FadeIn delay={0.28}>
+          <FadeIn delay={0.32}>
+            <div className="flex gap-10 mt-8 pt-8 border-t border-border/30">
+              {STATS.map((s) => (
+                <div key={s.l} className="text-center">
+                  <div className="type-headline text-3xl text-primary">{s.v}</div>
+                  <div className="type-data mt-1">{s.l}</div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+
+          {/* Phone mockup — mobile only, shown below stats */}
+          <FadeIn delay={0.36}>
             <div className="md:hidden relative mx-auto w-full max-w-[260px] mt-10 animate-float">
               <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
               <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_hsl(var(--primary)/0.4)] overflow-hidden">
@@ -101,17 +112,6 @@ export default function LandingHero() {
                   fetchPriority="high"
                 />
               </div>
-            </div>
-          </FadeIn>
-
-          <FadeIn delay={0.32}>
-            <div className="flex gap-10 mt-8 pt-8 border-t border-border/30">
-              {STATS.map((s) => (
-                <div key={s.l} className="text-center">
-                  <div className="type-headline text-3xl text-primary">{s.v}</div>
-                  <div className="type-data mt-1">{s.l}</div>
-                </div>
-              ))}
             </div>
           </FadeIn>
         </div>
