@@ -1215,6 +1215,19 @@ function buildOutfit(
   if (!hasTop && !hasOuterwear && !hasDress) return null;
   if (!hasBottom && !hasDress && !hasOuterwear) return null;
 
+  // Beach occasions MUST contain at least one actual swim piece
+  // (swim shorts, board shorts, bikini, one-piece, rashguard…). A "beach"
+  // outfit of just linen + sandals reads as a brunch fit, not a beach fit.
+  if (occasion.key === "beach_day" || occasion.key === "beach_tropical") {
+    const hasSwim = items.some(i => {
+      const cat = normalizeCategory(i.product.category);
+      const hay = `${i.product.name} ${(i.product.tags ?? []).join(" ")}`.toLowerCase();
+      return cat === "swimwear"
+        || /\b(swim|bikini|board ?short|trunk|rash ?guard|one[- ]?piece|tankini|monokini)\b/.test(hay);
+    });
+    if (!hasSwim) return null;
+  }
+
   // Reposition for display order: outerwear, top, bottom, shoes, accessory
   const displayOrder = ["outerwear", "top", "bottom", "shoes", "accessory"];
   items.sort((a, b) => displayOrder.indexOf(a.role) - displayOrder.indexOf(b.role));
