@@ -1368,6 +1368,54 @@ export type Database = {
           },
         ]
       }
+      tryon_attempts: {
+        Row: {
+          background_source: string | null
+          completed_at: string | null
+          created_at: string
+          error_code: string | null
+          error_message: string | null
+          guest_uuid: string | null
+          id: string
+          item_type: string | null
+          latency_ms: number | null
+          started_at: string
+          status: string
+          user_id: string | null
+          user_tier: string
+        }
+        Insert: {
+          background_source?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          guest_uuid?: string | null
+          id?: string
+          item_type?: string | null
+          latency_ms?: number | null
+          started_at?: string
+          status?: string
+          user_id?: string | null
+          user_tier?: string
+        }
+        Update: {
+          background_source?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          guest_uuid?: string | null
+          id?: string
+          item_type?: string | null
+          latency_ms?: number | null
+          started_at?: string
+          status?: string
+          user_id?: string | null
+          user_tier?: string
+        }
+        Relationships: []
+      }
       tryon_posts: {
         Row: {
           caption: string | null

@@ -54,6 +54,17 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // ── ATTEMPT TELEMETRY ──
+  const attemptStart = Date.now();
+  let attemptId: string | null = null;
+  let attemptLogger: {
+    finish: (
+      status: "succeeded" | "failed" | "rejected",
+      errorCode?: string,
+      errorMessage?: string,
+    ) => Promise<void>;
+  } | null = null;
+
   try {
     let raw: Record<string, unknown>;
     try {
@@ -213,6 +224,48 @@ Deno.serve(async (req) => {
     const bgInstruction = useClothingBg
       ? "Use the background/environment from Image B (the clothing/product photo). Place the model into that scene."
       : "Keep the EXACT same background, environment, and scene from Image A. Do NOT replace it with a studio backdrop.";
+
+    // ── LOG ATTEMPT START ──
+    try {
+      const itemTypeForLog = typeof raw.itemType === "string"
+        ? raw.itemType
+        : "clothing";
+      const { data: attemptRow } = await supabaseAdmin
+        .from("tryon_attempts")
+        .insert({
+          user_id: userId,
+          guest_uuid: userId ? null : guestUuid,
+          user_tier: userTier,
+          status: "started",
+          item_type: itemTypeForLog,
+          background_source: backgroundSource,
+          started_at: new Date(attemptStart).toISOString(),
+        })
+        .select("id")
+        .maybeSingle();
+      attemptId = attemptRow?.id ?? null;
+      attemptLogger = {
+        finish: async (status, errorCode, errorMessage) => {
+          if (!attemptId) return;
+          try {
+            await supabaseAdmin
+              .from("tryon_attempts")
+              .update({
+                status,
+                error_code: errorCode ?? null,
+                error_message: errorMessage ? errorMessage.slice(0, 500) : null,
+                latency_ms: Date.now() - attemptStart,
+                completed_at: new Date().toISOString(),
+              })
+              .eq("id", attemptId);
+          } catch (logErr) {
+            console.warn("attempt finish log failed:", logErr);
+          }
+        },
+      };
+    } catch (logErr) {
+      console.warn("attempt start log failed:", logErr);
+    }
 
     // ── CLASSIFY ITEM ──
     const itemType: string = (raw.itemType as string) || "clothing";
@@ -1783,6 +1836,7 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
       const failHint = (isSwimwear || isUnderwear || isIntimate)
         ? "The AI could not generate this try-on from the current product photo. Try a full-body user photo plus a front-facing product-only or flat-lay garment image."
         : "The AI was unable to generate a try-on image. Try clearer, well-lit photos showing the full person and garment.";
+      await attemptLogger?.finish("failed", "NO_IMAGE", lastTextContent || failHint);
       return successResponse(
         { description: lastTextContent || failHint, resultImage: null },
         200,
@@ -1829,9 +1883,15 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
       }
     }
 
+    await attemptLogger?.finish("succeeded");
     return successResponse({ resultImage, userTier }, 200, corsHeaders);
   } catch (e) {
     console.error("virtual-tryon error:", e);
+    await attemptLogger?.finish(
+      "failed",
+      "INTERNAL_ERROR",
+      e instanceof Error ? e.message : "Try-on failed",
+    );
     return errorResponse(
       e instanceof Error ? e.message : "Try-on failed",
       "INTERNAL_ERROR",
