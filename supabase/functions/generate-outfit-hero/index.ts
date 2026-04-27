@@ -660,6 +660,18 @@ async function processOutfit(
     return { success: false, outfit_id: outfitId, error: updateErr.message };
   }
 
+  // ── Dual-generation: produce a matching clean editorial scene ──
+  // Runs after the hero so a failure here doesn't block the hero result.
+  // Internally caps at EDITORIAL_BG_CAP (500) total backgrounds.
+  try {
+    // Small delay to avoid back-to-back rate limiting on the image model
+    await new Promise(r => setTimeout(r, 4000));
+    await generateEditorialScene(sb, outfitId, outfit.occasion, outfit.title, apiKey);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Unknown";
+    console.warn(`[Editorial] Scene generation skipped for ${outfitId}: ${msg}`);
+  }
+
   return { success: true, outfit_id: outfitId, hero_url: publicUrl };
 }
 
