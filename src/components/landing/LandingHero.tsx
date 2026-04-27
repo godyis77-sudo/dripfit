@@ -2,7 +2,7 @@ import { ArrowRight, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 import { useAuth } from '@/hooks/useAuth';
-import heroPhoneMockup from '@/assets/hero-phone-mockup.jpg';
+import heroPhoneMockup from '@/assets/hero-phone-mockup.webp';
 
 const STATS = [
   { v: '186', l: 'Brands' },
