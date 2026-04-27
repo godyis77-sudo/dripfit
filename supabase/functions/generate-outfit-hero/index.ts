@@ -472,6 +472,136 @@ async function uploadHero(
   return sb.storage.from("backgrounds-curated").getPublicUrl(fileName).data.publicUrl;
 }
 
+/* ── Editorial scene-only (clean background) generation ──────── */
+
+const EDITORIAL_BG_CAP = 500;
+
+function buildScenePrompt(occasion: string): { text: string; imageUrls: string[] } {
+  const campaign = CAMPAIGNS[occasion] || CAMPAIGNS.weekend_casual;
+  const text = `You are a world-class fashion photographer shooting an EMPTY editorial location plate for ${campaign.reference}.
+
+═══ ABSOLUTE RULE ═══
+NO PEOPLE. NO MODELS. NO MANNEQUINS. NO CLOTHING. NO BODY PARTS.
+This is a CLEAN ENVIRONMENT-ONLY plate — the location and architecture only, with NO subject in frame.
+Treat it as a behind-the-scenes "before the talent walks on set" shot.
+
+═══ LOCATION ═══
+${campaign.location}
+${campaign.architecture}
+
+═══ CAMERA ═══
+${campaign.camera}
+Frame the scene as if a model would stand center-frame — leave that center area UNOBSTRUCTED and well-lit so a person could be composited in later. Do not place objects in the standing zone.
+
+═══ LIGHTING ═══
+${campaign.lighting}
+
+═══ COLOR GRADE ═══
+${campaign.colorGrade}
+
+═══ NEGATIVE DIRECTION ═══
+${campaign.negative}
+NO people. NO models. NO mannequins. NO crowds. NO silhouettes. NO body parts of any kind. NO clothing on display. NO floating garments. NO text overlays. NO watermarks.
+
+═══ FINAL CHECK ═══
+Portrait orientation (3:4). Confirm BEFORE rendering: (1) absolutely zero people or human figures, (2) the center of the frame is an open, unobstructed standing zone with clean floor/ground, (3) editorial lighting and architectural detail are dialed in for a luxury campaign backplate.`;
+  return { text, imageUrls: [] };
+}
+
+async function uploadEditorialScene(
+  sb: ReturnType<typeof createClient>,
+  base64Data: string,
+  outfitId: string
+): Promise<string | null> {
+  const base64Clean = base64Data.replace(/^data:image\/\w+;base64,/, "");
+  const bytes = Uint8Array.from(atob(base64Clean), (c) => c.charCodeAt(0));
+  const version = Date.now();
+  const fileName = `editorial-scenes/${outfitId}-${version}.png`;
+
+  const { error } = await sb.storage
+    .from("backgrounds-curated")
+    .upload(fileName, bytes, { contentType: "image/png", upsert: false });
+
+  if (error) {
+    console.error("Editorial scene upload error:", error);
+    return null;
+  }
+
+  return fileName; // store the storage_path; UI generates the public URL
+}
+
+/**
+ * Generates a clean (model-free) editorial scene matched to the outfit's occasion
+ * and inserts it into the `backgrounds` table under the `editorial` category.
+ * Hard-capped at EDITORIAL_BG_CAP total backgrounds across the system.
+ *
+ * Returns true if a new scene was generated and saved; false otherwise (cap hit, error, etc.).
+ */
+async function generateEditorialScene(
+  // deno-lint-ignore no-explicit-any
+  sb: any,
+  outfitId: string,
+  occasion: string,
+  outfitTitle: string,
+  apiKey: string
+): Promise<boolean> {
+  // Cap check — count total backgrounds (across all categories)
+  const { count: totalBgs, error: countErr } = await sb
+    .from("backgrounds")
+    .select("id", { count: "exact", head: true });
+
+  if (countErr) {
+    console.error("Editorial cap count error:", countErr);
+    return false;
+  }
+  if ((totalBgs ?? 0) >= EDITORIAL_BG_CAP) {
+    console.log(`[Editorial] Cap reached (${totalBgs}/${EDITORIAL_BG_CAP}) — skipping clean scene for ${outfitId}`);
+    return false;
+  }
+
+  // Look up the editorial category id
+  const { data: cat, error: catErr } = await sb
+    .from("background_categories")
+    .select("id")
+    .eq("slug", "editorial")
+    .single();
+
+  if (catErr || !cat) {
+    console.error("Editorial category missing:", catErr);
+    return false;
+  }
+
+  const prompt = buildScenePrompt(occasion);
+  const base64 = await generateHeroImage(prompt, apiKey);
+  if (!base64) {
+    console.warn(`[Editorial] Generation returned no image for ${outfitId}`);
+    return false;
+  }
+
+  const storagePath = await uploadEditorialScene(sb, base64, outfitId);
+  if (!storagePath) return false;
+
+  const friendlyName = `${outfitTitle} — Scene`;
+  const { error: insertErr } = await sb.from("backgrounds").insert({
+    category_id: cat.id,
+    name: friendlyName,
+    storage_path: storagePath,
+    source: "editorial-pipeline",
+    source_id: outfitId,
+    is_active: true,
+    is_premium: false,
+    tags: ["editorial", "weekly-drip", occasion],
+  });
+
+  if (insertErr) {
+    console.error("[Editorial] Insert failed:", insertErr);
+    return false;
+  }
+
+  console.log(`[Editorial] ✅ Saved clean scene for "${outfitTitle}" (${(totalBgs ?? 0) + 1}/${EDITORIAL_BG_CAP})`);
+  return true;
+}
+
 /* ── Process single outfit ────────────────────────────────────── */
 
 async function processOutfit(
@@ -528,6 +658,18 @@ async function processOutfit(
 
   if (updateErr) {
     return { success: false, outfit_id: outfitId, error: updateErr.message };
+  }
+
+  // ── Dual-generation: produce a matching clean editorial scene ──
+  // Runs after the hero so a failure here doesn't block the hero result.
+  // Internally caps at EDITORIAL_BG_CAP (500) total backgrounds.
+  try {
+    // Small delay to avoid back-to-back rate limiting on the image model
+    await new Promise(r => setTimeout(r, 4000));
+    await generateEditorialScene(sb, outfitId, outfit.occasion, outfit.title, apiKey);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Unknown";
+    console.warn(`[Editorial] Scene generation skipped for ${outfitId}: ${msg}`);
   }
 
   return { success: true, outfit_id: outfitId, hero_url: publicUrl };
