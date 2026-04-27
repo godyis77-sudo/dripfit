@@ -34,8 +34,9 @@ export default function LandingFeatures() {
                 src={bodyScanShowcase}
                 alt="DripFit body scan showing precise biometric measurements — shoulder, chest, waist, hips, and inseam mapped on a holographic silhouette"
                 className="w-full h-auto"
-                loading="lazy"
+                loading="eager"
                 decoding="async"
+                fetchPriority="high"
                 width={720}
                 height={957}
               />
