@@ -2,7 +2,7 @@ import { ArrowRight, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 import { useAuth } from '@/hooks/useAuth';
-import heroPhoneMockup from '@/assets/hero-phone-mockup.jpg';
+import heroPhoneMockup from '@/assets/hero-phone-mockup.webp';
 
 const STATS = [
   { v: '186', l: 'Brands' },
@@ -110,6 +110,9 @@ export default function LandingHero() {
                   className="w-full block"
                   loading="eager"
                   fetchPriority="high"
+                  decoding="async"
+                  width={720}
+                  height={1290}
                 />
               </div>
             </div>
@@ -127,6 +130,9 @@ export default function LandingHero() {
                 className="w-full block"
                 loading="eager"
                 fetchPriority="high"
+                decoding="async"
+                width={720}
+                height={1290}
               />
             </div>
           </div>

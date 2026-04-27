@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import scanShowcase from '@/assets/body-scan-showcase.jpg';
+import scanShowcase from '@/assets/body-scan-showcase.webp';
 
 interface Props {
   className?: string;
