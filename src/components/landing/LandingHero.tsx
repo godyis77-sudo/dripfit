@@ -110,6 +110,9 @@ export default function LandingHero() {
                   className="w-full block"
                   loading="eager"
                   fetchPriority="high"
+                  decoding="async"
+                  width={720}
+                  height={1290}
                 />
               </div>
             </div>
