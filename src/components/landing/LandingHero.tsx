@@ -117,24 +117,22 @@ export default function LandingHero() {
           </div>
         </div>
 
-        {/* Phone mockup — hidden on mobile to keep CTAs above the fold */}
-        <FadeIn delay={0.15}>
-          <div className="hidden md:block relative mx-auto w-full max-w-[280px] lg:max-w-[360px] animate-float">
-            <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
-            <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_hsl(var(--primary)/0.4)] overflow-hidden">
-              <img
-                src={heroPhoneMockup}
-                alt="DripFit My Sizes screen showing verified size cards for multiple brands"
-                className="w-full block"
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                width={720}
-                height={1290}
-              />
-            </div>
+        {/* Phone mockup — desktop only, painted immediately to avoid delayed reveal */}
+        <div className="hidden md:block relative mx-auto w-full max-w-[280px] lg:max-w-[360px] animate-float">
+          <div className="absolute inset-0 rounded-full blur-[80px] opacity-15 bg-primary" />
+          <div className="relative rounded-[2rem] border-[10px] border-primary shadow-[0_0_30px_hsl(var(--primary)/0.4)] overflow-hidden">
+            <img
+              src={heroPhoneMockup}
+              alt="DripFit My Sizes screen showing verified size cards for multiple brands"
+              className="w-full block"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              width={720}
+              height={1290}
+            />
           </div>
-        </FadeIn>
+        </div>
       </div>
     </section>
   );
