@@ -26,22 +26,22 @@ export default function LandingFeatures() {
           </div>
         </FadeIn>
 
-        {/* Body Scan Showcase */}
-        <FadeIn delay={0.1}>
-          <div className="flex justify-center mb-14">
-            <div className="relative max-w-[326px] w-full rounded-2xl overflow-hidden border border-primary/20 shadow-[0_0_60px_-15px_hsl(var(--primary)/0.3)]">
-              <img
-                src={bodyScanShowcase}
-                alt="DripFit body scan showing precise biometric measurements — shoulder, chest, waist, hips, and inseam mapped on a holographic silhouette"
-                className="w-full h-auto"
-                loading="lazy"
-                decoding="async"
-                width={720}
-                height={957}
-              />
-            </div>
+        {/* Body Scan Showcase — rendered outside FadeIn so the browser fetches + decodes
+            it during initial page load instead of waiting for scroll-into-view. */}
+        <div className="flex justify-center mb-14">
+          <div className="relative max-w-[326px] w-full rounded-2xl overflow-hidden border border-primary/20 shadow-[0_0_60px_-15px_hsl(var(--primary)/0.3)]">
+            <img
+              src={bodyScanShowcase}
+              alt="DripFit body scan showing precise biometric measurements — shoulder, chest, waist, hips, and inseam mapped on a holographic silhouette"
+              className="w-full h-auto block"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              width={720}
+              height={957}
+            />
           </div>
-        </FadeIn>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
