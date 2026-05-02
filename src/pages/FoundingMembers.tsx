@@ -120,83 +120,50 @@ const FoundingMembers = () => {
         </div>
       </section>
 
-      {/* ── Who's Already In ───────────────────────── */}
+      {/* ── What You're Joining (live capabilities) ── */}
       <section className="max-w-md mx-auto px-6 pb-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.4 }}
         >
-          <h2 className="font-display text-lg font-bold text-center mb-4">Who's Already In</h2>
-          <div className="flex flex-wrap justify-center gap-2">
-            {EARLY_MEMBERS.map((m, i) => (
+          <h2 className="font-display text-lg font-bold text-center mb-4 uppercase tracking-wide">What You're Joining</h2>
+          <div className="grid grid-cols-3 gap-2">
+            {CAPABILITIES.map((c, i) => (
               <motion.div
-                key={m.initials}
-                initial={{ opacity: 0, scale: 0.8 }}
+                key={c.label}
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 + i * 0.07, duration: 0.3 }}
-                className="flex items-center gap-2 glass-dark rounded-full pl-1 pr-3 py-1"
+                transition={{ delay: 0.6 + i * 0.08, duration: 0.3 }}
+                className="text-center bg-secondary border border-border rounded-2xl py-4 px-2"
               >
-                <Avatar className="h-7 w-7">
-                  <AvatarFallback className={`text-[10px] font-bold ${m.color}`}>
-                    {m.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-left">
-                  <p className="text-[11px] font-semibold leading-tight">{m.name}</p>
-                  <p className="text-[9px] text-muted-foreground leading-tight">{m.label}</p>
-                </div>
+                <p className="font-display text-xl font-bold text-primary leading-none">{c.stat}</p>
+                <p className="text-[10px] text-foreground/55 mt-2 uppercase tracking-[0.08em] leading-tight font-medium">{c.label}</p>
               </motion.div>
             ))}
-            {/* Remaining placeholder */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.0, duration: 0.3 }}
-              className="flex items-center gap-2 glass rounded-full pl-1 pr-3 py-1 border-dashed"
-            >
-              <Avatar className="h-7 w-7">
-                <AvatarFallback className="text-[10px] text-muted-foreground bg-muted">?</AvatarFallback>
-              </Avatar>
-              <p className="text-[11px] text-muted-foreground font-medium">You?</p>
-            </motion.div>
           </div>
         </motion.div>
       </section>
 
-      {/* ── Testimonials ───────────────────────────── */}
+      {/* ── The Promise ────────────────────────────── */}
       <section className="max-w-md mx-auto px-6 pb-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.4 }}
+          className="glass-dark rounded-2xl p-5"
         >
-          <h2 className="font-display text-lg font-bold text-left mb-4 uppercase">The Verdict.</h2>
-          <div className="space-y-3">
-            {TESTIMONIALS.map((t, i) => (
-              <motion.div
-                key={t.name}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -12 : 12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.8 + i * 0.12, duration: 0.35 }}
-                className="glass-dark rounded-xl p-4 relative"
-              >
-                <Quote className="h-4 w-4 text-primary/30 absolute top-3 right-3" />
-                <p className="text-[12px] text-foreground leading-relaxed mb-2.5 pr-5">
-                  "{t.quote}"
-                </p>
-                <div className="flex items-center gap-2">
-                  <div className="h-1 w-1 rounded-full bg-primary" />
-                  <span className="text-[11px] font-semibold">{t.name}</span>
-                  <span className="text-[10px] text-muted-foreground">· {t.detail}</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <h2 className="font-display text-base font-bold mb-3 uppercase tracking-wide">The Promise.</h2>
+          <ul className="space-y-2.5 text-[12px] text-foreground/80 leading-relaxed">
+            <li className="flex gap-2"><span className="text-primary">→</span> Stop buying multiple sizes "just in case"</li>
+            <li className="flex gap-2"><span className="text-primary">→</span> Get the right size on the first order</li>
+            <li className="flex gap-2"><span className="text-primary">→</span> Vote on which brands and features get built next</li>
+            <li className="flex gap-2"><span className="text-primary">→</span> Lock in Premium for life — never pay a monthly fee</li>
+          </ul>
         </motion.div>
       </section>
 
-      {/* ── P3 Founder Letter (placeholder portrait, swap when shot delivered) ── */}
+
       <section
         data-placeholder="p3-founder-photo"
         className="max-w-md mx-auto px-6 pb-10 w-full"
