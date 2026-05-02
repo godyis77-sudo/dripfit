@@ -351,6 +351,7 @@ ${wardrobeLines}
 STYLING: ${campaign.styling}
 FOOTWEAR: ${footwearInstruction}
 ${colorHints}
+${swimInstruction}
 
 ═══ LAYER 3: MODEL ═══
 ${modelDesc}
