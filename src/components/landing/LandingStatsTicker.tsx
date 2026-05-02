@@ -30,7 +30,7 @@ export default function LandingStatsTicker() {
         </div>
       </div>
       <p className="sr-only">
-        Apparel return rate: 25–40%. 70% of returns are fit-related. 47% of shoppers avoid online fashion due to fit uncertainty. $849.9B in returns processed in 2025. $46 average cost per returned item. 1 in 4 orders includes a bracketed size.
+        70% of returns are fit-related. $46 average cost per returned item. 94% first-try fit rate with DripFit.
       </p>
     </>
   );
