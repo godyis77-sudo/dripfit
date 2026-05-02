@@ -23,6 +23,16 @@ export default function LandingHero() {
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center relative z-10">
         <div className="md:flex-1">
           <FadeIn>
+            <div className="flex gap-8 mb-6">
+              {STATS.map((s) => (
+                <div key={s.l}>
+                  <div className="type-headline text-2xl text-primary">{s.v}</div>
+                  <div className="type-data mt-1">{s.l}</div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+          <FadeIn>
             <h1
               className="type-display-editorial leading-[1.05] text-foreground"
               style={{ fontSize: 'clamp(34px, 5.4vw, 64px)' }}
