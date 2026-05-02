@@ -14,8 +14,8 @@ export default function LandingHowItWorks() {
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <div>
           <FadeIn>
-            <span className="type-data block mb-5 text-primary/70">How It Works</span>
-            <h2 className="type-headline leading-tight mb-12" style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}>
+            <span className="type-data block mb-5 text-primary/70 text-center lg:text-left">How It Works</span>
+            <h2 className="type-headline leading-tight mb-12 text-center lg:text-left" style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}>
               Scan. Try. <span className="text-primary">Cop.</span>
             </h2>
           </FadeIn>
