@@ -280,12 +280,11 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      {/* Close — high-contrast circular, hit area = visible area */}
+      {/* Close — high-contrast circular. Use onClick only (pointerdown leaks through to underlying page buttons after unmount). Positioned top-LEFT to avoid overlap with page header "New" action at top-right. */}
       <button
         type="button"
-        onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onClose(); }}
-        onClick={(e) => { e.stopPropagation(); onClose(); }}
-        className="absolute right-4 z-[220] h-11 w-11 rounded-full bg-black/80 backdrop-blur-md border border-white/30 flex items-center justify-center active:scale-90 transition-transform shadow-[0_2px_12px_rgba(0,0,0,0.5)] p-0"
+        onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClose(); }}
+        className="absolute left-4 z-[220] h-11 w-11 rounded-full bg-black/80 backdrop-blur-md border border-white/30 flex items-center justify-center active:scale-90 transition-transform shadow-[0_2px_12px_rgba(0,0,0,0.5)] p-0"
         style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))', pointerEvents: 'auto' }}
         aria-label="Close"
       >
