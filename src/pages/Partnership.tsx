@@ -77,9 +77,10 @@ const Partnership = () => {
               <p className="text-muted-foreground text-sm mt-1">Sizing is the #1 reason for online fashion returns.</p>
             </div>
           </div>
-          <div className="grid sm:grid-cols-3 gap-4 mt-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
             {[
               { stat: '30-40%', note: 'of online clothing is returned' },
+              { stat: '1 in 3', note: 'online fashion purchases come back' },
               { stat: '$15-30', note: 'cost per return (shipping + restock)' },
               { stat: '70%', note: 'of returns cite "wrong size/fit"' },
             ].map(r => (
