@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Users, Crown, TrendingUp, Zap, MessageSquare, ArrowRight, Quote, Sparkles } from 'lucide-react';
+import { Users, Crown, TrendingUp, Zap, MessageSquare, ArrowRight, Sparkles } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 // P3 placeholder — swap when real founder portrait is shot
 import editorialFounderImg from '@/assets/editorial-founder.jpg';
 
