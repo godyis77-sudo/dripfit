@@ -422,31 +422,12 @@ const Waitlist = () => {
 
           {/* Stats */}
           <FadeUp delay={0.2} className="mt-14 grid grid-cols-3 gap-3">
-            {STATS.map((s) => (
+            {buildStats(stats.sizeChartsLabel).map((s) => (
               <div key={s.label} className="text-center bg-secondary border border-border rounded-2xl py-5 px-3">
                 <p className="font-display text-[22px] sm:text-2xl font-bold gradient-drip-text leading-none">{s.stat}</p>
                 <p className="text-[11px] text-foreground/55 mt-2 uppercase tracking-[0.08em] leading-tight font-medium">{s.label}</p>
               </div>
             ))}
-          </FadeUp>
-        </div>
-      </section>
-
-      {/* ─── TESTIMONIAL STRIP ─── */}
-      <section className="py-12 px-5 sm:px-8">
-        <div className="max-w-lg mx-auto">
-          <FadeUp>
-            <div className="bg-secondary border border-border rounded-2xl p-5 text-center">
-              <div className="flex justify-center gap-0.5 mb-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 text-primary fill-primary" />
-                ))}
-              </div>
-              <p className="text-[13px] text-foreground/75 leading-relaxed italic mb-3">
-                "I used to return 3 out of every 5 orders. After using DripFit, I haven't had a single return in 4 months."
-              </p>
-              <p className="text-[11px] text-foreground/50 uppercase tracking-[0.2em]">— Sarah M., Beta Tester</p>
-            </div>
           </FadeUp>
         </div>
       </section>
