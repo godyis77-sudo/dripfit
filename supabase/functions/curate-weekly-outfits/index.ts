@@ -880,7 +880,10 @@ function semanticBucket(normCat: string): string | null {
   if (["sneakers", "boots", "heels", "sandals", "loafers", "shoes", "footwear"].includes(normCat)) return "footwear";
   if (["jackets", "coats", "blazers", "outerwear", "cardigans"].includes(normCat)) return "outerwear";
   if (["pants", "jeans", "trousers", "shorts", "skirts", "joggers", "leggings", "chinos"].includes(normCat)) return "bottom";
-  if (["dresses", "jumpsuits"].includes(normCat)) return "one_piece";
+  // Swimwear, dresses and jumpsuits are all "base body story" pieces — only one
+  // may exist per outfit. Picking a swimsuit AND a dress AND pants in the same
+  // beach look produces the "wearing 2 swimsuits under a full body suit" bug.
+  if (["dresses", "jumpsuits", "swimwear"].includes(normCat)) return "base_body";
   if (["t-shirts", "shirts", "tops", "blouses", "sweaters", "hoodies", "tank tops", "knits", "polos"].includes(normCat)) return "top";
   if (["bags"].includes(normCat)) return "bag";
   if (["hats"].includes(normCat)) return "hat";
