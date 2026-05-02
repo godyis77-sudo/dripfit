@@ -1,19 +1,21 @@
 import { Scan, Shirt, Users, Scale, ShieldCheck, Sparkles, LucideIcon } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 import bodyScanShowcase from '@/assets/body-scan-showcase.webp';
 
 interface Feature { icon: LucideIcon; title: string; desc: string }
 
-const FEATURES: Feature[] = [
-  { icon: Scan, title: 'The Biometric Scan', desc: '2 photos. 60 seconds. Your exact geometry — measured. Cross-referenced against 389 size charts.' },
-  { icon: Shirt, title: 'Infinite Drape Studio', desc: '9,000+ pieces. 186 brands. AR try-on renders the real fit on your silhouette. No model. Just you.' },
-  { icon: Users, title: 'Body Twins', desc: 'Members with your exact proportions. If it works on them — it works on you.' },
-  { icon: Scale, title: 'COP or DROP', desc: 'Swipe through fits worn by your Body Twins. Their verdict in real time — buy it, or skip it. No influencers. No paid placements. Just the people built like you.' },
-  { icon: ShieldCheck, title: 'Locked-In Sizing', desc: 'Your exact size at every brand. Instantly. No more guessing between a Medium at Nike and a Large at Zara.' },
-  { icon: Sparkles, title: 'AI Style Assistant', desc: 'Recommends pieces that fit your body, your taste, and your closet — not a generic algorithm.' },
-];
-
 export default function LandingFeatures() {
+  const stats = useCatalogStats();
+  const FEATURES: Feature[] = [
+    { icon: Scan, title: 'The Biometric Scan', desc: `2 photos. 60 seconds. Your exact geometry — measured. Cross-referenced against ${stats.sizeChartsLabel} size charts.` },
+    { icon: Shirt, title: 'Infinite Drape Studio', desc: `${stats.productsLabel} pieces. ${stats.brands} brands. AR try-on renders the real fit on your silhouette. No model. Just you.` },
+    { icon: Users, title: 'Body Twins', desc: 'Members with your exact proportions. If it works on them — it works on you.' },
+    { icon: Scale, title: 'COP or DROP', desc: 'Swipe through fits worn by your Body Twins. Their verdict in real time — buy it, or skip it. No influencers. No paid placements. Just the people built like you.' },
+    { icon: ShieldCheck, title: 'Locked-In Sizing', desc: 'Your exact size at every brand. Instantly. No more guessing between a Medium at Nike and a Large at Zara.' },
+    { icon: Sparkles, title: 'AI Style Assistant', desc: 'Recommends pieces that fit your body, your taste, and your closet — not a generic algorithm.' },
+  ];
+
   return (
     <section id="features" className="pt-12 md:pt-16 pb-12 bg-secondary/20 border-y border-border/30 scroll-mt-20">
       <div className="max-w-6xl mx-auto px-6">
@@ -26,8 +28,6 @@ export default function LandingFeatures() {
           </div>
         </FadeIn>
 
-        {/* Body Scan Showcase — rendered outside FadeIn so the browser fetches + decodes
-            it during initial page load instead of waiting for scroll-into-view. */}
         <div className="flex justify-center mb-14">
           <div className="relative max-w-[326px] w-full rounded-2xl overflow-hidden border border-primary/20 shadow-[0_0_60px_-15px_hsl(var(--primary)/0.3)]">
             <img
@@ -57,7 +57,6 @@ export default function LandingFeatures() {
           ))}
         </div>
 
-        {/* Section exit link */}
         <FadeIn delay={0.4}>
           <div className="flex justify-center mt-12">
             <a
@@ -68,7 +67,7 @@ export default function LandingFeatures() {
               }}
               className="type-data text-primary/80 hover:text-primary transition-colors inline-flex items-center gap-2 border-b border-primary/30 hover:border-primary pb-1"
             >
-              See all 186 brands →
+              See all {stats.brands} brands →
             </a>
           </div>
         </FadeIn>

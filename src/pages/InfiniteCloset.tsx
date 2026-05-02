@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 import { trackEvent } from '@/lib/analytics';
 import PageHeader from '@/components/layout/PageHeader';
 import BottomTabBar from '@/components/BottomTabBar';
@@ -28,6 +29,7 @@ const InfiniteCloset = () => {
   });
   const navigate = useNavigate();
   const { user } = useAuth();
+  const catalogStats = useCatalogStats();
 
   // Live counts for personalized step badges
   const { data: counts } = useQuery({
@@ -54,7 +56,7 @@ const InfiniteCloset = () => {
     {
       n: 1, key: 'discover',
       title: 'Discover',
-      blurb: 'Swipe through 9,000+ pieces. COP what you love, drop the rest.',
+      blurb: `Swipe through ${catalogStats.productsLabel} pieces. COP what you love, drop the rest.`,
       cta: 'Open Closet Swipe', to: '/closet',
     },
     {

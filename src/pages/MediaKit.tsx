@@ -27,8 +27,8 @@ interface DbStats {
 }
 
 const FALLBACK: DbStats = {
-  active_products: 7000, unique_brands: 130, unique_retailers: 130,
-  size_charts: 280, categories: 35, total_users: 0, total_scans: 0, public_tryons: 0,
+  active_products: 8504, unique_brands: 142, unique_retailers: 162,
+  size_charts: 390, categories: 36, total_users: 0, total_scans: 0, public_tryons: 0,
 };
 
 /* ── Brand Colors (from index.css :root) ─────────────── */
@@ -72,7 +72,7 @@ const PILLARS = [
 
 const VALUE_PROPS = [
   '60-second AI body scan — no tape measure needed',
-  'Accurate size matching across 186+ brands',
+  'Accurate size matching across 142+ brands',
   'Virtual try-on to visualize fit before purchase',
   '30–40% reduction in size-related returns',
   'Community-powered style feedback via The Drop',
@@ -221,7 +221,7 @@ const MediaKit = () => {
             <div>
               <Label>Elevator Pitch</Label>
               <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                DripFit Check uses AI-powered body scanning to match shoppers with their exact size at 186+ brands —
+                DripFit Check uses AI-powered body scanning to match shoppers with their exact size at {stats.unique_brands}+ brands —
                 eliminating the guesswork, cutting return rates by 30–40%, and building confidence in every purchase.
               </p>
             </div>

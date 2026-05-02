@@ -1,13 +1,7 @@
 import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
-
-const STATS = [
-  { value: '186+', label: 'Brands Indexed' },
-  { value: '9,000+', label: 'Products Cataloged' },
-  { value: '30-40%', label: 'Return Reduction' },
-  { value: '<60s', label: 'Body Scan Time' },
-];
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 
 const HOW_IT_WORKS = [
   { icon: Scan, title: 'AI Body Scan', desc: 'Two smartphone photos → 6 precise body measurements extracted via computer vision in under 60 seconds.' },
@@ -31,6 +25,13 @@ const INTEGRATIONS = [
 
 const Partnership = () => {
   usePageMeta({ title: 'Brand Partnership', description: 'Partner with DripFit to reduce returns by 30-40%. AI-powered size matching drives confident purchases.', path: '/partnership' });
+  const catalogStats = useCatalogStats();
+  const STATS = [
+    { value: `${catalogStats.brands}+`, label: 'Brands Indexed' },
+    { value: catalogStats.productsLabel, label: 'Products Cataloged' },
+    { value: '30-40%', label: 'Return Reduction' },
+    { value: '<60s', label: 'Body Scan Time' },
+  ];
 
   return (
     <div className="min-h-screen bg-background text-foreground">

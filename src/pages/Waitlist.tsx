@@ -21,7 +21,7 @@ const FEATURES = [
   {
     icon: Scan,
     title: 'AI Body Scan',
-    desc: 'Two photos. 60 seconds. Your exact measurements mapped to 389 size charts.',
+    desc: 'Two photos. 60 seconds. Your exact measurements mapped to 390 size charts.',
     detail: 'No tape measure needed — just your phone camera.',
     badge: '',
     image: '',
@@ -55,7 +55,7 @@ const FEATURES = [
 ];
 
 const CHECKLIST = [
-  { text: 'Your exact measurements for 186 brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
+  { text: 'Your exact measurements for 142 brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
   { text: 'The 3-question checklist before every online order.', icon: Shield },
   { text: 'How to never pay return shipping again.', icon: Zap },
 ];
@@ -63,7 +63,7 @@ const CHECKLIST = [
 const STATS = [
   { stat: '73%', label: 'Sizing returns' },
   { stat: '$550', label: 'Wasted yearly' },
-  { stat: '389', label: 'Size charts' },
+  { stat: '390', label: 'Size charts' },
 ];
 
 /* ─── Animation helpers ─── */

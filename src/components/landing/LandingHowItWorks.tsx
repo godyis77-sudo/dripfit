@@ -1,13 +1,14 @@
 import { FadeIn } from './LandingAnimations';
-
-const STEPS = [
-  { n: '01', title: 'Scan Your Body', desc: 'Stand in front of your phone. Two photos. 60 seconds. 20+ biometric data points extracted. Your measurements — verified.' },
-  { n: '02', title: 'Enter Infinite Drape Studio', desc: 'Browse 9,000+ pieces from 186 brands. AR try-on renders every garment on your exact silhouette. See the real drape.' },
-  { n: '03', title: 'Verify With Your Twins', desc: 'Your Body Twins have the same proportions. They\'ve already tested it. See their verdict.' },
-  { n: '04', title: 'Cop. Zero Returns.', desc: 'Confirmed. Perfect drape. One size. One purchase. Done.' },
-];
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 
 export default function LandingHowItWorks() {
+  const stats = useCatalogStats();
+  const STEPS = [
+    { n: '01', title: 'Scan Your Body', desc: 'Stand in front of your phone. Two photos. 60 seconds. 20+ biometric data points extracted. Your measurements — verified.' },
+    { n: '02', title: 'Enter Infinite Drape Studio', desc: `Browse ${stats.productsLabel} pieces from ${stats.brands} brands. AR try-on renders every garment on your exact silhouette. See the real drape.` },
+    { n: '03', title: 'Verify With Your Twins', desc: 'Your Body Twins have the same proportions. They\'ve already tested it. See their verdict.' },
+    { n: '04', title: 'Cop. Zero Returns.', desc: 'Confirmed. Perfect drape. One size. One purchase. Done.' },
+  ];
   return (
     <section id="how-it-works" className="pt-20 md:pt-24 pb-10 md:pb-12 scroll-mt-20">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">

@@ -15,6 +15,7 @@ import WeeklyOutfitsSection from '@/components/home/WeeklyOutfitsSection';
 import SwipeFeedSection from '@/components/home/SwipeFeedSection';
 import HomeBrowseErrorBoundary from '@/components/home/HomeBrowseErrorBoundary';
 import { CARD, SPACING } from '@/lib/design-tokens';
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 // P3 placeholder — swap when real photography lands
 import editorialScanImg from '@/assets/editorial-scan.jpg';
 
@@ -45,6 +46,7 @@ export interface HomeProps {
 const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = false }, ref) => {
   const navigate = useNavigate();
   const { user, userGender, genderLoaded, loading: authLoading } = useAuth();
+  const catalogStats = useCatalogStats();
   const mappedGender =
     userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
 
@@ -170,7 +172,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                 DRIPFIT <span className="text-primary text-[20px]">✔</span>
               </h1>
               <p className="type-data text-foreground/50">
-                Verified · 186 brands · 9,000+ pieces
+                Verified · {catalogStats.brands} brands · {catalogStats.productsLabel} pieces
               </p>
             </motion.div>
           </div>
@@ -278,7 +280,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                   YOUR BIOMETRIC SCAN.
                 </h2>
                 <p className="font-sans text-[14px] font-light text-foreground/75 leading-snug max-w-[300px] mb-4">
-                  2 photos. 60 seconds. Your exact size across 186 brands — locked.
+                  2 photos. 60 seconds. Your exact size across {catalogStats.brands} brands — locked.
                 </p>
                 <button
                   onClick={e => {
@@ -290,7 +292,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
                   Start the Scan <ArrowRight className="h-4 w-4" />
                 </button>
                 <p className="type-data text-foreground/40 text-center mt-3">
-                  186 BRANDS · 389 SIZE CHARTS · 9,000+ PIECES
+                  {catalogStats.brands} BRANDS · {catalogStats.sizeChartsLabel} SIZE CHARTS · {catalogStats.productsLabel} PIECES
                 </p>
               </div>
             </div>
@@ -461,7 +463,7 @@ const Home = forwardRef<HTMLDivElement, HomeProps>(({ forceState, hideBrowse = f
           >
             <div className="flex items-center justify-between mb-3 mt-2">
               <p className="font-sans text-[11px] font-bold tracking-[0.15em] uppercase text-foreground/70">
-                Browse · 9,000+ Pieces
+                Browse · {catalogStats.productsLabel} Pieces
               </p>
               <button
                 onClick={() => navigate('/browse/all')}
