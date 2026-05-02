@@ -26,6 +26,7 @@ const Partnership = () => {
   const HOW_IT_WORKS = [
     { icon: Scan, title: 'AI Body Scan', desc: `Two smartphone photos. 20+ biometric data points extracted via computer vision in under 60 seconds. Key measurements mapped to your brand-specific size charts.` },
     { icon: BarChart3, title: 'Size Matching', desc: `Measurements mapped against ${stats.sizeCharts}+ brand-specific size charts. Users see their exact size at YOUR store — not a generic S/M/L.` },
+    { icon: Users, title: 'Community Verification', desc: 'Before buying, users see fit verdicts from members with matching body measurements. Real people, real try-ons, real feedback — social proof layered on top of sizing data.' },
     { icon: ShoppingBag, title: 'Confident Purchase', desc: 'Size-confident shoppers click through to your store, buy the right size first time, and keep what they buy.' },
   ];
 
