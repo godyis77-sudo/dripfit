@@ -1,4 +1,4 @@
-import { TrendingDown, Users, ShoppingBag, Scan, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink, Quote } from 'lucide-react';
+import { TrendingDown, Users, ShoppingBag, Scan, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink, Quote, Download } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { useCatalogStats } from '@/hooks/useCatalogStats';
@@ -11,6 +11,8 @@ const VALUE_PROPS = [
   'Lower return rates — customers buy the right size the first time',
   'Higher conversion — size confidence removes the biggest purchase barrier',
   'Zero cost — we monetize through affiliate commissions, not retailer fees',
+  'Incremental traffic — qualified, high-intent shoppers directed to your checkout, already knowing their size',
+  'Brand-safe presentation — your products shown in a premium editorial format, no discount aesthetics',
 ];
 
 const Partnership = () => {
@@ -28,9 +30,9 @@ const Partnership = () => {
   ];
 
   const INTEGRATIONS = [
-    { label: 'Product Data Feed', desc: 'CSV, JSON, or REST API. Daily sync. We handle ingest, image normalization, and category mapping. Zero engineering on your side.' },
-    { label: 'Affiliate Program', desc: 'CJ, Rakuten, Impact, ShareASale — or direct partnership. Standard affiliate links, no custom SDK required.' },
-    { label: 'Size Chart Access', desc: 'Public size table URL or upload. We map every variant (numeric, alpha, regional) to user measurements within 0.5 inches.' },
+    { label: 'Product Data Feed', desc: 'CSV, JSON, or REST API. Automated weekly sync. We handle ingest, image normalization, and category mapping. Zero engineering on your side.', setup: 'Setup: 1–2 days' },
+    { label: 'Affiliate Program', desc: 'CJ, Rakuten, Impact, ShareASale — or direct partnership. Standard affiliate links, no custom SDK required.', setup: 'Setup: same day' },
+    { label: 'Size Chart Access', desc: 'Public size table URL or upload. We map every variant (numeric, alpha, regional) to user measurements within 0.5 inches.', setup: 'Setup: 2–3 days' },
   ];
 
   const STATS = [
@@ -75,9 +77,10 @@ const Partnership = () => {
               <p className="text-muted-foreground text-sm mt-1">Sizing is the #1 reason for online fashion returns.</p>
             </div>
           </div>
-          <div className="grid sm:grid-cols-3 gap-4 mt-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
             {[
               { stat: '30-40%', note: 'of online clothing is returned' },
+              { stat: '1 in 3', note: 'online fashion purchases come back' },
               { stat: '$15-30', note: 'cost per return (shipping + restock)' },
               { stat: '70%', note: 'of returns cite "wrong size/fit"' },
             ].map(r => (
@@ -165,9 +168,12 @@ const Partnership = () => {
         <p className="text-muted-foreground text-sm text-center mb-8">Onboarded in days, not weeks.</p>
         <div className="grid sm:grid-cols-3 gap-4">
           {INTEGRATIONS.map(item => (
-            <div key={item.label} className="bg-card border border-border rounded-2xl p-5 text-center">
+            <div key={item.label} className="bg-card border border-border rounded-2xl p-5 text-center flex flex-col">
               <h3 className="font-display font-bold text-sm mb-2">{item.label}</h3>
-              <p className="text-[12px] text-muted-foreground leading-relaxed">{item.desc}</p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed flex-1">{item.desc}</p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-primary/80 mt-3 pt-3 border-t border-border/40">
+                {item.setup}
+              </p>
             </div>
           ))}
         </div>
@@ -231,6 +237,15 @@ const Partnership = () => {
             >
               <Mail className="h-3.5 w-3.5" />
               partnerships@dripfitcheck.com
+            </a>
+            <span className="hidden sm:inline text-muted-foreground/30">·</span>
+            <a
+              href="/dripfit-partnership-deck.pdf"
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline underline-offset-4"
+            >
+              <Download className="h-3 w-3" /> Download Deck (PDF)
             </a>
             <span className="hidden sm:inline text-muted-foreground/30">·</span>
             <a
