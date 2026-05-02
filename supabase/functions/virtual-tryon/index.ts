@@ -894,11 +894,11 @@ Deno.serve(async (req) => {
     const intimateScopeInstruction = isSwimwear
       ? swimwearScopeInstruction
       : isSetGarment
-      ? "Image B shows a MATCHING SET with BOTH a top AND a bottom. Replace ALL clothing from Image A with BOTH pieces from Image B — the top piece AND the bottom piece must BOTH appear on the model. Do NOT apply only one piece. Show ONLY what is visible in Image B — do NOT add leggings, pants, shorts, or any garment not shown in Image B."
+      ? "Image B shows a MATCHING SET with BOTH a top AND a bottom. REMOVE every garment from Image A — including any jacket, blazer, coat, cardigan, hoodie, sweater, shirt, t-shirt, pants, jeans, shorts, skirt, leggings, or layering piece — and replace them with BOTH pieces from Image B. The top piece AND the bottom piece from Image B must BOTH appear on the model. Do NOT apply only one piece. Do NOT keep or re-add any outerwear from Image A. Show ONLY what is visible in Image B — do NOT add leggings, pants, shorts, or any garment not shown in Image B."
       : isTopOnlyGarment
       ? (isCropTopOrSportsBra
-        ? "Image B shows a CROP TOP / SPORTS BRA — a SHORT top that ends ABOVE the waist or at the midriff. Replace ONLY the upper-body clothing from Image A with this cropped top. The top must remain SHORT and cropped — do NOT extend it into a full-length shirt or tank top. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms in any way."
-        : "Image B shows a TOP-only garment. Replace the upper body clothing from Image A with the top from Image B. Keep the person's EXISTING lower-body clothing from Image A unchanged — do NOT replace bottoms.")
+        ? "Image B shows a CROP TOP / SPORTS BRA — a SHORT top that ends ABOVE the waist or at the midriff. REMOVE EVERY upper-body item from Image A — including any jacket, blazer, coat, cardigan, hoodie, sweater, vest, shirt, t-shirt, blouse, tank, or layering piece — and replace them with this cropped top ONLY. The top must remain SHORT and cropped — do NOT extend it into a full-length shirt or tank top, and do NOT layer anything over it. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms in any way."
+        : "Image B shows a TOP-only garment. REMOVE EVERY upper-body item from Image A — including any jacket, blazer, coat, cardigan, hoodie, sweater, vest, shirt, t-shirt, blouse, tank, or layering piece — and replace them with the top from Image B ONLY. Do NOT keep, layer, or re-add any outerwear or extra upper-body garment from Image A. Keep the person's EXISTING lower-body clothing from Image A unchanged — do NOT replace bottoms.")
       : isBottomOnlyIntimate
       ? (
         isUnderwearSafeMode
@@ -910,7 +910,7 @@ Deno.serve(async (req) => {
     const garmentSwapScopeInstruction = isIntimateGarment
       ? intimateScopeInstruction
       : isTopOnlyGarment
-      ? "This is a TOP-only garment: replace upper-body clothing only and keep lower-body clothing from Image A unchanged."
+      ? "This is a TOP-only garment: REMOVE every upper-body item from Image A — including any jacket, blazer, coat, cardigan, hoodie, sweater, vest, shirt, blouse, tank, or layering piece — and replace them with the top from Image B ONLY. Do NOT keep or re-add any outerwear over it. Keep lower-body clothing from Image A unchanged."
       : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
 
     const identityInstruction = isIntimateGarment
@@ -1022,9 +1022,9 @@ ${underwearSafetyInstruction}`;
     } else {
       // Determine scope instruction based on what the product actually is
       const standardScopeInstruction = isSetGarment
-        ? "Image B shows a MATCHING SET (top AND bottom). Replace ALL clothing from Image A with BOTH pieces from Image B. Show ONLY what is visible in Image B — do NOT add extra garments not shown in Image B."
+        ? "Image B shows a MATCHING SET (top AND bottom). REMOVE every garment from Image A — including any jacket, blazer, coat, cardigan, hoodie, sweater, shirt, t-shirt, pants, jeans, shorts, skirt, leggings, or layering piece — and replace them with BOTH pieces from Image B (top AND bottom must both appear). Do NOT keep or re-add any outerwear from Image A. Show ONLY what is visible in Image B — do NOT add extra garments not shown in Image B."
         : isTopOnlyGarment
-        ? "Image B shows a TOP-ONLY garment. Replace ONLY the upper-body clothing from Image A with the item from Image B. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms in any way. Do NOT add new pants or bottoms."
+        ? "Image B shows a TOP-ONLY garment. REMOVE EVERY upper-body item from Image A — including any jacket, blazer, coat, cardigan, hoodie, sweater, vest, shirt, t-shirt, blouse, tank, or layering piece — and replace them with the top from Image B ONLY. Do NOT keep, layer, or re-add any outerwear over it. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms in any way. Do NOT add new pants or bottoms."
         : /\b(pants|jeans|trousers|shorts|skirt|leggings|joggers|sweatpants)\b/.test(normalizedProductContext)
         ? "Image B shows a BOTTOM-ONLY garment. Replace ONLY the lower-body clothing from Image A with the item from Image B. Keep the person's EXISTING upper-body clothing from Image A unchanged."
         : "Replace ONLY the clothing that matches the garment type from Image B. Keep all other clothing from Image A unchanged.";

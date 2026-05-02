@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
-import { decodeHtmlEntities } from '@/lib/utils';
+import { decodeHtmlEntities, cleanProductName } from '@/lib/utils';
 import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -280,12 +280,11 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      {/* Close — high-contrast circular, hit area = visible area */}
+      {/* Close — high-contrast circular. Use onClick only (pointerdown leaks through to underlying page buttons after unmount). Positioned top-LEFT to avoid overlap with page header "New" action at top-right. */}
       <button
         type="button"
-        onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onClose(); }}
-        onClick={(e) => { e.stopPropagation(); onClose(); }}
-        className="absolute right-4 z-[220] h-11 w-11 rounded-full bg-black/80 backdrop-blur-md border border-white/30 flex items-center justify-center active:scale-90 transition-transform shadow-[0_2px_12px_rgba(0,0,0,0.5)] p-0"
+        onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClose(); }}
+        className="absolute left-4 z-[220] h-11 w-11 rounded-full bg-black/80 backdrop-blur-md border border-white/30 flex items-center justify-center active:scale-90 transition-transform shadow-[0_2px_12px_rgba(0,0,0,0.5)] p-0"
         style={{ top: 'max(1rem, env(safe-area-inset-top, 1rem))', pointerEvents: 'auto' }}
         aria-label="Close"
       >
@@ -293,7 +292,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       </button>
 
       {/* Image */}
-      <ZoomableProductImage src={product.image_url} alt={decodeHtmlEntities(product.name)} brand={product.brand} caption={caption} additionalImages={product.additional_images} />
+      <ZoomableProductImage src={product.image_url} alt={cleanProductName(product.name)} brand={product.brand} caption={caption} additionalImages={product.additional_images} />
 
       {/* Info + Actions */}
       <div
@@ -302,7 +301,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       >
         <div className="text-center">
           <p className="text-[10px] tracking-[0.2em] uppercase text-white/40 font-bold">{product.brand}</p>
-          <p className="text-[13px] text-white/80 font-semibold mt-0.5 line-clamp-2 px-2">{decodeHtmlEntities(product.name)}</p>
+          <p className="text-[13px] text-white/80 font-semibold mt-0.5 line-clamp-2 px-2">{cleanProductName(product.name)}</p>
           {product.price_cents != null && (
             <p className="font-display text-xl text-primary mt-1">
               ${(product.price_cents / 100).toFixed(0)}
@@ -449,7 +448,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                         )}
                         <div className="flex-1 min-w-0">
                           <span className="text-[9px] tracking-[0.15em] uppercase text-white/40 font-bold block">{item.brand}</span>
-                          <p className="text-[10px] text-white/70 truncate leading-tight">{decodeHtmlEntities(item.name)}</p>
+                          <p className="text-[10px] text-white/70 truncate leading-tight">{cleanProductName(item.name)}</p>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {item.price_cents != null && (
