@@ -455,7 +455,7 @@ const Waitlist = () => {
           <div className="flex items-center gap-6 text-[11px] text-foreground/40">
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-            <a href="mailto:hello@dripfit.app" className="hover:text-foreground transition-colors">Contact</a>
+            <a href="mailto:hello@dripfitcheck.com" className="hover:text-foreground transition-colors">Contact</a>
           </div>
         </div>
       </footer>
