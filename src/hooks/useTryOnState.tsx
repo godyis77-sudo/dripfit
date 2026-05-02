@@ -121,7 +121,12 @@ export function useTryOnState() {
   const { toast } = useToast();
   const bodyProfile = (location.state as { bodyProfile?: unknown })?.bodyProfile;
 
-  const persisted = loadPersistedTryOnState();
+  // Lazy initializer — only parse storage once on mount, not every render
+  const persistedRef = useRef<PersistedTryOnState | null>(null);
+  if (persistedRef.current === null) {
+    persistedRef.current = loadPersistedTryOnState();
+  }
+  const persisted = persistedRef.current;
 
   const [userPhoto, setUserPhotoRaw] = useState<string | null>(persisted.userPhoto);
   const [clothingPhoto, setClothingPhotoRaw] = useState<string | null>(persisted.clothingPhoto);
@@ -171,6 +176,20 @@ export function useTryOnState() {
 
   // Background upload: converts base64 to a storage URL for persistence
   const uploadInflightRef = useRef<Record<string, AbortController>>({});
+  const isMountedRef = useRef(true);
+  const hasHydratedFromDbRef = useRef(false);
+
+  // Cleanup on unmount: abort in-flight uploads to prevent stale writes
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      Object.values(uploadInflightRef.current).forEach((controller) => {
+        try { controller.abort(); } catch { /* ignore */ }
+      });
+      uploadInflightRef.current = {};
+    };
+  }, []);
   const eagerUpload = useCallback(async (base64: string, folder: string): Promise<string | null> => {
     if (!user) return null; // guests can't upload
     if (!base64.startsWith('data:')) return null; // already a URL
