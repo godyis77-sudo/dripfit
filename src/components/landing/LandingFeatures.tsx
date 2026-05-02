@@ -47,10 +47,12 @@ export default function LandingFeatures() {
           {FEATURES.map((f, i) => (
             <FadeIn key={f.title} delay={i * 0.06}>
               <div className="bg-[hsl(var(--surface-glass)/0.03)] backdrop-blur-xl border border-border/40 rounded-2xl p-8 group hover:-translate-y-1 transition-transform duration-300 h-full">
-                <div className="w-11 h-11 rounded-full flex items-center justify-center mb-6 border border-primary/20 bg-primary/[0.08]">
-                  <f.icon className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center border border-primary/20 bg-primary/[0.08]">
+                    <f.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="type-headline text-xl">{f.title}</h3>
                 </div>
-                <h3 className="type-headline text-xl mb-3">{f.title}</h3>
                 <p className="type-body leading-relaxed text-muted-foreground/85" style={{ fontSize: 15 }}>{f.desc}</p>
               </div>
             </FadeIn>
