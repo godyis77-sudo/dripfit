@@ -878,7 +878,7 @@ Deno.serve(async (req) => {
         : `${itemType} with catalog-style details`);
 
     const swimwearScopeInstruction = isTopOnlyGarment
-      ? "This is a SWIM TOP / BIKINI TOP. Style the model in a complete swimwear look: apply the swim top reference and add a simple matching swim bottom in the same color family. REMOVE ALL existing streetwear clothing (pants, jeans, skirts, shorts, blazers, shirts, t-shirts, jackets, coats) AND shoes — the model should ONLY be wearing the swimwear, barefoot."
+      ? "This is a SWIM TOP / BIKINI TOP. Treat it like any other top: REMOVE ONLY the upper-body clothing from Image A (shirts, t-shirts, blouses, jackets, blazers, coats, sweaters, hoodies) and replace with the swim top from Image B. KEEP the person's EXISTING lower-body clothing (pants, jeans, skirt, shorts, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms. Do NOT add a swim bottom, bikini bottom, or any new lower garment. Keep the existing footwear from Image A unchanged."
       : "REMOVE ALL existing clothing AND shoes from Image A (tops, pants, jeans, skirts, jackets, shirts, t-shirts, shoes, sneakers, boots, sandals — everything). Replace with ONLY the swimwear/swimsuit from Image B. The model should be wearing NOTHING except the swimwear garment. Do NOT keep any streetwear or footwear from Image A. The model should be barefoot.";
 
     const isSetGarment =
