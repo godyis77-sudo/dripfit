@@ -1659,18 +1659,22 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
       const hasCleanFlatLay = garmentOnlyImage !== clothingImageInput;
 
       if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
+        const swimTopShapeConstraint = (isSwimwear && isTopOnlyGarment)
+          ? "\nGARMENT SHAPE LOCK: This is a SHORT cropped triangle/bralette BIKINI TOP that ends ABOVE the ribcage and exposes the midriff. It is NOT a tank top, NOT a one-piece, NOT a bodysuit, NOT a swimsuit, NOT a full-body suit. Do NOT extend the fabric down past the bust. The torso, waist and stomach must remain fully visible below the bikini top. KEEP the person's existing bottoms (skirt/shorts/pants) from Image A unchanged."
+          : "";
         const descForPrompt = isUnderwearSafeMode
           ? (
             // Keep it fully covered, but preserve ITEM-SPECIFIC cues (color/pattern/waistband/logo/brand) via textDesc.
             `${
               (textDesc || "").trim()
-            }\nCommercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues.`
+            }\nCommercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues.${swimTopShapeConstraint}`
               .replace(/\s+/g, " ")
               .trim() ||
             "Commercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues."
           )
-          : (textDesc ||
-            "athletic fitted garment matching the reference image");
+          : ((textDesc ||
+            "athletic fitted garment matching the reference image") +
+            swimTopShapeConstraint);
         console.log(
           `Layer 3 text-bridge: hasCleanFlatLay=${hasCleanFlatLay}, textDesc=${!!textDesc} (${
             textDesc?.length || 0
