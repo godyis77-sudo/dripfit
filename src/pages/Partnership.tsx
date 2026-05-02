@@ -240,6 +240,15 @@ const Partnership = () => {
             </a>
             <span className="hidden sm:inline text-muted-foreground/30">·</span>
             <a
+              href="/dripfit-partnership-deck.pdf"
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline underline-offset-4"
+            >
+              <Download className="h-3 w-3" /> Download Deck (PDF)
+            </a>
+            <span className="hidden sm:inline text-muted-foreground/30">·</span>
+            <a
               href="/landing"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline underline-offset-4"
             >
