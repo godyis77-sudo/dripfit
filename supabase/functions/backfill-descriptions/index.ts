@@ -327,7 +327,7 @@ Deno.serve(async (req) => {
         } catch (err) {
           console.error(`[backfill] ${retailer} error:`, (err as Error).message);
           if (useFirecrawl) {
-            const fcUpdated = await scrapeViaFirecrawl(supabase, items.slice(0, 50));
+            const fcUpdated = await scrapeViaFirecrawl(supabase, items);
             retailerResults[retailer] = fcUpdated;
             totalUpdated += fcUpdated;
           } else if (!skipAi) {
@@ -339,7 +339,7 @@ Deno.serve(async (req) => {
           }
         }
       } else {
-        const updated = await scrapeDescriptionsFromPages(supabase, items.slice(0, 50), skipAi);
+        const updated = await scrapeDescriptionsFromPages(supabase, items, skipAi);
         retailerResults[retailer] = updated;
         totalUpdated += updated;
       }
