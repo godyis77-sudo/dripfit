@@ -112,7 +112,7 @@ async function scrapeViaFirecrawl(supabase: any, items: BackfillItem[]): Promise
     return 0;
   }
   let updated = 0;
-  const CONCURRENCY = 4;
+  const CONCURRENCY = 12;
 
   async function processOne(item: BackfillItem) {
     if (!item.product_url) return;
@@ -124,10 +124,10 @@ async function scrapeViaFirecrawl(supabase: any, items: BackfillItem[]): Promise
           url: item.product_url,
           formats: ['summary'],
           onlyMainContent: true,
-          waitFor: 2000,
-          timeout: 90000,
+          waitFor: 800,
+          timeout: 30000,
         }),
-        signal: AbortSignal.timeout(100000),
+        signal: AbortSignal.timeout(35000),
       });
       const data = await resp.json().catch(() => null);
       if (!resp.ok || !data?.success) {
@@ -252,7 +252,7 @@ Deno.serve(async (req) => {
       const shopifyBase = SHOPIFY_DOMAINS[retailer];
 
       if (useFirecrawl && !shopifyBase) {
-        const updated = await scrapeViaFirecrawl(supabase, items.slice(0, 100));
+        const updated = await scrapeViaFirecrawl(supabase, items);
         retailerResults[retailer] = updated;
         totalUpdated += updated;
         continue;
@@ -317,8 +317,8 @@ Deno.serve(async (req) => {
           if (unmatchedItems.length > 0) {
             console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back`);
             const fallbackUpdated = useFirecrawl
-              ? await scrapeViaFirecrawl(supabase, unmatchedItems.slice(0, 50))
-              : await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50), skipAi);
+              ? await scrapeViaFirecrawl(supabase, unmatchedItems)
+              : await scrapeDescriptionsFromPages(supabase, unmatchedItems, skipAi);
             updated += fallbackUpdated;
           }
 
@@ -327,7 +327,7 @@ Deno.serve(async (req) => {
         } catch (err) {
           console.error(`[backfill] ${retailer} error:`, (err as Error).message);
           if (useFirecrawl) {
-            const fcUpdated = await scrapeViaFirecrawl(supabase, items.slice(0, 50));
+            const fcUpdated = await scrapeViaFirecrawl(supabase, items);
             retailerResults[retailer] = fcUpdated;
             totalUpdated += fcUpdated;
           } else if (!skipAi) {
@@ -339,7 +339,7 @@ Deno.serve(async (req) => {
           }
         }
       } else {
-        const updated = await scrapeDescriptionsFromPages(supabase, items.slice(0, 50), skipAi);
+        const updated = await scrapeDescriptionsFromPages(supabase, items, skipAi);
         retailerResults[retailer] = updated;
         totalUpdated += updated;
       }
