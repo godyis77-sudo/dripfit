@@ -934,6 +934,15 @@ export function useTryOnState() {
   };
 
   const handleTryAnother = () => {
+    // Mark DB-hydrate as already-done so a remount can't resurrect the previous result
+    hasHydratedFromDbRef.current = true;
+    // Abort any in-flight clothing upload so it can't write back stale data
+    Object.entries(uploadInflightRef.current).forEach(([folder, controller]) => {
+      if (folder !== 'user-staged') {
+        try { controller.abort(); } catch { /* ignore */ }
+        delete uploadInflightRef.current[folder];
+      }
+    });
     // Keep user photo — only reset clothing, result, and session state
     setClothingPhoto(null); setResultImage(null); setDescription(null); setCategory('all');
     setCaption(''); setIsPublic(getDefaultSharePreference()); setShared(false); setAutoSaved(false);
