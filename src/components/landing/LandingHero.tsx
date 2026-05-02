@@ -90,7 +90,7 @@ export default function LandingHero() {
           </FadeIn>
 
           <FadeIn delay={0.32}>
-            <div className="flex gap-10 mt-8 pt-8 border-t border-border/30">
+            <div className="flex justify-center gap-10 mt-8 pt-8 border-t border-border/30">
               {STATS.map((s) => (
                 <div key={s.l} className="text-center">
                   <div className="type-headline text-3xl text-primary">{s.v}</div>
