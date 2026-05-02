@@ -168,9 +168,12 @@ const Partnership = () => {
         <p className="text-muted-foreground text-sm text-center mb-8">Onboarded in days, not weeks.</p>
         <div className="grid sm:grid-cols-3 gap-4">
           {INTEGRATIONS.map(item => (
-            <div key={item.label} className="bg-card border border-border rounded-2xl p-5 text-center">
+            <div key={item.label} className="bg-card border border-border rounded-2xl p-5 text-center flex flex-col">
               <h3 className="font-display font-bold text-sm mb-2">{item.label}</h3>
-              <p className="text-[12px] text-muted-foreground leading-relaxed">{item.desc}</p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed flex-1">{item.desc}</p>
+              <p className="text-[10px] font-mono uppercase tracking-widest text-primary/80 mt-3 pt-3 border-t border-border/40">
+                {item.setup}
+              </p>
             </div>
           ))}
         </div>
