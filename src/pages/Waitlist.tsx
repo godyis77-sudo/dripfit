@@ -211,6 +211,8 @@ function GoldParticles() {
 const Waitlist = () => {
   usePageMeta({ title: 'Join the Waitlist', description: 'Get early access to DripFit — AI body scanning, virtual try-on, and size matching for 130+ brands. Free to join.', path: '/waitlist' });
   const [showTop, setShowTop] = useState(false);
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+  const stats = useCatalogStats();
 
   useEffect(() => {
     const handler = () => setShowTop(window.scrollY > 500);
@@ -218,7 +220,21 @@ const Waitlist = () => {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
+  useEffect(() => {
+    supabase
+      .from('app_config')
+      .select('value')
+      .eq('key', 'waitlist_count')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) setWaitlistCount(parseInt(data.value, 10));
+      });
+  }, []);
+
   const scrollToTop = useCallback(() => window.scrollTo({ top: 0, behavior: 'smooth' }), []);
+  const waitlistNote = waitlistCount && waitlistCount > 10
+    ? `Join ${waitlistCount.toLocaleString()}+ shoppers already on the waitlist.`
+    : 'Be one of the first on the waitlist.';
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
