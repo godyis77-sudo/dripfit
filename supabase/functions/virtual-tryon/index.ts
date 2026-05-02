@@ -878,7 +878,7 @@ Deno.serve(async (req) => {
         : `${itemType} with catalog-style details`);
 
     const swimwearScopeInstruction = isTopOnlyGarment
-      ? "This is a SWIM TOP / BIKINI TOP. Treat it like any other top: REMOVE ONLY the upper-body clothing from Image A (shirts, t-shirts, blouses, jackets, blazers, coats, sweaters, hoodies) and replace with the swim top from Image B. KEEP the person's EXISTING lower-body clothing (pants, jeans, skirt, shorts, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms. Do NOT add a swim bottom, bikini bottom, or any new lower garment. Keep the existing footwear from Image A unchanged."
+      ? "This is a SHORT cropped triangle/bralette BIKINI TOP — it ends ABOVE the ribcage and exposes the midriff. It is NOT a tank top, NOT a one-piece, NOT a bodysuit, NOT a full-body swimsuit. Do NOT extend the fabric down past the bust. REMOVE ONLY the upper-body clothing from Image A (shirts, t-shirts, blouses, jackets, blazers, coats, sweaters, hoodies) and replace with the bikini top from Image B at its true cropped length. KEEP the person's EXISTING lower-body clothing (pants, jeans, skirt, shorts, leggings) from Image A EXACTLY as they are — the torso/waist/stomach must remain visible between the bikini top and the existing bottoms. Do NOT add a swim bottom, bikini bottom, or any new lower garment. Keep the existing footwear from Image A unchanged."
       : "REMOVE ALL existing clothing AND shoes from Image A (tops, pants, jeans, skirts, jackets, shirts, t-shirts, shoes, sneakers, boots, sandals — everything). Replace with ONLY the swimwear/swimsuit from Image B. The model should be wearing NOTHING except the swimwear garment. Do NOT keep any streetwear or footwear from Image A. The model should be barefoot.";
 
     const isSetGarment =
@@ -1659,18 +1659,22 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
       const hasCleanFlatLay = garmentOnlyImage !== clothingImageInput;
 
       if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
+        const swimTopShapeConstraint = (isSwimwear && isTopOnlyGarment)
+          ? "\nGARMENT SHAPE LOCK: This is a SHORT cropped triangle/bralette BIKINI TOP that ends ABOVE the ribcage and exposes the midriff. It is NOT a tank top, NOT a one-piece, NOT a bodysuit, NOT a swimsuit, NOT a full-body suit. Do NOT extend the fabric down past the bust. The torso, waist and stomach must remain fully visible below the bikini top. KEEP the person's existing bottoms (skirt/shorts/pants) from Image A unchanged."
+          : "";
         const descForPrompt = isUnderwearSafeMode
           ? (
             // Keep it fully covered, but preserve ITEM-SPECIFIC cues (color/pattern/waistband/logo/brand) via textDesc.
             `${
               (textDesc || "").trim()
-            }\nCommercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues.`
+            }\nCommercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues.${swimTopShapeConstraint}`
               .replace(/\s+/g, " ")
               .trim() ||
             "Commercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues."
           )
-          : (textDesc ||
-            "athletic fitted garment matching the reference image");
+          : ((textDesc ||
+            "athletic fitted garment matching the reference image") +
+            swimTopShapeConstraint);
         console.log(
           `Layer 3 text-bridge: hasCleanFlatLay=${hasCleanFlatLay}, textDesc=${!!textDesc} (${
             textDesc?.length || 0
