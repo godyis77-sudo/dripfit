@@ -112,7 +112,7 @@ async function scrapeViaFirecrawl(supabase: any, items: BackfillItem[]): Promise
     return 0;
   }
   let updated = 0;
-  const CONCURRENCY = 4;
+  const CONCURRENCY = 12;
 
   async function processOne(item: BackfillItem) {
     if (!item.product_url) return;
@@ -124,10 +124,10 @@ async function scrapeViaFirecrawl(supabase: any, items: BackfillItem[]): Promise
           url: item.product_url,
           formats: ['summary'],
           onlyMainContent: true,
-          waitFor: 2000,
-          timeout: 90000,
+          waitFor: 800,
+          timeout: 30000,
         }),
-        signal: AbortSignal.timeout(100000),
+        signal: AbortSignal.timeout(35000),
       });
       const data = await resp.json().catch(() => null);
       if (!resp.ok || !data?.success) {
