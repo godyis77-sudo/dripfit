@@ -11,6 +11,8 @@ const VALUE_PROPS = [
   'Lower return rates — customers buy the right size the first time',
   'Higher conversion — size confidence removes the biggest purchase barrier',
   'Zero cost — we monetize through affiliate commissions, not retailer fees',
+  'Incremental traffic — qualified, high-intent shoppers directed to your checkout, already knowing their size',
+  'Brand-safe presentation — your products shown in a premium editorial format, no discount aesthetics',
 ];
 
 const Partnership = () => {
