@@ -292,13 +292,13 @@ const Waitlist = () => {
 
         {/* Email form */}
         <FadeUp delay={0.22} className="relative z-10 w-full flex flex-col items-center mb-8">
-          <EmailCapture id="hero" buttonText="Send Me the Free Guide" note="Join 2,000+ shoppers already on the waitlist." />
+          <EmailCapture id="hero" buttonText="Send Me the Free Guide" note={waitlistNote} />
         </FadeUp>
 
         {/* Checklist — merged from lead magnet */}
         <FadeUp delay={0.25} className="relative z-10 w-full max-w-md mb-10">
           <div className="space-y-2.5">
-            {CHECKLIST.map((item, i) => (
+            {buildChecklist(stats.brandsLabel).map((item, i) => (
               <div key={i} className="flex gap-3 items-center bg-secondary/60 border border-border/60 rounded-xl px-4 py-3">
                 <item.icon className="h-4 w-4 text-primary shrink-0" />
                 <p className="text-[13px] text-foreground/75 leading-snug">{item.text}</p>
