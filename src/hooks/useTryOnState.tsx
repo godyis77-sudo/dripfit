@@ -353,12 +353,21 @@ export function useTryOnState() {
   }, [user, hasUnlimitedTryOns]);
 
   // Hydrate latest result from DB if localStorage has nothing (e.g. after refresh before auto-save finished)
+  // Runs at most once per mount per user to prevent resurrecting cleared state on auth-token refresh.
   useEffect(() => {
     if (!user) return;
+    if (hasHydratedFromDbRef.current) return;
     // If we already have a valid result URL, skip the DB lookup
-    if (resultImage && (resultImage.startsWith('http://') || resultImage.startsWith('https://'))) return;
+    if (resultImage && (resultImage.startsWith('http://') || resultImage.startsWith('https://'))) {
+      hasHydratedFromDbRef.current = true;
+      return;
+    }
     // If we have a base64 result in memory (generation just happened), skip too
-    if (resultImage && resultImage.startsWith('data:')) return;
+    if (resultImage && resultImage.startsWith('data:')) {
+      hasHydratedFromDbRef.current = true;
+      return;
+    }
+    hasHydratedFromDbRef.current = true;
 
     supabase
       .from('tryon_posts')
@@ -367,6 +376,7 @@ export function useTryOnState() {
       .order('created_at', { ascending: false })
       .limit(1)
       .then(({ data }) => {
+        if (!isMountedRef.current) return;
         if (data && data.length > 0) {
           const latest = data[0];
           const hasUserPhoto = !!userPhotoRef.current;
@@ -394,7 +404,7 @@ export function useTryOnState() {
           });
         }
       });
-  }, [user]);
+  }, [user?.id]);
 
   // Loading step progression
   useEffect(() => {
