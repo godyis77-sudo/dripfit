@@ -168,6 +168,9 @@ export const FullscreenImage = ({ src, alt = '', className = '', children, descr
               transition={{ duration: 0.12 }}
               className="fixed inset-0 z-[100] h-dvh w-screen overflow-hidden overscroll-none bg-black flex flex-col"
               style={{ ['--fs-img-max-h' as any]: '100%', pointerEvents: 'auto' }}
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              onPointerUp={(e) => e.stopPropagation()}
             >
               {/* Backdrop layer — closes on tap */}
               <div
