@@ -54,7 +54,7 @@ const InfiniteCloset = () => {
     {
       n: 1, key: 'discover',
       title: 'Discover',
-      blurb: 'Swipe through 9,000+ pieces. COP what you love, drop the rest.',
+      blurb: `Swipe through ${catalogStats.productsLabel} pieces. COP what you love, drop the rest.`,
       cta: 'Open Closet Swipe', to: '/closet',
     },
     {
