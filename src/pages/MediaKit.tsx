@@ -221,7 +221,7 @@ const MediaKit = () => {
             <div>
               <Label>Elevator Pitch</Label>
               <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                DripFit Check uses AI-powered body scanning to match shoppers with their exact size at 186+ brands —
+                DripFit Check uses AI-powered body scanning to match shoppers with their exact size at {stats.unique_brands}+ brands —
                 eliminating the guesswork, cutting return rates by 30–40%, and building confidence in every purchase.
               </p>
             </div>
