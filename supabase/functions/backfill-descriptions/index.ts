@@ -252,7 +252,7 @@ Deno.serve(async (req) => {
       const shopifyBase = SHOPIFY_DOMAINS[retailer];
 
       if (useFirecrawl && !shopifyBase) {
-        const updated = await scrapeViaFirecrawl(supabase, items.slice(0, 100));
+        const updated = await scrapeViaFirecrawl(supabase, items);
         retailerResults[retailer] = updated;
         totalUpdated += updated;
         continue;
