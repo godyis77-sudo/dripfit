@@ -1,79 +1,77 @@
-import { TrendingDown, Users, ShoppingBag, Scan, Shirt, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink } from 'lucide-react';
+import { TrendingDown, Users, ShoppingBag, Scan, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink, Quote } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { useCatalogStats } from '@/hooks/useCatalogStats';
-
-const HOW_IT_WORKS = [
-  { icon: Scan, title: 'AI Body Scan', desc: 'Two smartphone photos → 6 precise body measurements extracted via computer vision in under 60 seconds.' },
-  { icon: BarChart3, title: 'Size Matching', desc: 'Measurements mapped against brand-specific size charts. Users see their exact size per brand — not generic S/M/L.' },
-  { icon: ShoppingBag, title: 'Confident Purchase', desc: 'Size-confident shoppers click through to your store, buy the right size first time, and keep what they buy.' },
-];
+import PartnershipNav from '@/components/partnership/PartnershipNav';
+import PartnershipStickyCTA from '@/components/partnership/PartnershipStickyCTA';
+import PartnershipBrandStrip from '@/components/partnership/PartnershipBrandStrip';
+import PartnershipContactForm from '@/components/partnership/PartnershipContactForm';
 
 const VALUE_PROPS = [
   'Lower return rates — customers buy the right size the first time',
   'Higher conversion — size confidence removes the biggest purchase barrier',
   'Zero cost — we monetize through affiliate commissions, not retailer fees',
-  'Incremental traffic — qualified, high-intent shoppers directed to your checkout',
-  'Brand-safe presentation — products shown in a premium editorial format',
-];
-
-const INTEGRATIONS = [
-  { label: 'Product Data Feed', desc: 'CSV, JSON, or API — we ingest your catalog and keep it synced' },
-  { label: 'Affiliate Program', desc: 'CJ, Rakuten, Impact, ShareASale — or direct partnership' },
-  { label: 'Size Chart Access', desc: 'We map your exact size tables for precise recommendations' },
 ];
 
 const Partnership = () => {
-  usePageMeta({ title: 'Brand Partnership', description: 'Partner with DripFit to reduce returns by 30-40%. AI-powered size matching drives confident purchases.', path: '/partnership' });
-  const catalogStats = useCatalogStats();
+  usePageMeta({
+    title: 'DripFit — Retail Partnership',
+    description: 'Reduce returns with AI-powered size matching. Zero integration cost — we monetize through affiliate commissions, not retailer fees.',
+    path: '/partnership',
+  });
+  const stats = useCatalogStats();
+
+  const HOW_IT_WORKS = [
+    { icon: Scan, title: 'AI Body Scan', desc: `Two smartphone photos. 20+ biometric data points extracted via computer vision in under 60 seconds. Key measurements mapped to your brand-specific size charts.` },
+    { icon: BarChart3, title: 'Size Matching', desc: `Measurements mapped against ${stats.sizeCharts}+ brand-specific size charts. Users see their exact size at YOUR store — not a generic S/M/L.` },
+    { icon: ShoppingBag, title: 'Confident Purchase', desc: 'Size-confident shoppers click through to your store, buy the right size first time, and keep what they buy.' },
+  ];
+
+  const INTEGRATIONS = [
+    { label: 'Product Data Feed', desc: 'CSV, JSON, or REST API. Daily sync. We handle ingest, image normalization, and category mapping. Zero engineering on your side.' },
+    { label: 'Affiliate Program', desc: 'CJ, Rakuten, Impact, ShareASale — or direct partnership. Standard affiliate links, no custom SDK required.' },
+    { label: 'Size Chart Access', desc: 'Public size table URL or upload. We map every variant (numeric, alpha, regional) to user measurements within 0.5 inches.' },
+  ];
+
   const STATS = [
-    { value: `${catalogStats.brands}+`, label: 'Brands Indexed' },
-    { value: catalogStats.productsLabel, label: 'Products Cataloged' },
-    { value: '30-40%', label: 'Return Reduction' },
-    { value: '<60s', label: 'Body Scan Time' },
+    { value: `${stats.brands}+`, label: 'Brands Indexed', note: 'Active size charts' },
+    { value: stats.productsLabel, label: 'Products Cataloged', note: 'Live across categories' },
+    { value: '\u00B10.5"', label: 'Sizing Accuracy', note: `Across ${stats.sizeCharts}+ size charts` },
+    { value: '<60s', label: 'Body Scan Time', note: 'Two phone photos' },
   ];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* ── Hero ─────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/8 via-transparent to-transparent" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
-        
-        <div className="relative max-w-3xl mx-auto px-6 pt-16 pb-12 text-center">
+      <PartnershipNav />
+
+      {/* ── Hero — provoke first ─────────────────────────── */}
+      <section className="relative overflow-hidden pt-24">
+        <div className="relative max-w-3xl mx-auto px-6 pt-8 pb-12 text-center">
           <BrandLogo size="xl" className="justify-center mb-8" />
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">
-            Retail <span className="text-primary">Partnership</span> Deck
+          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary/80 mb-4">
+            Retail Partnership · B2B
+          </p>
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-5">
+            Sizing returns are eating your margin.{' '}
+            <span className="text-primary">We end them.</span>
           </h1>
           <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-            AI-powered body scanning that matches shoppers to their perfect size — 
-            reducing returns and driving higher-converting traffic to your store.
+            Your customers scan once. We map their exact size to your size chart.
+            They buy right. They keep it.
           </p>
         </div>
       </section>
 
-      {/* ── Stats Bar ────────────────────────────────────── */}
-      <section className="border-y border-border bg-card/50">
-        <div className="max-w-3xl mx-auto px-6 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6">
-          {STATS.map(s => (
-            <div key={s.label} className="text-center">
-              <p className="font-display text-2xl sm:text-3xl font-bold text-primary">{s.value}</p>
-              <p className="text-[11px] sm:text-xs text-muted-foreground uppercase tracking-widest mt-1">{s.label}</p>
-              {s.label === 'Return Reduction' && (
-                <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>Projected from verified sizing accuracy data</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ── Brand strip — proof of catalog breadth ───────── */}
+      <PartnershipBrandStrip />
 
-      {/* ── The Problem ──────────────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-6 py-14">
+      {/* ── The Problem — provocation, sourced ───────────── */}
+      <section id="problem" className="max-w-3xl mx-auto px-6 py-14 scroll-mt-20">
         <div className="bg-destructive/8 border border-destructive/20 rounded-2xl p-6 sm:p-8">
           <div className="flex items-start gap-3 mb-4">
             <TrendingDown className="h-6 w-6 text-primary shrink-0 mt-0.5" />
             <div>
-              <h2 className="font-display text-xl font-bold">The $100B Problem</h2>
+              <h2 className="font-display text-xl font-bold">The $849.9B Problem</h2>
               <p className="text-muted-foreground text-sm mt-1">Sizing is the #1 reason for online fashion returns.</p>
             </div>
           </div>
@@ -89,21 +87,42 @@ const Partnership = () => {
               </div>
             ))}
           </div>
+          <p className="text-[10px] text-muted-foreground/60 mt-5 text-center">
+            Sources: McKinsey Returns Survey 2024 · National Retail Federation 2025
+          </p>
+        </div>
+      </section>
+
+      {/* ── Stats Bar — capability, not projection ───────── */}
+      <section className="border-y border-border bg-card/50">
+        <div className="max-w-3xl mx-auto px-6 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6">
+          {STATS.map(s => (
+            <div key={s.label} className="text-center">
+              <p className="font-display text-2xl sm:text-3xl font-bold text-primary">{s.value}</p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground uppercase tracking-widest mt-1">{s.label}</p>
+              <p className="text-[10px] text-muted-foreground/60 mt-1">{s.note}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ── How It Works ─────────────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-6 pb-14">
-        <h2 className="font-display text-2xl font-bold text-center mb-8">How DripFit Check Works</h2>
+      <section id="how-it-works" className="max-w-3xl mx-auto px-6 py-14 scroll-mt-20">
+        <h2 className="font-display text-2xl font-bold text-center mb-8">How DripFit Works</h2>
         <div className="space-y-4">
           {HOW_IT_WORKS.map((step, i) => (
-            <div key={step.title} className="flex items-start gap-4 bg-card border border-border rounded-2xl p-5">
+            <div
+              key={step.title}
+              className="flex items-start gap-4 bg-card border-l-2 border-primary border-y border-r border-border rounded-2xl p-5"
+            >
               <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <step.icon className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">Step {String(i + 1).padStart(2, '0')}</span>
+                  <span className="font-mono text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">
+                    Step {String(i + 1).padStart(2, '0')}
+                  </span>
                   <h3 className="font-display font-bold text-sm">{step.title}</h3>
                 </div>
                 <p className="text-muted-foreground text-[13px] mt-1 leading-relaxed">{step.desc}</p>
@@ -113,11 +132,11 @@ const Partnership = () => {
         </div>
       </section>
 
-      {/* ── Value for Retailers ──────────────────────────── */}
+      {/* ── Why Partner — 3 reasons only ─────────────────── */}
       <section className="border-y border-border bg-card/30">
         <div className="max-w-3xl mx-auto px-6 py-14">
           <h2 className="font-display text-2xl font-bold text-center mb-8">Why Partner With Us</h2>
-          <div className="space-y-3">
+          <div className="space-y-3 max-w-xl mx-auto">
             {VALUE_PROPS.map(v => (
               <div key={v} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -125,24 +144,36 @@ const Partnership = () => {
               </div>
             ))}
           </div>
+
+          {/* Anchor testimonial — partner-side voice */}
+          <div className="mt-10 max-w-xl mx-auto bg-background/60 border border-border/60 rounded-2xl p-6">
+            <Quote className="h-5 w-5 text-primary/70 mb-3" />
+            <p className="font-display italic text-base text-foreground/90 leading-snug">
+              "If sized correctly the first time, even half of our return rate disappears.
+              That pays for the integration in a month."
+            </p>
+            <p className="text-[11px] text-muted-foreground/70 mt-3 uppercase tracking-widest">
+              — E-commerce Director, contemporary fashion brand · pilot conversation
+            </p>
+          </div>
         </div>
       </section>
 
       {/* ── Integration Options ──────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-6 py-14">
+      <section id="integration" className="max-w-3xl mx-auto px-6 py-14 scroll-mt-20">
         <h2 className="font-display text-2xl font-bold text-center mb-2">Integration Options</h2>
-        <p className="text-muted-foreground text-sm text-center mb-8">We make onboarding seamless — choose what works for you.</p>
+        <p className="text-muted-foreground text-sm text-center mb-8">Onboarded in days, not weeks.</p>
         <div className="grid sm:grid-cols-3 gap-4">
           {INTEGRATIONS.map(item => (
             <div key={item.label} className="bg-card border border-border rounded-2xl p-5 text-center">
-              <h3 className="font-display font-bold text-sm mb-1">{item.label}</h3>
+              <h3 className="font-display font-bold text-sm mb-2">{item.label}</h3>
               <p className="text-[12px] text-muted-foreground leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── User Journey Visual ──────────────────────────── */}
+      {/* ── User Journey ─────────────────────────────────── */}
       <section className="border-y border-border bg-card/30">
         <div className="max-w-3xl mx-auto px-6 py-14">
           <h2 className="font-display text-2xl font-bold text-center mb-8">The User Journey</h2>
@@ -156,9 +187,7 @@ const Partnership = () => {
                   )}
                   <div
                     className={`rounded-xl px-4 py-3 text-center min-w-[120px] border ${
-                      isFinal
-                        ? 'bg-primary/10 border-primary/30'
-                        : 'bg-card border-border'
+                      isFinal ? 'bg-primary/10 border-primary/30' : 'bg-card border-border'
                     }`}
                   >
                     <p
@@ -180,33 +209,46 @@ const Partnership = () => {
         </div>
       </section>
 
-      {/* ── CTA ──────────────────────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-6 py-16 text-center">
-        <div className="bg-gradient-to-br from-primary/10 via-card to-card border border-primary/20 rounded-2xl p-8 sm:p-12">
+      {/* ── Contact — form + secondary CTA ───────────────── */}
+      <section id="contact" className="max-w-3xl mx-auto px-6 py-16 scroll-mt-20">
+        <div className="bg-gradient-to-br from-primary/10 via-card to-card border border-primary/20 rounded-2xl p-6 sm:p-10">
           <Users className="h-10 w-10 text-primary mx-auto mb-4" />
-          <h2 className="font-display text-2xl sm:text-3xl font-bold mb-2">Let's Reduce Returns Together</h2>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
-            Ready to reduce returns? Reach out. Onboarded in days, not weeks.
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-center mb-2">
+            Let's Reduce Returns Together
+          </h2>
+          <p className="text-muted-foreground text-sm text-center max-w-md mx-auto mb-8">
+            Tell us about your brand. We'll come back with a tailored integration plan.
           </p>
-          <a
-            href="mailto:partnerships@dripfitcheck.com"
-            className="inline-flex items-center gap-2 btn-gold-3d shimmer-sweep rounded-xl px-6 py-3 font-semibold text-sm text-primary-foreground"
-          >
-            <Mail className="h-4 w-4" />
-            partnerships@dripfitcheck.com
-          </a>
-          <div className="mt-6 flex items-center justify-center gap-4">
-            <a href="https://dripfitcheck.lovable.app" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline underline-offset-4 inline-flex items-center gap-1">
-              Try the App <ExternalLink className="h-3 w-3" />
+
+          <div className="max-w-md mx-auto">
+            <PartnershipContactForm />
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="mailto:partnerships@dripfitcheck.com"
+              className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              partnerships@dripfitcheck.com
+            </a>
+            <span className="hidden sm:inline text-muted-foreground/30">·</span>
+            <a
+              href="/landing"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline underline-offset-4"
+            >
+              See Consumer Experience <ExternalLink className="h-3 w-3" />
             </a>
           </div>
         </div>
       </section>
 
       {/* ── Footer ───────────────────────────────────────── */}
-      <footer className="border-t border-border py-6 text-center">
+      <footer className="border-t border-border py-6 text-center pb-24">
         <p className="text-[11px] text-muted-foreground">© {new Date().getFullYear()} DripFit Check. All rights reserved.</p>
       </footer>
+
+      <PartnershipStickyCTA />
     </div>
   );
 };

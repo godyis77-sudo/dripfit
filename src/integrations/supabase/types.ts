@@ -653,6 +653,39 @@ export type Database = {
         }
         Relationships: []
       }
+      partnership_leads: {
+        Row: {
+          company_name: string
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          return_rate: string | null
+          role: string
+          source: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          return_rate?: string | null
+          role: string
+          source?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          return_rate?: string | null
+          role?: string
+          source?: string | null
+        }
+        Relationships: []
+      }
       payout_requests: {
         Row: {
           amount_cents: number
