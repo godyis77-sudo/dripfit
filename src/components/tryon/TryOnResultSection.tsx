@@ -426,7 +426,7 @@ const TryOnResultSection = ({
     latestItem.url === selectedQuickPick.product_url
   );
   const shopUrl = latestItem?.url || selectedQuickPick?.product_url || productLink;
-  const productName = latestItem?.name || selectedQuickPick?.name;
+  const productName = cleanProductName(latestItem?.name || selectedQuickPick?.name);
   const productBrand = latestItem?.brand || selectedQuickPick?.brand;
   const productPrice = latestItem?.price_cents ?? selectedQuickPick?.price_cents;
   const isPostSelected = !shared && showPostUI && isPublic;
