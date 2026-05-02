@@ -32,7 +32,7 @@ export default function LandingFAQ() {
     { q: 'How does Infinite Drape Studio work?', a: 'Infinite Drape Studio renders garments directly onto your mapped silhouette. You see the actual drape, proportions, and fit on YOUR body — not a mannequin or model.' },
     { q: 'What are Body Twins?', a: 'Members who share your exact proportions — within verified measurement tolerances. When they try a piece, their fit feedback is directly applicable to you. Same body. Same drape.' },
     { q: 'What brands are available?', a: `${stats.brands} brands across ${stats.sizeChartsLabel} size charts — from Arc'teryx and Stone Island to The Row and Totême. ${stats.productsLabel} products and growing weekly.` },
-    { q: 'Is DripFit free?', a: 'Core features including body scanning, size verification, and browsing are free. Premium features like unlimited Infinite Drape Studio access and advanced Twin matching are available with DripFit Pro.' },
+    { q: 'Is DripFit free?', a: 'Yes — body scanning, verified sizing across every brand, and browsing are free. Forever. DripFit Pro unlocks unlimited try-ons and advanced Body Twin matching.' },
   ];
   return (
     <section id="faq" className="py-20 md:py-24 scroll-mt-20">
