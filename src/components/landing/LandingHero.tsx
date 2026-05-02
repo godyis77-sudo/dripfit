@@ -23,13 +23,12 @@ export default function LandingHero() {
       <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center relative z-10">
         <div className="md:flex-1">
           <FadeIn>
-            <div className="flex gap-8 mb-6">
-              {STATS.map((s) => (
-                <div key={s.l}>
-                  <div className="type-headline text-2xl text-primary">{s.v}</div>
-                  <div className="type-data mt-1">{s.l}</div>
-                </div>
-              ))}
+            <div className="inline-flex items-center gap-2 mb-6">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              </span>
+              <span className="type-data text-foreground/70">LIVE</span>
             </div>
           </FadeIn>
           <FadeIn>
