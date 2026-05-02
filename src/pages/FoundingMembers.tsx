@@ -65,7 +65,7 @@ const FoundingMembers = () => {
               <Sparkles className="h-3 w-3" /> Founding 100
             </span>
 
-            <h1 className="headline-editorial text-3xl sm:text-4xl tracking-tight leading-[1.15] mb-3 text-primary">
+            <h1 className="headline-editorial text-3xl sm:text-4xl tracking-tight leading-[1.15] mb-3 text-foreground">
               Help us build the future of{' '}
               <span className="text-primary">online sizing</span>
             </h1>
