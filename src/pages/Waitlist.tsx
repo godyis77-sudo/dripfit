@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { Scan, Shirt, Users, CheckCircle2, ChevronUp, Sparkles, ArrowRight, Mail, Shield, Zap, Star } from 'lucide-react';
+import { Scan, Shirt, Users, CheckCircle2, ChevronUp, Sparkles, ArrowRight, Mail, Shield, Zap } from 'lucide-react';
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,16 +55,16 @@ const FEATURES = [
   },
 ];
 
-const CHECKLIST = [
-  { text: 'Your exact measurements for 142 brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
+const buildChecklist = (brandsLabel: string) => [
+  { text: `Your exact measurements for ${brandsLabel} brands including Zara, Nike, H&M, ASOS, and more.`, icon: Sparkles },
   { text: 'The 3-question checklist before every online order.', icon: Shield },
   { text: 'How to never pay return shipping again.', icon: Zap },
 ];
 
-const STATS = [
-  { stat: '73%', label: 'Sizing returns' },
+const buildStats = (sizeChartsLabel: string) => [
+  { stat: '30-40%', label: 'Industry returns' },
   { stat: '$550', label: 'Wasted yearly' },
-  { stat: '390', label: 'Size charts' },
+  { stat: sizeChartsLabel, label: 'Size charts' },
 ];
 
 /* ─── Animation helpers ─── */
@@ -210,6 +211,8 @@ function GoldParticles() {
 const Waitlist = () => {
   usePageMeta({ title: 'Join the Waitlist', description: 'Get early access to DripFit — AI body scanning, virtual try-on, and size matching for 130+ brands. Free to join.', path: '/waitlist' });
   const [showTop, setShowTop] = useState(false);
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+  const stats = useCatalogStats();
 
   useEffect(() => {
     const handler = () => setShowTop(window.scrollY > 500);
@@ -217,7 +220,21 @@ const Waitlist = () => {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
+  useEffect(() => {
+    supabase
+      .from('app_config')
+      .select('value')
+      .eq('key', 'waitlist_count')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) setWaitlistCount(parseInt(data.value, 10));
+      });
+  }, []);
+
   const scrollToTop = useCallback(() => window.scrollTo({ top: 0, behavior: 'smooth' }), []);
+  const waitlistNote = waitlistCount && waitlistCount > 10
+    ? `Join ${waitlistCount.toLocaleString()}+ shoppers already on the waitlist.`
+    : 'Be one of the first on the waitlist.';
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -275,13 +292,13 @@ const Waitlist = () => {
 
         {/* Email form */}
         <FadeUp delay={0.22} className="relative z-10 w-full flex flex-col items-center mb-8">
-          <EmailCapture id="hero" buttonText="Send Me the Free Guide" note="Join 2,000+ shoppers already on the waitlist." />
+          <EmailCapture id="hero" buttonText="Send Me the Free Guide" note={waitlistNote} />
         </FadeUp>
 
         {/* Checklist — merged from lead magnet */}
         <FadeUp delay={0.25} className="relative z-10 w-full max-w-md mb-10">
           <div className="space-y-2.5">
-            {CHECKLIST.map((item, i) => (
+            {buildChecklist(stats.brandsLabel).map((item, i) => (
               <div key={i} className="flex gap-3 items-center bg-secondary/60 border border-border/60 rounded-xl px-4 py-3">
                 <item.icon className="h-4 w-4 text-primary shrink-0" />
                 <p className="text-[13px] text-foreground/75 leading-snug">{item.text}</p>
@@ -405,31 +422,12 @@ const Waitlist = () => {
 
           {/* Stats */}
           <FadeUp delay={0.2} className="mt-14 grid grid-cols-3 gap-3">
-            {STATS.map((s) => (
+            {buildStats(stats.sizeChartsLabel).map((s) => (
               <div key={s.label} className="text-center bg-secondary border border-border rounded-2xl py-5 px-3">
                 <p className="font-display text-[22px] sm:text-2xl font-bold gradient-drip-text leading-none">{s.stat}</p>
                 <p className="text-[11px] text-foreground/55 mt-2 uppercase tracking-[0.08em] leading-tight font-medium">{s.label}</p>
               </div>
             ))}
-          </FadeUp>
-        </div>
-      </section>
-
-      {/* ─── TESTIMONIAL STRIP ─── */}
-      <section className="py-12 px-5 sm:px-8">
-        <div className="max-w-lg mx-auto">
-          <FadeUp>
-            <div className="bg-secondary border border-border rounded-2xl p-5 text-center">
-              <div className="flex justify-center gap-0.5 mb-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 text-primary fill-primary" />
-                ))}
-              </div>
-              <p className="text-[13px] text-foreground/75 leading-relaxed italic mb-3">
-                "I used to return 3 out of every 5 orders. After using DripFit, I haven't had a single return in 4 months."
-              </p>
-              <p className="text-[11px] text-foreground/50 uppercase tracking-[0.2em]">— Sarah M., Beta Tester</p>
-            </div>
           </FadeUp>
         </div>
       </section>
@@ -457,7 +455,7 @@ const Waitlist = () => {
           <div className="flex items-center gap-6 text-[11px] text-foreground/40">
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-            <a href="mailto:hello@dripfit.app" className="hover:text-foreground transition-colors">Contact</a>
+            <a href="mailto:hello@dripfitcheck.com" className="hover:text-foreground transition-colors">Contact</a>
           </div>
         </div>
       </footer>

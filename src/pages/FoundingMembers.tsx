@@ -1,42 +1,36 @@
 import { useEffect, useState } from 'react';
-import { Users, Crown, TrendingUp, Zap, MessageSquare, ArrowRight, Quote, Sparkles } from 'lucide-react';
+import { Users, Crown, TrendingUp, Zap, MessageSquare, ArrowRight, Sparkles } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 // P3 placeholder — swap when real founder portrait is shot
 import editorialFounderImg from '@/assets/editorial-founder.jpg';
 
 const TOTAL_SPOTS = 100;
 const FALLBACK_CLAIMED = 12;
 
-const PERKS = [
+const buildPerks = (brandsLabel: string, sizeChartsLabel: string) => [
   { icon: Zap, title: 'Early Access', desc: 'You test it first. Virtual try-on, AI sizing, new drops — before the public sees them.' },
   { icon: MessageSquare, title: 'Direct Input', desc: 'Your brands. Your features. Founding members shape what gets built next.' },
   { icon: Crown, title: 'Free Premium', desc: 'Premium. For life. Zero strings. The cheat code — locked in at founding tier.' },
-  { icon: TrendingUp, title: 'Sizing Intel', desc: '142 brands. Insider sizing data from Body Twins who actually wear the pieces.' },
+  { icon: TrendingUp, title: 'Sizing Intel', desc: `${brandsLabel} brands. ${sizeChartsLabel} size charts. Insider sizing data from Body Twins who actually wear the pieces.` },
 ];
 
-const EARLY_MEMBERS = [
-  { initials: 'JT', name: 'Jordan T.', label: 'Sneakerhead', color: 'bg-primary/20 text-primary' },
-  { initials: 'AK', name: 'Ava K.', label: 'Capsule wardrobe', color: 'bg-accent/20 text-accent-foreground' },
-  { initials: 'ML', name: 'Marcus L.', label: 'Streetwear', color: 'bg-foreground/10 text-foreground' },
-  { initials: 'SR', name: 'Sofia R.', label: 'Petite fashion', color: 'bg-foreground/10 text-foreground' },
-  { initials: 'DW', name: 'Derek W.', label: 'Big & tall', color: 'bg-foreground/10 text-foreground' },
-  { initials: 'NK', name: 'Nina K.', label: 'Thrift queen', color: 'bg-primary/20 text-primary' },
-];
-
-const TESTIMONIALS = [
-  { quote: "Finally stopped buying 3 sizes of everything and returning 2. This saved me so much money already.", name: 'Jordan T.', detail: 'Founding Member' },
-  { quote: "The sizing is eerily accurate. Got my Zara size right on the first try — that never happens.", name: 'Sofia R.', detail: 'Beta Member' },
-  { quote: "Love that I can actually influence what brands get added next. Feels like I'm building this with the team.", name: 'Marcus L.', detail: 'Day-one beta' },
+const buildCapabilities = (brandsLabel: string, sizeChartsLabel: string, retailersLabel: string) => [
+  { stat: brandsLabel, label: 'Brands mapped' },
+  { stat: sizeChartsLabel, label: 'Verified size charts' },
+  { stat: retailersLabel, label: 'Retailers connected' },
 ];
 
 const FoundingMembers = () => {
   usePageMeta({ title: 'Founding Members', description: 'Join the Founding 100 — exclusive early access, direct input on features, and lifetime perks.', path: '/founding-members' });
   const [spotsClaimed, setSpotsClaimed] = useState(FALLBACK_CLAIMED);
+  const stats = useCatalogStats();
+  const PERKS = buildPerks(stats.brandsLabel, stats.sizeChartsLabel);
+  const CAPABILITIES = buildCapabilities(stats.brandsLabel, stats.sizeChartsLabel, stats.retailersLabel);
 
   useEffect(() => {
     supabase
@@ -71,7 +65,7 @@ const FoundingMembers = () => {
               <Sparkles className="h-3 w-3" /> Founding 100
             </span>
 
-            <h1 className="headline-editorial text-3xl sm:text-4xl tracking-tight leading-[1.15] mb-3 text-primary">
+            <h1 className="headline-editorial text-3xl sm:text-4xl tracking-tight leading-[1.15] mb-3 text-foreground">
               Help us build the future of{' '}
               <span className="text-primary">online sizing</span>
             </h1>
@@ -126,83 +120,50 @@ const FoundingMembers = () => {
         </div>
       </section>
 
-      {/* ── Who's Already In ───────────────────────── */}
+      {/* ── What You're Joining (live capabilities) ── */}
       <section className="max-w-md mx-auto px-6 pb-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.4 }}
         >
-          <h2 className="font-display text-lg font-bold text-center mb-4">Who's Already In</h2>
-          <div className="flex flex-wrap justify-center gap-2">
-            {EARLY_MEMBERS.map((m, i) => (
+          <h2 className="font-display text-lg font-bold text-center mb-4 uppercase tracking-wide">What You're Joining</h2>
+          <div className="grid grid-cols-3 gap-2">
+            {CAPABILITIES.map((c, i) => (
               <motion.div
-                key={m.initials}
-                initial={{ opacity: 0, scale: 0.8 }}
+                key={c.label}
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 + i * 0.07, duration: 0.3 }}
-                className="flex items-center gap-2 glass-dark rounded-full pl-1 pr-3 py-1"
+                transition={{ delay: 0.6 + i * 0.08, duration: 0.3 }}
+                className="text-center bg-secondary border border-border rounded-2xl py-4 px-2"
               >
-                <Avatar className="h-7 w-7">
-                  <AvatarFallback className={`text-[10px] font-bold ${m.color}`}>
-                    {m.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-left">
-                  <p className="text-[11px] font-semibold leading-tight">{m.name}</p>
-                  <p className="text-[9px] text-muted-foreground leading-tight">{m.label}</p>
-                </div>
+                <p className="font-display text-xl font-bold text-primary leading-none">{c.stat}</p>
+                <p className="text-[10px] text-foreground/55 mt-2 uppercase tracking-[0.08em] leading-tight font-medium">{c.label}</p>
               </motion.div>
             ))}
-            {/* Remaining placeholder */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.0, duration: 0.3 }}
-              className="flex items-center gap-2 glass rounded-full pl-1 pr-3 py-1 border-dashed"
-            >
-              <Avatar className="h-7 w-7">
-                <AvatarFallback className="text-[10px] text-muted-foreground bg-muted">?</AvatarFallback>
-              </Avatar>
-              <p className="text-[11px] text-muted-foreground font-medium">You?</p>
-            </motion.div>
           </div>
         </motion.div>
       </section>
 
-      {/* ── Testimonials ───────────────────────────── */}
+      {/* ── The Promise ────────────────────────────── */}
       <section className="max-w-md mx-auto px-6 pb-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.4 }}
+          className="glass-dark rounded-2xl p-5"
         >
-          <h2 className="font-display text-lg font-bold text-left mb-4 uppercase">The Verdict.</h2>
-          <div className="space-y-3">
-            {TESTIMONIALS.map((t, i) => (
-              <motion.div
-                key={t.name}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -12 : 12 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.8 + i * 0.12, duration: 0.35 }}
-                className="glass-dark rounded-xl p-4 relative"
-              >
-                <Quote className="h-4 w-4 text-primary/30 absolute top-3 right-3" />
-                <p className="text-[12px] text-foreground leading-relaxed mb-2.5 pr-5">
-                  "{t.quote}"
-                </p>
-                <div className="flex items-center gap-2">
-                  <div className="h-1 w-1 rounded-full bg-primary" />
-                  <span className="text-[11px] font-semibold">{t.name}</span>
-                  <span className="text-[10px] text-muted-foreground">· {t.detail}</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <h2 className="font-display text-base font-bold mb-3 uppercase tracking-wide">The Promise.</h2>
+          <ul className="space-y-2.5 text-[12px] text-foreground/80 leading-relaxed">
+            <li className="flex gap-2"><span className="text-primary">→</span> Stop buying multiple sizes "just in case"</li>
+            <li className="flex gap-2"><span className="text-primary">→</span> Get the right size on the first order</li>
+            <li className="flex gap-2"><span className="text-primary">→</span> Vote on which brands and features get built next</li>
+            <li className="flex gap-2"><span className="text-primary">→</span> Lock in Premium for life — never pay a monthly fee</li>
+          </ul>
         </motion.div>
       </section>
 
-      {/* ── P3 Founder Letter (placeholder portrait, swap when shot delivered) ── */}
+
       <section
         data-placeholder="p3-founder-photo"
         className="max-w-md mx-auto px-6 pb-10 w-full"
