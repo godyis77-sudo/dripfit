@@ -393,14 +393,32 @@ function buildPrompt(
     return /shoe|sneaker|boot|slipper|sandal|loafer|heel|pump|mule|flat|espadrille|slingback|moccasin|trainer/.test(c);
   });
 
+  // ── Per-item garment classification (mirrors virtual-tryon prompt logic)
+  const itemTraits = items.map(i => ({ item: i, traits: classifyGarment(i) }));
+  const hasIntimate = itemTraits.some(({ traits }) => traits.isSwim || traits.isUnderwear || traits.isIntimate);
+
   // Build wardrobe layer with layering context
   const ROLE_ORDER = ["outerwear", "top", "bottom", "footwear", "accessory"];
-  const wardrobeLines = items.map((item, i) => {
+  const wardrobeLines = itemTraits.map(({ item, traits }, i) => {
     const brand = item.brand ? ` by ${item.brand}` : "";
     const price = item.price_cents ? ` $${(item.price_cents / 100).toFixed(0)}` : "";
     const cat = item.category ? ` [${item.category}]` : "";
-    return `  ${i + 1}. ${decode(item.product_name)}${brand}${price}${cat}`;
+    const rawName = decode(item.product_name);
+    // Sanitize names only when intimate/swim items are present, to avoid
+    // safety refusals from the image model on the entire prompt.
+    const name = (traits.isSwim || traits.isUnderwear || traits.isIntimate)
+      ? sanitizeIntimateText(rawName)
+      : rawName;
+    return `  ${i + 1}. ${name}${brand}${price}${cat}`;
   }).join("\n");
+
+  // Per-item shape locks (top-only stays top-only, bikini top stays cropped, etc.)
+  const shapeLockLines = itemTraits
+    .map(({ item, traits }) => shapeLockFor(decode(item.product_name), traits))
+    .filter((s): s is string => !!s);
+  const shapeLockBlock = shapeLockLines.length === 0
+    ? ""
+    : `\n\n═══ GARMENT SHAPE LOCK (per item) ═══\n${shapeLockLines.map(l => `- ${l}`).join("\n")}`;
 
   const colorHints = extractColorHints(items);
 
@@ -413,10 +431,7 @@ function buildPrompt(
     .filter((url): url is string => !!url);
 
   const itemCount = items.length;
-  const bagCount = items.filter(i => {
-    const c = `${i.category || ""} ${i.product_name || ""}`.toLowerCase();
-    return /\b(bag|tote|clutch|purse|backpack|handbag|pouch|crossbody|shoulder bag|satchel)\b/.test(c);
-  }).length;
+  const bagCount = itemTraits.filter(({ traits }) => traits.isBag).length;
   const bagInstruction = bagCount === 0
     ? "NO bags of any kind — the model is NOT holding, carrying, or wearing any bag, tote, clutch, purse, backpack, or handbag. Hands are empty or resting naturally."
     : `EXACTLY ${bagCount} bag${bagCount === 1 ? "" : "s"} total — the model carries only the listed bag${bagCount === 1 ? "" : "s"}. Never add a second bag, extra clutch, tote, or handbag.`;
@@ -424,10 +439,7 @@ function buildPrompt(
   // Beach / swimwear anti-stacking: if there is a swim piece, force the AI
   // to render it as the BASE layer with no extra swimsuits, no pants/sweatpants
   // layered over, and at most one light open cover-up.
-  const swimItems = items.filter(i => {
-    const hay = `${i.category || ""} ${i.product_name || ""}`.toLowerCase();
-    return /\b(swim|bikini|board ?short|trunk|rash ?guard|one[- ]?piece|tankini|monokini)\b/.test(hay) || hay.includes("swimwear");
-  });
+  const swimItems = itemTraits.filter(({ traits }) => traits.isSwim);
   const swimInstruction = swimItems.length === 0
     ? ""
     : `
@@ -439,18 +451,29 @@ This is a beachwear look. The model wears EXACTLY ONE swimsuit (the listed swim 
 - If a "pants" item is listed, render it as a beach cover-up worn OPEN at the side or rolled, NEVER pulled fully over the swimsuit.
 - Show the swimsuit clearly visible — at least the top half is uncovered.`;
 
+  // Safety mode for intimate/swim — keep output commercially appropriate
+  const safetyBlock = hasIntimate
+    ? `\n\n═══ COMMERCIAL SAFETY MODE ═══
+- Render any base-layer / swimwear / activewear pieces as commercially appropriate, fully-styled retail editorial.
+- Preserve exact color, pattern, logo/waistband cues, neckline, straps, and silhouette family.
+- Do NOT depict exposed intimate anatomy, sheer/transparent coverage, or minimal-coverage styling.
+- Keep the result retail-safe and natural.`
+    : "";
+
 
   const text = `You are a world-class fashion photographer shooting for ${campaign.reference}.
 
-═══ LAYER 1: PRODUCT FIDELITY (ABSOLUTE PRIORITY) ═══
-Reference product images are attached. The model MUST wear items VISUALLY IDENTICAL to those references:
+═══ LAYER 1: PRODUCT FIDELITY (ABSOLUTE PRIORITY — COMPOSITION LOCK) ═══
+Reference product images are attached, one per listed item, in the SAME ORDER as the wardrobe list. The model MUST wear items VISUALLY IDENTICAL to those references:
 - EXACT same colors, prints, graphics, logos, and text
-- EXACT same silhouette, cut, and proportions
+- EXACT same silhouette, cut, proportions, neckline, straps, sleeves, hem, and length
 - Brand logos/text ON garments must match reference photos precisely
 - Do NOT substitute, reinterpret, or create "inspired by" versions — COPY exactly
+- If a reference image shows MULTIPLE models, a collage, or a multi-figure layout, extract ONLY the garment and IGNORE all people/figures from the reference
 - Show EXACTLY ${itemCount} garment piece${itemCount === 1 ? "" : "s"} on the model — no extra jackets, no extra shoes, no held bags or shopping accessories that aren't in the list
 - The model wears ONE pair of shoes (the listed footwear) and is NOT carrying a second pair
 - BAGS: ${bagInstruction}
+- ABSOLUTE LAYOUT RULE: Output EXACTLY ONE single image panel. NEVER generate a triptych, diptych, side-by-side, before/after, or multi-panel grid.${shapeLockBlock}
 
 ═══ LAYER 2: WARDROBE ═══
 ${brandContext}
@@ -461,7 +484,7 @@ ${wardrobeLines}
 STYLING: ${campaign.styling}
 FOOTWEAR: ${footwearInstruction}
 ${colorHints}
-${swimInstruction}
+${swimInstruction}${safetyBlock}
 
 ═══ LAYER 3: MODEL ═══
 ${modelDesc}
@@ -492,7 +515,7 @@ ${campaign.negative}
 No text overlays. No watermarks. No mannequins. No flat-lay. No product-only shots. Only styled on-body editorial.
 
 ═══ FINAL CHECK ═══
-Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette, (4) accessory count is exact — ${bagCount === 0 ? "ZERO bags visible" : `exactly ${bagCount} bag${bagCount === 1 ? "" : "s"}`} and ONE pair of shoes only.`;
+Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette AND respects its per-item shape lock, (4) accessory count is exact — ${bagCount === 0 ? "ZERO bags visible" : `exactly ${bagCount} bag${bagCount === 1 ? "" : "s"}`} and ONE pair of shoes only.`;
 
   return { text, imageUrls };
 }
