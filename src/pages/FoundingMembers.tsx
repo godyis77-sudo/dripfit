@@ -12,26 +12,17 @@ import editorialFounderImg from '@/assets/editorial-founder.jpg';
 const TOTAL_SPOTS = 100;
 const FALLBACK_CLAIMED = 12;
 
-const PERKS = [
+const buildPerks = (brandsLabel: string, sizeChartsLabel: string) => [
   { icon: Zap, title: 'Early Access', desc: 'You test it first. Virtual try-on, AI sizing, new drops — before the public sees them.' },
   { icon: MessageSquare, title: 'Direct Input', desc: 'Your brands. Your features. Founding members shape what gets built next.' },
   { icon: Crown, title: 'Free Premium', desc: 'Premium. For life. Zero strings. The cheat code — locked in at founding tier.' },
-  { icon: TrendingUp, title: 'Sizing Intel', desc: '142 brands. Insider sizing data from Body Twins who actually wear the pieces.' },
+  { icon: TrendingUp, title: 'Sizing Intel', desc: `${brandsLabel} brands. ${sizeChartsLabel} size charts. Insider sizing data from Body Twins who actually wear the pieces.` },
 ];
 
-const EARLY_MEMBERS = [
-  { initials: 'JT', name: 'Jordan T.', label: 'Sneakerhead', color: 'bg-primary/20 text-primary' },
-  { initials: 'AK', name: 'Ava K.', label: 'Capsule wardrobe', color: 'bg-accent/20 text-accent-foreground' },
-  { initials: 'ML', name: 'Marcus L.', label: 'Streetwear', color: 'bg-foreground/10 text-foreground' },
-  { initials: 'SR', name: 'Sofia R.', label: 'Petite fashion', color: 'bg-foreground/10 text-foreground' },
-  { initials: 'DW', name: 'Derek W.', label: 'Big & tall', color: 'bg-foreground/10 text-foreground' },
-  { initials: 'NK', name: 'Nina K.', label: 'Thrift queen', color: 'bg-primary/20 text-primary' },
-];
-
-const TESTIMONIALS = [
-  { quote: "Finally stopped buying 3 sizes of everything and returning 2. This saved me so much money already.", name: 'Jordan T.', detail: 'Founding Member' },
-  { quote: "The sizing is eerily accurate. Got my Zara size right on the first try — that never happens.", name: 'Sofia R.', detail: 'Beta Member' },
-  { quote: "Love that I can actually influence what brands get added next. Feels like I'm building this with the team.", name: 'Marcus L.', detail: 'Day-one beta' },
+const buildCapabilities = (brandsLabel: string, sizeChartsLabel: string, retailersLabel: string) => [
+  { stat: brandsLabel, label: 'Brands mapped' },
+  { stat: sizeChartsLabel, label: 'Verified size charts' },
+  { stat: retailersLabel, label: 'Retailers connected' },
 ];
 
 const FoundingMembers = () => {
