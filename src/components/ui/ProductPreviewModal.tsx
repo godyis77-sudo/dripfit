@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { trackEvent } from '@/lib/analytics';
-import { decodeHtmlEntities } from '@/lib/utils';
+import { decodeHtmlEntities, cleanProductName } from '@/lib/utils';
 import { useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
