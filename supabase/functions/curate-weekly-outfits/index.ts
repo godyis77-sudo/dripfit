@@ -880,7 +880,10 @@ function semanticBucket(normCat: string): string | null {
   if (["sneakers", "boots", "heels", "sandals", "loafers", "shoes", "footwear"].includes(normCat)) return "footwear";
   if (["jackets", "coats", "blazers", "outerwear", "cardigans"].includes(normCat)) return "outerwear";
   if (["pants", "jeans", "trousers", "shorts", "skirts", "joggers", "leggings", "chinos"].includes(normCat)) return "bottom";
-  if (["dresses", "jumpsuits"].includes(normCat)) return "one_piece";
+  // Swimwear, dresses and jumpsuits are all "base body story" pieces — only one
+  // may exist per outfit. Picking a swimsuit AND a dress AND pants in the same
+  // beach look produces the "wearing 2 swimsuits under a full body suit" bug.
+  if (["dresses", "jumpsuits", "swimwear"].includes(normCat)) return "base_body";
   if (["t-shirts", "shirts", "tops", "blouses", "sweaters", "hoodies", "tank tops", "knits", "polos"].includes(normCat)) return "top";
   if (["bags"].includes(normCat)) return "bag";
   if (["hats"].includes(normCat)) return "hat";
@@ -1219,14 +1222,40 @@ function buildOutfit(
   // (swim shorts, board shorts, bikini, one-piece, rashguard…). A "beach"
   // outfit of just linen + sandals reads as a brunch fit, not a beach fit.
   if (occasion.key === "beach_day" || occasion.key === "beach_tropical") {
-    const hasSwim = items.some(i => {
+    const swimItems = items.filter(i => {
       const cat = normalizeCategory(i.product.category);
       const hay = `${i.product.name} ${(i.product.tags ?? []).join(" ")}`.toLowerCase();
       return cat === "swimwear"
         || /\b(swim|bikini|board ?short|trunk|rash ?guard|one[- ]?piece|tankini|monokini)\b/.test(hay);
     });
-    if (!hasSwim) return null;
+    if (swimItems.length === 0) return null;
+
+    // Anti-stacking: when the base story is a swimsuit, the model cannot also
+    // be wearing pants/sweatpants/jeans/skirts (those go OVER the swim). The
+    // only acceptable layer over swim is light outerwear like a linen shirt
+    // or open cover-up. Also reject obviously heavy layers.
+    const hasHeavyBottom = items.some(i => {
+      const cat = normalizeCategory(i.product.category);
+      const hay = `${i.product.name} ${(i.product.tags ?? []).join(" ")}`.toLowerCase();
+      if (!["pants", "jeans", "trousers", "joggers", "leggings", "chinos"].includes(cat)) return false;
+      // allow lightweight beach pants explicitly
+      return !/\b(linen|gauze|crochet|cabana|sarong|cover[- ]?up|sheer)\b/.test(hay);
+    });
+    if (hasHeavyBottom) return null;
+
+    const hasHeavyOuterwear = items.some(i => {
+      const cat = normalizeCategory(i.product.category);
+      const hay = `${i.product.name} ${(i.product.tags ?? []).join(" ")}`.toLowerCase();
+      if (!["jackets", "coats", "blazers", "outerwear"].includes(cat)) return false;
+      // allow open shirts / kaftans / cover-ups
+      return !/\b(linen|kaftan|cover[- ]?up|cabana|open|sheer|gauze)\b/.test(hay);
+    });
+    if (hasHeavyOuterwear) return null;
+
+    // Maximum one swim piece per outfit (no bikini under one-piece nonsense).
+    if (swimItems.length > 1) return null;
   }
+
 
   // Reposition for display order: outerwear, top, bottom, shoes, accessory
   const displayOrder = ["outerwear", "top", "bottom", "shoes", "accessory"];

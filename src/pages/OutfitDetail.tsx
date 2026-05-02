@@ -17,8 +17,12 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 
 /** Inline product image with graceful fallback when the retailer CDN blocks hotlinks. */
 function ItemImage({ src, alt, onClick }: { src: string; alt: string; onClick?: () => void }) {
-  const [failed, setFailed] = useState(false);
-  if (failed) {
+  const [stage, setStage] = useState<'direct' | 'proxy' | 'failed'>('direct');
+
+  // Strip protocol for weserv (it expects a bare host+path).
+  const proxied = `https://images.weserv.nl/?url=${encodeURIComponent(src.replace(/^https?:\/\//, ''))}&w=300&h=300&fit=cover`;
+
+  if (stage === 'failed') {
     return (
       <div
         className="w-24 h-24 rounded-xl overflow-hidden bg-secondary shrink-0 flex items-center justify-center cursor-pointer"
@@ -34,11 +38,12 @@ function ItemImage({ src, alt, onClick }: { src: string; alt: string; onClick?: 
       onClick={onClick}
     >
       <img
-        src={src}
+        src={stage === 'direct' ? src : proxied}
         alt={alt}
         className="w-full h-full object-cover"
         loading="lazy"
-        onError={() => setFailed(true)}
+        referrerPolicy="no-referrer"
+        onError={() => setStage(prev => (prev === 'direct' ? 'proxy' : 'failed'))}
       />
     </div>
   );
