@@ -61,10 +61,10 @@ const buildChecklist = (brandsLabel: string) => [
   { text: 'How to never pay return shipping again.', icon: Zap },
 ];
 
-const STATS = [
-  { stat: '73%', label: 'Sizing returns' },
+const buildStats = (sizeChartsLabel: string) => [
+  { stat: '30-40%', label: 'Industry returns' },
   { stat: '$550', label: 'Wasted yearly' },
-  { stat: '390', label: 'Size charts' },
+  { stat: sizeChartsLabel, label: 'Size charts' },
 ];
 
 /* ─── Animation helpers ─── */
