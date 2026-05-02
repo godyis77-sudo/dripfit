@@ -28,6 +28,9 @@ const buildCapabilities = (brandsLabel: string, sizeChartsLabel: string, retaile
 const FoundingMembers = () => {
   usePageMeta({ title: 'Founding Members', description: 'Join the Founding 100 — exclusive early access, direct input on features, and lifetime perks.', path: '/founding-members' });
   const [spotsClaimed, setSpotsClaimed] = useState(FALLBACK_CLAIMED);
+  const stats = useCatalogStats();
+  const PERKS = buildPerks(stats.brandsLabel, stats.sizeChartsLabel);
+  const CAPABILITIES = buildCapabilities(stats.brandsLabel, stats.sizeChartsLabel, stats.retailersLabel);
 
   useEffect(() => {
     supabase
