@@ -292,7 +292,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       </button>
 
       {/* Image */}
-      <ZoomableProductImage src={product.image_url} alt={decodeHtmlEntities(product.name)} brand={product.brand} caption={caption} additionalImages={product.additional_images} />
+      <ZoomableProductImage src={product.image_url} alt={cleanProductName(product.name)} brand={product.brand} caption={caption} additionalImages={product.additional_images} />
 
       {/* Info + Actions */}
       <div
@@ -301,7 +301,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
       >
         <div className="text-center">
           <p className="text-[10px] tracking-[0.2em] uppercase text-white/40 font-bold">{product.brand}</p>
-          <p className="text-[13px] text-white/80 font-semibold mt-0.5 line-clamp-2 px-2">{decodeHtmlEntities(product.name)}</p>
+          <p className="text-[13px] text-white/80 font-semibold mt-0.5 line-clamp-2 px-2">{cleanProductName(product.name)}</p>
           {product.price_cents != null && (
             <p className="font-display text-xl text-primary mt-1">
               ${(product.price_cents / 100).toFixed(0)}
