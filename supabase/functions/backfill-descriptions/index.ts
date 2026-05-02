@@ -317,8 +317,8 @@ Deno.serve(async (req) => {
           if (unmatchedItems.length > 0) {
             console.log(`[backfill] ${retailer}: ${unmatchedItems.length} unmatched, falling back`);
             const fallbackUpdated = useFirecrawl
-              ? await scrapeViaFirecrawl(supabase, unmatchedItems.slice(0, 50))
-              : await scrapeDescriptionsFromPages(supabase, unmatchedItems.slice(0, 50), skipAi);
+              ? await scrapeViaFirecrawl(supabase, unmatchedItems)
+              : await scrapeDescriptionsFromPages(supabase, unmatchedItems, skipAi);
             updated += fallbackUpdated;
           }
 
