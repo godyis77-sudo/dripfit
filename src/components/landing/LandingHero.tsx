@@ -55,7 +55,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-[15px] md:text-lg leading-[1.55] tracking-[-0.005em] max-w-[19rem] md:max-w-md mb-10 mt-6 font-light text-balance">
-              Scan once. Try on {stats.productsLabel} pieces. Sized across {stats.brands} brands. Community Verified Drip.
+              Scan once. Get your verified size across {stats.brands} brands. Cop with zero returns.
             </p>
           </FadeIn>
 
