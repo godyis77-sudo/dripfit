@@ -1131,7 +1131,10 @@ Output: a single photorealistic full-body fashion image showing ONE person only.
         { type: "text", text: promptText },
         { type: "image_url", image_url: { url: userImageInput } },
       ];
-      if (garmentOnlyImage && garmentOnlyImage !== clothingImageInput) {
+      if (
+        garmentOnlyImage && garmentOnlyImage !== clothingImageInput &&
+        !(isSwimwear && isTopOnlyGarment)
+      ) {
         content.push({
           type: "image_url",
           image_url: { url: garmentOnlyImage },
