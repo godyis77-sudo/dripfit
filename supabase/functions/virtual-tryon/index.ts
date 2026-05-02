@@ -1101,14 +1101,24 @@ Output: a single photorealistic full-body fashion image showing ONE person only.
     const makeTextBridgePrompt = (
       garmentText: string,
       hasCleanFlatLay: boolean,
-    ) =>
-      `You are a fashion photo editor. Generate ONE photorealistic full-body image.\n\nUse Image A as the only person, pose, body, camera framing, and background reference. Replace only the target garment with this item description: ${garmentText}. Match color, silhouette, neckline, straps, hem, fabric feel, and visible branding details as closely as possible. Keep the result commercially appropriate and realistic. ${
-        hasCleanFlatLay
+    ) => {
+      const safeTextBridgeText = isSwimwear && isTopOnlyGarment
+        ? sanitizeIntimateText(garmentText)
+          .replace(/\b(expos\w*|bare|nude|skin|stomach|bust|cleavage|chest)\b/gi, "fabric")
+          .replace(/\b(midriff|torso)\b/gi, "waist area")
+        : garmentText;
+      const safeSwimTopBridgeScope = isSwimwear && isTopOnlyGarment
+        ? "TOP-ONLY SCOPE: Apply a short cropped bandeau/triangle swim top to the upper clothing area only. Keep all original lower garments from Image A unchanged. Do not add, remove, or redesign the skirt, shorts, pants, leggings, or shoes. Do not turn the top into a one-piece, bodysuit, tank, dress, or full-body garment."
+        : garmentSwapScopeInstruction;
+
+      return `You are a fashion photo editor. Generate ONE photorealistic full-body image.\n\nUse Image A as the only person, pose, proportions, camera framing, and background reference. Replace only the target garment with this item description: ${safeTextBridgeText}. Match color, silhouette, neckline, straps, hem, fabric feel, and visible branding details as closely as possible. Keep the result commercially appropriate and realistic. ${
+        hasCleanFlatLay && !(isSwimwear && isTopOnlyGarment)
           ? "A clean garment reference is available for product fidelity."
-          : "No product image should be copied into the final composition."
-      } ${garmentSwapScopeInstruction} ${intimateFramingInstruction} ${noResizeInstruction}`
+          : "Use the text description only for product details; do not copy any product-card layout into the final composition."
+      } ${safeSwimTopBridgeScope} ${intimateFramingInstruction} ${noResizeInstruction}`
         .replace(/\s+/g, " ")
         .trim();
+    };
 
     const buildTextBridgeContent = (promptText: string) => {
       const content: Array<
