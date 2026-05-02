@@ -30,9 +30,9 @@ const Partnership = () => {
   ];
 
   const INTEGRATIONS = [
-    { label: 'Product Data Feed', desc: 'CSV, JSON, or REST API. Daily sync. We handle ingest, image normalization, and category mapping. Zero engineering on your side.' },
-    { label: 'Affiliate Program', desc: 'CJ, Rakuten, Impact, ShareASale — or direct partnership. Standard affiliate links, no custom SDK required.' },
-    { label: 'Size Chart Access', desc: 'Public size table URL or upload. We map every variant (numeric, alpha, regional) to user measurements within 0.5 inches.' },
+    { label: 'Product Data Feed', desc: 'CSV, JSON, or REST API. Automated weekly sync. We handle ingest, image normalization, and category mapping. Zero engineering on your side.', setup: 'Setup: 1–2 days' },
+    { label: 'Affiliate Program', desc: 'CJ, Rakuten, Impact, ShareASale — or direct partnership. Standard affiliate links, no custom SDK required.', setup: 'Setup: same day' },
+    { label: 'Size Chart Access', desc: 'Public size table URL or upload. We map every variant (numeric, alpha, regional) to user measurements within 0.5 inches.', setup: 'Setup: 2–3 days' },
   ];
 
   const STATS = [
