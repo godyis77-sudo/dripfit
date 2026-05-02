@@ -12,6 +12,7 @@ import { getFitPreference } from '@/lib/session';
 import BottomTabBar from '@/components/BottomTabBar';
 import { getBrandGenre, type BrandGenre, BRAND_GENRES } from '@/lib/brandGenres';
 import { cn } from '@/lib/utils';
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 
 /** Derive a display percentage that always falls within the correct tier range.
  *  High match (confidence >= 0.72) → 88–99%
@@ -121,6 +122,7 @@ const SizeComparison = () => {
 
   const navigate = useNavigate();
   const { user, isSubscribed, userGender } = useAuth();
+  const catalogStats = useCatalogStats();
 
   const categoryPills = useMemo(() => {
     if (userGender === 'male') return MALE_CATEGORY_PILLS;
