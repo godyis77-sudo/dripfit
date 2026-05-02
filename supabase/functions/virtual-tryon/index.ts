@@ -910,7 +910,7 @@ Deno.serve(async (req) => {
     const garmentSwapScopeInstruction = isIntimateGarment
       ? intimateScopeInstruction
       : isTopOnlyGarment
-      ? "This is a TOP-only garment: replace upper-body clothing only and keep lower-body clothing from Image A unchanged."
+      ? "This is a TOP-only garment: REMOVE every upper-body item from Image A — including any jacket, blazer, coat, cardigan, hoodie, sweater, vest, shirt, blouse, tank, or layering piece — and replace them with the top from Image B ONLY. Do NOT keep or re-add any outerwear over it. Keep lower-body clothing from Image A unchanged."
       : "Replace only the clothing area needed for this garment and keep all unrelated body/background details unchanged.";
 
     const identityInstruction = isIntimateGarment
