@@ -1,4 +1,4 @@
-import { TrendingDown, Users, ShoppingBag, Scan, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink, Quote } from 'lucide-react';
+import { TrendingDown, Users, ShoppingBag, Scan, BarChart3, ArrowRight, ChevronDown, Mail, CheckCircle2, ExternalLink, Quote, Download } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { useCatalogStats } from '@/hooks/useCatalogStats';
