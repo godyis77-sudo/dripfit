@@ -121,7 +121,12 @@ export function useTryOnState() {
   const { toast } = useToast();
   const bodyProfile = (location.state as { bodyProfile?: unknown })?.bodyProfile;
 
-  const persisted = loadPersistedTryOnState();
+  // Lazy initializer — only parse storage once on mount, not every render
+  const persistedRef = useRef<PersistedTryOnState | null>(null);
+  if (persistedRef.current === null) {
+    persistedRef.current = loadPersistedTryOnState();
+  }
+  const persisted = persistedRef.current;
 
   const [userPhoto, setUserPhotoRaw] = useState<string | null>(persisted.userPhoto);
   const [clothingPhoto, setClothingPhotoRaw] = useState<string | null>(persisted.clothingPhoto);
@@ -171,6 +176,20 @@ export function useTryOnState() {
 
   // Background upload: converts base64 to a storage URL for persistence
   const uploadInflightRef = useRef<Record<string, AbortController>>({});
+  const isMountedRef = useRef(true);
+  const hasHydratedFromDbRef = useRef(false);
+
+  // Cleanup on unmount: abort in-flight uploads to prevent stale writes
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      Object.values(uploadInflightRef.current).forEach((controller) => {
+        try { controller.abort(); } catch { /* ignore */ }
+      });
+      uploadInflightRef.current = {};
+    };
+  }, []);
   const eagerUpload = useCallback(async (base64: string, folder: string): Promise<string | null> => {
     if (!user) return null; // guests can't upload
     if (!base64.startsWith('data:')) return null; // already a URL
@@ -203,12 +222,13 @@ export function useTryOnState() {
       try { localStorage.removeItem(TRYON_USER_PHOTO_KEY); } catch { /* ignore */ }
       // Upload in background, swap to URL when done
       eagerUpload(v, 'user-staged').then(url => {
-        if (url) {
-          userPhotoRef.current = url;
-          setUserPhotoRaw(url);
-          persistState({ userPhoto: url });
-          try { localStorage.setItem(TRYON_USER_PHOTO_KEY, url); } catch { /* ignore */ }
-        }
+        if (!url || !isMountedRef.current) return;
+        // Only swap if user hasn't replaced the photo in the meantime
+        if (userPhotoRef.current !== v) return;
+        userPhotoRef.current = url;
+        setUserPhotoRaw(url);
+        persistState({ userPhoto: url });
+        try { localStorage.setItem(TRYON_USER_PHOTO_KEY, url); } catch { /* ignore */ }
       });
     } else if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
       persistState({ userPhoto: v });
@@ -224,11 +244,11 @@ export function useTryOnState() {
     setClothingPhotoRaw(v);
     if (v && v.startsWith('data:')) {
       eagerUpload(v, 'clothing-staged').then(url => {
-        if (url) {
-          clothingPhotoRef.current = url;
-          setClothingPhotoRaw(url);
-          persistState({ clothingPhoto: url });
-        }
+        if (!url || !isMountedRef.current) return;
+        if (clothingPhotoRef.current !== v) return;
+        clothingPhotoRef.current = url;
+        setClothingPhotoRaw(url);
+        persistState({ clothingPhoto: url });
       });
     } else {
       persistState({ clothingPhoto: v });
@@ -251,6 +271,14 @@ export function useTryOnState() {
     try {
       if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
         localStorage.setItem(TRYON_RESULT_KEY, v);
+        // New stable URL — purge any stale base64 result from sessionStorage to free quota
+        try {
+          const ss = JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}');
+          if (typeof ss.resultImage === 'string' && ss.resultImage.startsWith('data:')) {
+            ss.resultImage = v;
+            sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify(ss));
+          }
+        } catch { /* ignore */ }
       } else {
         // Avoid stale older URL winning when latest image is still base64/session-backed
         localStorage.removeItem(TRYON_RESULT_KEY);
@@ -325,12 +353,21 @@ export function useTryOnState() {
   }, [user, hasUnlimitedTryOns]);
 
   // Hydrate latest result from DB if localStorage has nothing (e.g. after refresh before auto-save finished)
+  // Runs at most once per mount per user to prevent resurrecting cleared state on auth-token refresh.
   useEffect(() => {
     if (!user) return;
+    if (hasHydratedFromDbRef.current) return;
     // If we already have a valid result URL, skip the DB lookup
-    if (resultImage && (resultImage.startsWith('http://') || resultImage.startsWith('https://'))) return;
+    if (resultImage && (resultImage.startsWith('http://') || resultImage.startsWith('https://'))) {
+      hasHydratedFromDbRef.current = true;
+      return;
+    }
     // If we have a base64 result in memory (generation just happened), skip too
-    if (resultImage && resultImage.startsWith('data:')) return;
+    if (resultImage && resultImage.startsWith('data:')) {
+      hasHydratedFromDbRef.current = true;
+      return;
+    }
+    hasHydratedFromDbRef.current = true;
 
     supabase
       .from('tryon_posts')
@@ -339,6 +376,7 @@ export function useTryOnState() {
       .order('created_at', { ascending: false })
       .limit(1)
       .then(({ data }) => {
+        if (!isMountedRef.current) return;
         if (data && data.length > 0) {
           const latest = data[0];
           const hasUserPhoto = !!userPhotoRef.current;
@@ -366,7 +404,7 @@ export function useTryOnState() {
           });
         }
       });
-  }, [user]);
+  }, [user?.id]);
 
   // Loading step progression
   useEffect(() => {
@@ -896,6 +934,15 @@ export function useTryOnState() {
   };
 
   const handleTryAnother = () => {
+    // Mark DB-hydrate as already-done so a remount can't resurrect the previous result
+    hasHydratedFromDbRef.current = true;
+    // Abort any in-flight clothing upload so it can't write back stale data
+    Object.entries(uploadInflightRef.current).forEach(([folder, controller]) => {
+      if (folder !== 'user-staged') {
+        try { controller.abort(); } catch { /* ignore */ }
+        delete uploadInflightRef.current[folder];
+      }
+    });
     // Keep user photo — only reset clothing, result, and session state
     setClothingPhoto(null); setResultImage(null); setDescription(null); setCategory('all');
     setCaption(''); setIsPublic(getDefaultSharePreference()); setShared(false); setAutoSaved(false);
