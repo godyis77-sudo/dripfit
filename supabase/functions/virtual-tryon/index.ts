@@ -1022,9 +1022,9 @@ ${underwearSafetyInstruction}`;
     } else {
       // Determine scope instruction based on what the product actually is
       const standardScopeInstruction = isSetGarment
-        ? "Image B shows a MATCHING SET (top AND bottom). Replace ALL clothing from Image A with BOTH pieces from Image B. Show ONLY what is visible in Image B — do NOT add extra garments not shown in Image B."
+        ? "Image B shows a MATCHING SET (top AND bottom). REMOVE every garment from Image A — including any jacket, blazer, coat, cardigan, hoodie, sweater, shirt, t-shirt, pants, jeans, shorts, skirt, leggings, or layering piece — and replace them with BOTH pieces from Image B (top AND bottom must both appear). Do NOT keep or re-add any outerwear from Image A. Show ONLY what is visible in Image B — do NOT add extra garments not shown in Image B."
         : isTopOnlyGarment
-        ? "Image B shows a TOP-ONLY garment. Replace ONLY the upper-body clothing from Image A with the item from Image B. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms in any way. Do NOT add new pants or bottoms."
+        ? "Image B shows a TOP-ONLY garment. REMOVE EVERY upper-body item from Image A — including any jacket, blazer, coat, cardigan, hoodie, sweater, vest, shirt, t-shirt, blouse, tank, or layering piece — and replace them with the top from Image B ONLY. Do NOT keep, layer, or re-add any outerwear over it. Keep the person's EXISTING lower-body clothing (pants, jeans, shorts, skirt, leggings) from Image A EXACTLY as they are — do NOT replace, remove, or change the bottoms in any way. Do NOT add new pants or bottoms."
         : /\b(pants|jeans|trousers|shorts|skirt|leggings|joggers|sweatpants)\b/.test(normalizedProductContext)
         ? "Image B shows a BOTTOM-ONLY garment. Replace ONLY the lower-body clothing from Image A with the item from Image B. Keep the person's EXISTING upper-body clothing from Image A unchanged."
         : "Replace ONLY the clothing that matches the garment type from Image B. Keep all other clothing from Image A unchanged.";
