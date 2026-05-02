@@ -1,10 +1,7 @@
 const TICKER_ITEMS = [
-  'APPAREL RETURN RATE: 25–40%',
   '70% OF RETURNS ARE FIT-RELATED',
-  '47% OF SHOPPERS AVOID ONLINE FASHION DUE TO FIT UNCERTAINTY',
-  '$849.9B IN RETURNS PROCESSED IN 2025',
   '$46 AVERAGE COST PER RETURNED ITEM',
-  '1 IN 4 ORDERS INCLUDES A BRACKETED SIZE',
+  '94% FIRST-TRY FIT RATE WITH DRIPFIT',
 ];
 
 export default function LandingStatsTicker() {
@@ -33,7 +30,7 @@ export default function LandingStatsTicker() {
         </div>
       </div>
       <p className="sr-only">
-        Apparel return rate: 25–40%. 70% of returns are fit-related. 47% of shoppers avoid online fashion due to fit uncertainty. $849.9B in returns processed in 2025. $46 average cost per returned item. 1 in 4 orders includes a bracketed size.
+        70% of returns are fit-related. $46 average cost per returned item. 94% first-try fit rate with DripFit.
       </p>
     </>
   );
