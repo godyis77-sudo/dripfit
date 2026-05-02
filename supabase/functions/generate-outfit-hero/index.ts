@@ -19,6 +19,116 @@ const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const IMAGE_MODEL = "google/gemini-3.1-flash-image-preview";
 
 /* ══════════════════════════════════════════════════════════════════
+   SHARED TRY-ON PROMPT LOGIC (mirrors virtual-tryon)
+   - Intimate / swimwear sanitization to avoid safety refusals
+   - Per-item garment classification (top-only, bottom-only, swim, set,
+     intimate, footwear, accessory) so each reference image gets a
+     correct shape-lock + scope rule
+   ══════════════════════════════════════════════════════════════════ */
+
+const INTIMATE_SANITIZE_MAP: Array<[RegExp, string]> = [
+  [/\b(lingerie|underwear|panties|briefs|boxers)\b/gi, "base-layer"],
+  [/\b(swimwear|swimsuit|bikini|one-piece|one piece|tankini)\b/gi, "activewear"],
+  [/\b(sports bra|bra|bralette)\b/gi, "support top"],
+  [/\b(open cup|open-cup|thong|g-string|pasties)\b/gi, "full-coverage"],
+  [/\b(sheer|see-through|see through|transparent)\b/gi, "opaque"],
+  [/\b(lace|lacey|lacy)\b/gi, "textured fabric"],
+  [/\b(mesh)\b/gi, "textured fabric"],
+  [/\b(plunge|deep-v|deep v|plunging)\b/gi, "v-neck"],
+  [/\b(cleavage|bust|bosom|decolletage)\b/gi, "neckline area"],
+  [/\b(skin|flesh|body|bare|naked|nude|exposed)\b/gi, "fabric"],
+  [/\b(corset|bustier)\b/gi, "structured bodice"],
+  [/\b(teddy|chemise|negligee|nightgown)\b/gi, "fitted dress"],
+  [/\b(bodysuit)\b/gi, "fitted one-piece"],
+  [/\b(crotch|groin)\b/gi, "lower panel"],
+  [/\b(nipple|areola)\b/gi, "front panel"],
+  [/\b(provocative|seductive|sexy|sensual)\b/gi, "stylish"],
+  [/\b(intimate|intimates)\b/gi, "athletic"],
+  [/\b(minimal coverage|very little coverage|revealing)\b/gi, "streamlined fit"],
+  [/\b(string (bottoms?|briefs?)|high-cut|high cut)\b/gi, "athletic lower garment"],
+];
+
+function sanitizeIntimateText(text: string): string {
+  let result = text;
+  for (const [pattern, replacement] of INTIMATE_SANITIZE_MAP) {
+    result = result.replace(pattern, replacement);
+  }
+  return result.replace(/\s+/g, " ").trim();
+}
+
+interface GarmentTraits {
+  isSwim: boolean;
+  isUnderwear: boolean;
+  isIntimate: boolean;
+  isCropOrSportsBra: boolean;
+  isTopOnly: boolean;
+  isBottomOnly: boolean;
+  isSet: boolean;
+  isFootwear: boolean;
+  isAccessory: boolean;
+  isBag: boolean;
+  isOuterwear: boolean;
+}
+
+function classifyGarment(item: { product_name?: string; category?: string | null }): GarmentTraits {
+  const ctx = `${item.category || ""} ${item.product_name || ""}`.toLowerCase();
+  const has = (re: RegExp) => re.test(ctx);
+
+  const isSwim = has(/\b(swim|bikini|board ?short|trunk|rash ?guard|one[- ]?piece|tankini|monokini|swimsuit|swimwear)\b/);
+  const isUnderwearRaw = has(/\b(lingerie|underwear|panties|briefs|boxers|thong|g-string)\b/);
+  const isCropOrSportsBra = has(/\b(sports?\s*bra|crop\s*top|cropped\s*top|crop\s*tank|cropped\s*tank|crop\s*cami|cropped\s*cami|bralette|support\s*top|seamless\s*bra|longline\s*bra|bandeau|tube\s*top)\b/);
+  const isUnderwear = isUnderwearRaw && !isCropOrSportsBra;
+  const isIntimate = (has(/\b(robe|kimono|pajama|pj|sleep|chemise|negligee|nightgown|teddy|corset|bustier)\b/) || isSwim || isUnderwear) && !isCropOrSportsBra;
+
+  const isSet = has(/\b(set|two piece|2 piece|2-piece|matching|coord|co-ord|co ord|combo|bundle)\b/);
+  const isFootwear = has(/\b(shoe|sneaker|boot|slipper|sandal|loafer|heel|pump|mule|flat|espadrille|slingback|moccasin|trainer)\b/);
+  const isBag = has(/\b(bag|tote|clutch|purse|backpack|handbag|pouch|crossbody|shoulder bag|satchel)\b/);
+  const isAccessory = isBag || has(/\b(belt|jewelry|earring|necklace|bracelet|watch|sunglasses|hat|cap|beanie|scarf)\b/);
+  const isOuterwear = has(/\b(jacket|coat|blazer|outerwear|cardigan|parka|trench|puffer|bomber|overcoat)\b/);
+
+  const isTopLike = has(/\b(top|tank|cami|camisole|tee|t\s*shirt|shirt|blouse|halter|bandeau|tube\s*top|bralette|sports?\s*bra|support\s*top|sweater|hoodie|knit)\b/);
+  const isBottomLike = has(/\b(pants|jean|jeans|trouser|trousers|short|shorts|skirt|legging|leggings|joggers|sweatpants|bottom|bottoms)\b/);
+  const isOnePiece = has(/\b(dress|jumpsuit|romper|one[- ]?piece|monokini|bodysuit)\b/);
+
+  const isTopOnly = !isSet && !isOnePiece && (isCropOrSportsBra || (isTopLike && !isBottomLike));
+  const isBottomOnly = !isSet && !isOnePiece && isBottomLike && !isTopLike;
+
+  return {
+    isSwim, isUnderwear, isIntimate, isCropOrSportsBra,
+    isTopOnly, isBottomOnly, isSet,
+    isFootwear, isAccessory, isBag, isOuterwear,
+  };
+}
+
+function shapeLockFor(name: string, traits: GarmentTraits): string | null {
+  if (traits.isSwim && traits.isTopOnly) {
+    return `"${name}" — SHORT cropped bandeau/triangle swim top ending at the upper ribcage. NOT a tank top, NOT a one-piece, NOT a bodysuit. Do NOT extend the fabric downward.`;
+  }
+  if (traits.isCropOrSportsBra) {
+    return `"${name}" — SHORT crop top / sports bra ending above the waist. Do NOT render as a full-length shirt or tank top.`;
+  }
+  if (traits.isSwim && !traits.isTopOnly && !traits.isSet) {
+    return `"${name}" — render as ONE swimsuit only. Never stack a bikini under a one-piece. Never cover with pants/jeans.`;
+  }
+  if (traits.isSet) {
+    return `"${name}" — MATCHING SET (top AND bottom). Both pieces must appear; do not show only one half.`;
+  }
+  if (traits.isTopOnly) {
+    return `"${name}" — TOP-only garment; do not extend it into a one-piece or substitute the bottoms.`;
+  }
+  if (traits.isBottomOnly) {
+    return `"${name}" — BOTTOM-only garment; render only as a lower-body piece.`;
+  }
+  if (traits.isFootwear) {
+    return `"${name}" — render as the EXACT footwear shown in its reference image. Match color, shape, sole, branding precisely.`;
+  }
+  if (traits.isBag) {
+    return `"${name}" — exactly ONE bag carried naturally. Do not duplicate, do not add a second bag.`;
+  }
+  return null;
+}
+
+/* ══════════════════════════════════════════════════════════════════
    CAMPAIGN REFERENCES — Top fashion house editorial anchors
    ══════════════════════════════════════════════════════════════════ */
 
