@@ -1673,20 +1673,25 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
 
       if ((textDesc && textDesc.length > 15) || hasCleanFlatLay) {
         const swimTopShapeConstraint = (isSwimwear && isTopOnlyGarment)
-          ? "\nGARMENT SHAPE LOCK: This is a SHORT cropped triangle/bralette BIKINI TOP that ends ABOVE the ribcage and exposes the midriff. It is NOT a tank top, NOT a one-piece, NOT a bodysuit, NOT a swimsuit, NOT a full-body suit. Do NOT extend the fabric down past the bust. The torso, waist and stomach must remain fully visible below the bikini top. KEEP the person's existing bottoms (skirt/shorts/pants) from Image A unchanged."
+          ? "\nGARMENT SHAPE LOCK: This is a SHORT cropped bandeau/triangle swim top that ends at the upper ribcage. It is NOT a tank top, NOT a one-piece, NOT a bodysuit, NOT a full-body suit. Do NOT extend the fabric downward. KEEP the person's existing lower garment (skirt/shorts/pants/leggings) from Image A unchanged."
           : "";
+        const safeTextDesc = (isSwimwear && isTopOnlyGarment && textDesc)
+          ? sanitizeIntimateText(textDesc)
+            .replace(/\b(expos\w*|bare|nude|skin|stomach|bust|cleavage|chest)\b/gi, "fabric")
+            .replace(/\b(midriff|torso)\b/gi, "waist area")
+          : textDesc;
         const descForPrompt = isUnderwearSafeMode
           ? (
             // Keep it fully covered, but preserve ITEM-SPECIFIC cues (color/pattern/waistband/logo/brand) via textDesc.
             `${
-              (textDesc || "").trim()
+              (safeTextDesc || "").trim()
             }\nCommercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues.${swimTopShapeConstraint}`
               .replace(/\s+/g, " ")
               .trim() ||
             "Commercially appropriate fully-covered athletic styling (no nudity, no exposed base-layer areas). Preserve the exact colorway/pattern and any visible branded waistband/logo cues."
           )
-          : ((textDesc ||
-            "athletic fitted garment matching the reference image") +
+          : ((safeTextDesc ||
+            "cropped athletic top matching the reference image") +
             swimTopShapeConstraint);
         console.log(
           `Layer 3 text-bridge: hasCleanFlatLay=${hasCleanFlatLay}, textDesc=${!!textDesc} (${
