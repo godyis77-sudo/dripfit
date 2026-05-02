@@ -448,7 +448,7 @@ const ProductPreviewModal = ({ product, onClose, onTryOn, onShop, caption, lookI
                         )}
                         <div className="flex-1 min-w-0">
                           <span className="text-[9px] tracking-[0.15em] uppercase text-white/40 font-bold block">{item.brand}</span>
-                          <p className="text-[10px] text-white/70 truncate leading-tight">{decodeHtmlEntities(item.name)}</p>
+                          <p className="text-[10px] text-white/70 truncate leading-tight">{cleanProductName(item.name)}</p>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {item.price_cents != null && (
