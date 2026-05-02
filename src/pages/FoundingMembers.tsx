@@ -16,7 +16,7 @@ const PERKS = [
   { icon: Zap, title: 'Early Access', desc: 'You test it first. Virtual try-on, AI sizing, new drops — before the public sees them.' },
   { icon: MessageSquare, title: 'Direct Input', desc: 'Your brands. Your features. Founding members shape what gets built next.' },
   { icon: Crown, title: 'Free Premium', desc: 'Premium. For life. Zero strings. The cheat code — locked in at founding tier.' },
-  { icon: TrendingUp, title: 'Sizing Intel', desc: '186 brands. Insider sizing data from Body Twins who actually wear the pieces.' },
+  { icon: TrendingUp, title: 'Sizing Intel', desc: '142 brands. Insider sizing data from Body Twins who actually wear the pieces.' },
 ];
 
 const EARLY_MEMBERS = [

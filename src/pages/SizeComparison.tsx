@@ -511,7 +511,7 @@ const SizeComparison = () => {
             <div className="flex items-center justify-between my-2">
               <span className="text-[13px]" style={{ fontFamily: 'DM Sans', color: '#888888' }}>
                 <strong className="text-white font-semibold">{filtered.length}</strong>
-                {' '}of 186 brands verified • {selectedCategory}
+                {' '}of {catalogStats.brands} brands verified • {selectedCategory}
               </span>
               <div className="flex gap-0 rounded-full p-[3px]" style={{ backgroundColor: '#1A1A1A', border: '1px solid #2D2D2D' }}>
                 {(['brand', 'size'] as const).map(mode => (
@@ -719,10 +719,10 @@ const SizeComparison = () => {
                   Unlock More Brands
                 </span>
                 <h2 className="mt-1.5 text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: '1.75rem' }}>
-                  {filtered.length} of 186 brands.
+                  {filtered.length} of {catalogStats.brands} brands.
                 </h2>
                 <p className="mt-1 text-[13px]" style={{ color: '#888888', fontFamily: 'DM Sans' }}>
-                  Premium maps your size across all 186 brands and 389 size charts.
+                  Premium maps your size across all {catalogStats.brands} brands and {catalogStats.sizeChartsLabel} size charts.
                 </p>
                 <Button
                   className="w-full mt-4 rounded-full py-3 px-6 font-bold text-black"
