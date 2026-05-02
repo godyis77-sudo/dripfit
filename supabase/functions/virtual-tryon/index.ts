@@ -1483,6 +1483,11 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
         /image_prohibited_content/.test(finishReason.toLowerCase());
       if (isProhibitedContent && isSportsBraOrCropTop) {
         sawSafetyRefusal = true;
+        // Also flag intimate refusal so the intimate text-bridge rescue path triggers
+        // when the item is also classified as intimate (e.g. bralette bikini tops).
+        if (isIntimateGarment) {
+          sawIntimateRefusal = true;
+        }
         console.warn(
           `Sports bra safety refusal detected (${plan.label}), will attempt text-bridge rescue.`,
         );
