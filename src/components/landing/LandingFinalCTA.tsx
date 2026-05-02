@@ -19,17 +19,17 @@ export default function LandingFinalCTA() {
             className="type-display-editorial leading-[1.05] mb-6 text-foreground"
             style={{ fontSize: 'clamp(38px, 6vw, 64px)' }}
           >
-            STOP PRAYING.
+            STOP GUESSING.
             <span
               className="type-display-editorial type-display-editorial--italic block text-primary mt-1"
               style={{ fontSize: 'clamp(38px, 6vw, 64px)' }}
             >
-              IT FITS.
+              START KNOWING.
             </span>
           </h2>
 
           <p className="type-body text-base md:text-lg leading-relaxed max-w-md mx-auto mb-10 font-light">
-            Scan your body. Enter Infinite Drape Studio. Cop with confidence.
+            Scan once. Cop with confidence. Zero returns.
           </p>
         </FadeIn>
         <FadeIn delay={0.1}>
