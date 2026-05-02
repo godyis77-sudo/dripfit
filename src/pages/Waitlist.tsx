@@ -55,8 +55,8 @@ const FEATURES = [
   },
 ];
 
-const CHECKLIST = [
-  { text: 'Your exact measurements for 142 brands including Zara, Nike, H&M, ASOS, and more.', icon: Sparkles },
+const buildChecklist = (brandsLabel: string) => [
+  { text: `Your exact measurements for ${brandsLabel} brands including Zara, Nike, H&M, ASOS, and more.`, icon: Sparkles },
   { text: 'The 3-question checklist before every online order.', icon: Shield },
   { text: 'How to never pay return shipping again.', icon: Zap },
 ];
