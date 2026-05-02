@@ -96,7 +96,7 @@ function ZoomableFullscreenImg({ src, alt }: { src: string; alt: string }) {
       <img
         src={src}
         alt={alt}
-        className="max-w-full max-h-full w-auto h-auto object-contain"
+        className="w-full h-full object-contain"
         style={{
           transform: `scale(${zoom}) translate(${pan.x / zoom}px, ${pan.y / zoom}px)`,
           transition: isPanning ? 'none' : 'transform 0.15s ease-out',
