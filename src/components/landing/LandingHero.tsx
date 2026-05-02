@@ -2,16 +2,17 @@ import { ArrowRight, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 import { useAuth } from '@/hooks/useAuth';
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 import heroPhoneMockup from '@/assets/hero-phone-mockup.webp';
-
-const STATS = [
-  { v: '186', l: 'Brands' },
-  { v: '389', l: 'Size Charts' },
-  { v: '9,000+', l: 'Pieces' },
-];
 
 export default function LandingHero() {
   const { user } = useAuth();
+  const stats = useCatalogStats();
+  const STATS = [
+    { v: stats.brandsLabel, l: 'Brands' },
+    { v: stats.sizeChartsLabel, l: 'Size Charts' },
+    { v: stats.productsLabel, l: 'Pieces' },
+  ];
 
   return (
     <section className="relative min-h-screen flex items-center">
@@ -28,7 +29,7 @@ export default function LandingHero() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" style={{ boxShadow: '0 0 6px hsl(var(--primary))' }} />
               </span>
               <span className="type-data text-foreground/70">
-                Live · 9,158 Pieces · 186 Brands
+                Live · {stats.products.toLocaleString('en-US')} Pieces · {stats.brands} Brands
               </span>
             </div>
           </FadeIn>
@@ -54,7 +55,7 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-[15px] md:text-lg leading-[1.55] tracking-[-0.005em] max-w-[19rem] md:max-w-md mb-10 mt-6 font-light text-balance">
-              Scan once. Try on 9,000+ pieces. Sized across 186 brands. Community Verified Drip.
+              Scan once. Try on {stats.productsLabel} pieces. Sized across {stats.brands} brands. Community Verified Drip.
             </p>
           </FadeIn>
 

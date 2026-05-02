@@ -1,26 +1,27 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Check, Sparkles } from 'lucide-react';
 import { FadeIn } from './LandingAnimations';
-
-const FREE_FEATURES = [
-  '3 try-ons per month',
-  'Full access to all 186 brand size charts',
-  'Body Twin matching',
-  'COP or DROP access',
-  'Basic fit verification',
-];
-
-const PREMIUM_FEATURES = [
-  'Unlimited Infinite Drape Studio access',
-  'Full 186 brand size map',
-  'Priority scan queue',
-  'Side-by-side fit comparison',
-  'Advanced fit analytics',
-  'Early access to new features',
-  'Crown badge',
-];
+import { useCatalogStats } from '@/hooks/useCatalogStats';
 
 export default function LandingPricing() {
+  const stats = useCatalogStats();
+  const FREE_FEATURES = [
+    '3 try-ons per month',
+    `Full access to all ${stats.brands} brand size charts`,
+    'Body Twin matching',
+    'COP or DROP access',
+    'Basic fit verification',
+  ];
+
+  const PREMIUM_FEATURES = [
+    'Unlimited Infinite Drape Studio access',
+    `Full ${stats.brands} brand size map`,
+    'Priority scan queue',
+    'Side-by-side fit comparison',
+    'Advanced fit analytics',
+    'Early access to new features',
+    'Crown badge',
+  ];
   return (
     <section id="pricing" className="py-20 md:py-24 scroll-mt-20">
       <div className="max-w-5xl mx-auto px-6">
