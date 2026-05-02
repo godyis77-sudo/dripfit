@@ -222,12 +222,13 @@ export function useTryOnState() {
       try { localStorage.removeItem(TRYON_USER_PHOTO_KEY); } catch { /* ignore */ }
       // Upload in background, swap to URL when done
       eagerUpload(v, 'user-staged').then(url => {
-        if (url) {
-          userPhotoRef.current = url;
-          setUserPhotoRaw(url);
-          persistState({ userPhoto: url });
-          try { localStorage.setItem(TRYON_USER_PHOTO_KEY, url); } catch { /* ignore */ }
-        }
+        if (!url || !isMountedRef.current) return;
+        // Only swap if user hasn't replaced the photo in the meantime
+        if (userPhotoRef.current !== v) return;
+        userPhotoRef.current = url;
+        setUserPhotoRaw(url);
+        persistState({ userPhoto: url });
+        try { localStorage.setItem(TRYON_USER_PHOTO_KEY, url); } catch { /* ignore */ }
       });
     } else if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
       persistState({ userPhoto: v });
@@ -243,11 +244,11 @@ export function useTryOnState() {
     setClothingPhotoRaw(v);
     if (v && v.startsWith('data:')) {
       eagerUpload(v, 'clothing-staged').then(url => {
-        if (url) {
-          clothingPhotoRef.current = url;
-          setClothingPhotoRaw(url);
-          persistState({ clothingPhoto: url });
-        }
+        if (!url || !isMountedRef.current) return;
+        if (clothingPhotoRef.current !== v) return;
+        clothingPhotoRef.current = url;
+        setClothingPhotoRaw(url);
+        persistState({ clothingPhoto: url });
       });
     } else {
       persistState({ clothingPhoto: v });
@@ -270,6 +271,14 @@ export function useTryOnState() {
     try {
       if (v && (v.startsWith('http://') || v.startsWith('https://'))) {
         localStorage.setItem(TRYON_RESULT_KEY, v);
+        // New stable URL — purge any stale base64 result from sessionStorage to free quota
+        try {
+          const ss = JSON.parse(sessionStorage.getItem(TRYON_STATE_KEY) || '{}');
+          if (typeof ss.resultImage === 'string' && ss.resultImage.startsWith('data:')) {
+            ss.resultImage = v;
+            sessionStorage.setItem(TRYON_STATE_KEY, JSON.stringify(ss));
+          }
+        } catch { /* ignore */ }
       } else {
         // Avoid stale older URL winning when latest image is still base64/session-backed
         localStorage.removeItem(TRYON_RESULT_KEY);
