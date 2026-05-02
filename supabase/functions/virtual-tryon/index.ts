@@ -1685,38 +1685,44 @@ TASK: Add ONLY the accessory from Image B onto the person in Image A. Keep the o
           hasCleanFlatLay,
         );
 
-        const textBridgeModels = [
+        // Text-bridge requires a real image-generation call (15-25s typical).
+        // Running 3 sequential models guarantees each gets <10s after primary attempt
+        // burns ~30s of budget. Instead, pick ONE fast model and give it the full
+        // remaining budget. Fall back to a second only if substantial time remains.
+        const MIN_TEXTBRIDGE_TIMEOUT_MS = 14_000;
+        const textBridgeModels: Array<{ model: string; label: string; timeoutMs: number }> = [
           {
             model: "google/gemini-3.1-flash-image-preview",
             label: "textbridge-flash",
-            timeoutMs: 22_000,
+            timeoutMs: 25_000,
           },
-          {
+        ];
+        // Only queue a fallback if we'd have time for a meaningful second attempt
+        const elapsedAtPlan = Date.now() - startedAt;
+        const remainingAtPlan = FUNCTION_BUDGET_MS - elapsedAtPlan;
+        if (remainingAtPlan >= MIN_TEXTBRIDGE_TIMEOUT_MS * 2 + 2_000) {
+          textBridgeModels.push({
             model: "google/gemini-2.5-flash-image",
             label: "textbridge-nano",
             timeoutMs: 16_000,
-          },
-          {
-            model: "google/gemini-3-pro-image-preview",
-            label: "textbridge-pro",
-            timeoutMs: 18_000,
-          },
-        ];
+          });
+        }
 
         for (let tbIndex = 0; tbIndex < textBridgeModels.length; tbIndex++) {
           const tbPlan = textBridgeModels[tbIndex];
           const elapsedMs = Date.now() - startedAt;
           const remainingMs = FUNCTION_BUDGET_MS - elapsedMs;
-          if (remainingMs <= MIN_REQUIRED_MS_PER_ATTEMPT) break;
+          if (remainingMs < MIN_TEXTBRIDGE_TIMEOUT_MS) break;
 
           const attemptsLeftAfterThis = textBridgeModels.length - tbIndex - 1;
+          // Reserve enough for any remaining attempt to actually succeed
           const reserveForRetriesMs =
-            attemptsLeftAfterThis * MIN_REQUIRED_MS_PER_ATTEMPT +
+            attemptsLeftAfterThis * MIN_TEXTBRIDGE_TIMEOUT_MS +
             (attemptsLeftAfterThis > 0 ? 1_000 : 0);
           const timeoutMs = Math.min(
             tbPlan.timeoutMs,
             Math.max(
-              MIN_REQUIRED_MS_PER_ATTEMPT,
+              MIN_TEXTBRIDGE_TIMEOUT_MS,
               remainingMs - reserveForRetriesMs,
             ),
           );
