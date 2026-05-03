@@ -87,7 +87,21 @@ const Premium = () => {
     }
 
     if (onIOS) {
-      // Apple IAP flow — stub for now; will be wired to @capacitor-community/in-app-purchases
+      // Apple IAP flow — StoreKit purchase via @capacitor-community/in-app-purchases.
+      // Once the plugin returns a successful transaction, post it to verify-ios-iap
+      // which records the subscription AND awards referrer commission (idempotent):
+      //
+      //   const tx = await CdvPurchase.store.order(productId);
+      //   await supabase.functions.invoke('verify-ios-iap', {
+      //     body: {
+      //       product_id: tx.products[0].id,
+      //       transaction_id: tx.transactionId,
+      //       original_transaction_id: tx.originalTransactionId,
+      //       expires_date_ms: tx.expiryDate?.getTime(),
+      //       plan_type: selectedPlan,
+      //     },
+      //   });
+      //   await checkSubscription();
       trackEvent('premium_started_ios_iap', { plan: selectedPlan });
       toast({ title: 'Coming soon', description: 'In-app purchase will be available shortly.', variant: 'default' });
       return;
