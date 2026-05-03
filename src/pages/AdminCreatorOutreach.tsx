@@ -79,6 +79,7 @@ const daysSince = (iso: string | null) => {
 const KIND_ICON: Record<string, any> = {
   note: StickyNote,
   email: Mail,
+  email_sent: Send,
   dm: MessageSquare,
   call: Phone,
   status_change: StickyNote,
