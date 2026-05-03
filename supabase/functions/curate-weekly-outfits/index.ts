@@ -1204,8 +1204,8 @@ function buildOutfit(
     outfitCohortsUsed.add(pickCohort);
 
     usedProductIds.add(pick.id);
-    const pickBucket = semanticBucket(normalizeCategory(pick.category));
-    if (pickBucket) usedBuckets.add(pickBucket);
+    const pickBuckets = semanticBuckets(normalizeCategory(pick.category));
+    pickBuckets.forEach(b => usedBuckets.add(b));
     items.push({ product: pick, role: slot.role, position: position++ });
   }
 
