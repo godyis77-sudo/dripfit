@@ -874,21 +874,24 @@ function normalizeCategory(cat: string): string {
   return c;
 }
 
-/** Coarse semantic bucket used to enforce "one footwear / one outerwear / etc."
- *  per outfit, regardless of which sub-category a product is filed under. */
-function semanticBucket(normCat: string): string | null {
-  if (["sneakers", "boots", "heels", "sandals", "loafers", "shoes", "footwear"].includes(normCat)) return "footwear";
-  if (["jackets", "coats", "blazers", "outerwear", "cardigans"].includes(normCat)) return "outerwear";
-  if (["pants", "jeans", "trousers", "shorts", "skirts", "joggers", "leggings", "chinos"].includes(normCat)) return "bottom";
-  // Swimwear, dresses and jumpsuits are all "base body story" pieces — only one
-  // may exist per outfit. Picking a swimsuit AND a dress AND pants in the same
-  // beach look produces the "wearing 2 swimsuits under a full body suit" bug.
-  if (["dresses", "jumpsuits", "swimwear"].includes(normCat)) return "base_body";
-  if (["t-shirts", "shirts", "tops", "blouses", "sweaters", "hoodies", "tank tops", "knits", "polos"].includes(normCat)) return "top";
-  if (["bags"].includes(normCat)) return "bag";
-  if (["hats"].includes(normCat)) return "hat";
+/** Coarse semantic buckets used to enforce "one footwear / one outerwear / etc."
+ *  per outfit, regardless of which sub-category a product is filed under.
+ *  Returns ALL buckets a category occupies — dresses/jumpsuits/swimwear occupy
+ *  BOTH the "top" and "bottom" buckets (plus "base_body"), since they replace
+ *  both pieces. This prevents pairing a dress with a separate skirt or top. */
+function semanticBuckets(normCat: string): string[] {
+  if (["sneakers", "boots", "heels", "sandals", "loafers", "shoes", "footwear"].includes(normCat)) return ["footwear"];
+  if (["jackets", "coats", "blazers", "outerwear", "cardigans"].includes(normCat)) return ["outerwear"];
+  if (["pants", "jeans", "trousers", "shorts", "skirts", "joggers", "leggings", "chinos"].includes(normCat)) return ["bottom"];
+  // Dresses/jumpsuits/swimwear are full-body pieces. They occupy top + bottom +
+  // base_body so the curator cannot also add a separate skirt, pants, or top
+  // (the "two dresses / dress + skirt" bug).
+  if (["dresses", "jumpsuits", "swimwear"].includes(normCat)) return ["base_body", "top", "bottom"];
+  if (["t-shirts", "shirts", "tops", "blouses", "sweaters", "hoodies", "tank tops", "knits", "polos"].includes(normCat)) return ["top"];
+  if (["bags"].includes(normCat)) return ["bag"];
+  if (["hats"].includes(normCat)) return ["hat"];
   // sunglasses/jewelry/watches/belts/scarves/accessories share no bucket — many can co-exist.
-  return null;
+  return [];
 }
 
 /* ── Product type ─────────────────────────────────────────────── */
@@ -1102,10 +1105,11 @@ function buildOutfit(
       if (usedProductIds.has(p.id)) return false;
       const normCat = normalizeCategory(p.category);
       if (!effectiveCats.includes(normCat)) return false;
-      // Reject if its semantic bucket (footwear / outerwear / bottom / top)
-      // is already filled by another item in this outfit.
-      const bucket = semanticBucket(normCat);
-      if (bucket && usedBuckets.has(bucket)) return false;
+      // Reject if ANY of its semantic buckets (footwear / outerwear / bottom / top)
+      // is already filled by another item in this outfit. Dresses/jumpsuits occupy
+      // both top and bottom buckets so they cannot coexist with a separate skirt.
+      const buckets = semanticBuckets(normCat);
+      if (buckets.some(b => usedBuckets.has(b))) return false;
       return true;
     });
 
@@ -1200,8 +1204,8 @@ function buildOutfit(
     outfitCohortsUsed.add(pickCohort);
 
     usedProductIds.add(pick.id);
-    const pickBucket = semanticBucket(normalizeCategory(pick.category));
-    if (pickBucket) usedBuckets.add(pickBucket);
+    const pickBuckets = semanticBuckets(normalizeCategory(pick.category));
+    pickBuckets.forEach(b => usedBuckets.add(b));
     items.push({ product: pick, role: slot.role, position: position++ });
   }
 
