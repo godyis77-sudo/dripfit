@@ -126,6 +126,8 @@ export default function AdminCommissions() {
         </Button>
       </div>
 
+      <AdminNav />
+
       <div className="px-4 pt-4 space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl border border-amber-500/20 bg-card p-4">
