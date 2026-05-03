@@ -122,7 +122,8 @@ const WeeklyOutfitsSection = forwardRef<HTMLDivElement>((_props, ref) => {
       </div>
     </div>
   );
-};
+});
+WeeklyOutfitsSection.displayName = 'WeeklyOutfitsSection';
 
 function OccasionPill({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
   return (
