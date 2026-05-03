@@ -38,7 +38,7 @@ const FAQ = [
 const CreatorProgram = () => {
   usePageMeta({
     title: 'DripFit — Creator Program',
-    description: 'Earn cash for every install you drive. Real-time dashboard, custom promo codes, $25 minimum payout. Apply to join the DripFit Creator Program.',
+    description: 'Earn cash for every Premium upgrade you drive. Real-time dashboard, custom promo codes, $25 minimum payout. Apply to join the DripFit Creator Program.',
     path: '/creators',
   });
   const { user } = useAuth();
