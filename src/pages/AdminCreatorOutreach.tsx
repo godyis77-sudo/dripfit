@@ -20,6 +20,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 type Lead = {
   id: string;
