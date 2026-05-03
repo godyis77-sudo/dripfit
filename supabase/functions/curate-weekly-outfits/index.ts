@@ -1105,10 +1105,11 @@ function buildOutfit(
       if (usedProductIds.has(p.id)) return false;
       const normCat = normalizeCategory(p.category);
       if (!effectiveCats.includes(normCat)) return false;
-      // Reject if its semantic bucket (footwear / outerwear / bottom / top)
-      // is already filled by another item in this outfit.
-      const bucket = semanticBucket(normCat);
-      if (bucket && usedBuckets.has(bucket)) return false;
+      // Reject if ANY of its semantic buckets (footwear / outerwear / bottom / top)
+      // is already filled by another item in this outfit. Dresses/jumpsuits occupy
+      // both top and bottom buckets so they cannot coexist with a separate skirt.
+      const buckets = semanticBuckets(normCat);
+      if (buckets.some(b => usedBuckets.has(b))) return false;
       return true;
     });
 
