@@ -13,10 +13,14 @@ import { template as partnershipConfirmation } from './partnership-confirmation.
 import { template as waitlistConfirmation } from './waitlist-confirmation.tsx'
 import { template as creatorApplication } from './creator-application.tsx'
 import { template as founderWelcome } from './founder-welcome.tsx'
+import { template as creatorPitch } from './creator-pitch.tsx'
+import { template as creatorPitchFollowup } from './creator-pitch-followup.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'partnership-confirmation': partnershipConfirmation,
   'waitlist-confirmation': waitlistConfirmation,
   'creator-application': creatorApplication,
   'founder-welcome': founderWelcome,
+  'creator-pitch': creatorPitch,
+  'creator-pitch-followup': creatorPitchFollowup,
 }
