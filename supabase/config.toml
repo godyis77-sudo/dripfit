@@ -1,61 +1,45 @@
 project_id = "omdfzenqosecrytezyfa"
 
-[functions.create-checkout]
-verify_jwt = false
-
-[functions.check-subscription]
-verify_jwt = false
-
-[functions.customer-portal]
-verify_jwt = false
-
-[functions.get-size-recommendation]
-verify_jwt = false
-
-[functions.scrape-size-charts]
-verify_jwt = false
-
-[functions.categorize-products]
-verify_jwt = false
-
-[functions.backfill-gender]
-verify_jwt = false
-
-[functions.classify-gender-image]
-verify_jwt = false
-
-[functions.scrape-all-products]
-verify_jwt = false
-
-[functions.delete-account]
-verify_jwt = false
-
-[functions.analyze-body]
-verify_jwt = false
-
-[functions.analyze-size-guide]
-verify_jwt = false
-
-[functions.generate-body-diagram]
-verify_jwt = false
-
-[functions.virtual-tryon]
-verify_jwt = false
-
-[functions.generate-backgrounds]
-verify_jwt = false
-
-[functions.generate-outfit-hero]
-verify_jwt = false
-
-[functions.og-share-image]
-verify_jwt = false
-
-[functions.curate-weekly-outfits]
-verify_jwt = false
-
-[functions.weekly-drip-pipeline]
-verify_jwt = false
-
-[functions.process-email-queue]
-verify_jwt = true
+[functions]
+  [functions.analyze-body]
+    verify_jwt = false
+  [functions.analyze-size-guide]
+    verify_jwt = false
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.backfill-gender]
+    verify_jwt = false
+  [functions.categorize-products]
+    verify_jwt = false
+  [functions.check-subscription]
+    verify_jwt = false
+  [functions.classify-gender-image]
+    verify_jwt = false
+  [functions.create-checkout]
+    verify_jwt = false
+  [functions.curate-weekly-outfits]
+    verify_jwt = false
+  [functions.customer-portal]
+    verify_jwt = false
+  [functions.delete-account]
+    verify_jwt = false
+  [functions.generate-backgrounds]
+    verify_jwt = false
+  [functions.generate-body-diagram]
+    verify_jwt = false
+  [functions.generate-outfit-hero]
+    verify_jwt = false
+  [functions.get-size-recommendation]
+    verify_jwt = false
+  [functions.og-share-image]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
+  [functions.scrape-all-products]
+    verify_jwt = false
+  [functions.scrape-size-charts]
+    verify_jwt = false
+  [functions.virtual-tryon]
+    verify_jwt = false
+  [functions.weekly-drip-pipeline]
+    verify_jwt = false
