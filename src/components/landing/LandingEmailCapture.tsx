@@ -33,8 +33,16 @@ export default function LandingEmailCapture({ id, buttonText = 'Request Access' 
         throw error;
       }
       setSubmitted(true);
+      const cleanEmail = email.toLowerCase().trim();
       setEmail('');
       toast({ title: '✨ You\'re in!', description: "You're on the waitlist.", className: 'border-primary bg-primary/10' });
+      supabase.functions.invoke('send-transactional-email', {
+        body: {
+          templateName: 'waitlist-confirmation',
+          recipientEmail: cleanEmail,
+          idempotencyKey: `waitlist-${cleanEmail}`,
+        },
+      }).catch(() => {});
     } catch {
       toast({ title: 'Something went wrong', description: 'Please try again.', variant: 'destructive' });
     } finally {

@@ -113,8 +113,16 @@ function EmailCapture({ id, compact = false, buttonText = 'Join the Waitlist', n
       }
 
       setSubmitted(true);
+      const cleanEmail = email.toLowerCase().trim();
       setEmail('');
       toast({ title: '✨ You\'re in!', description: "You're on the waitlist. We'll notify you at launch.", className: 'border-primary bg-primary/10' });
+      supabase.functions.invoke('send-transactional-email', {
+        body: {
+          templateName: 'waitlist-confirmation',
+          recipientEmail: cleanEmail,
+          idempotencyKey: `waitlist-${cleanEmail}`,
+        },
+      }).catch(() => {});
     } catch {
       toast({ title: 'Something went wrong', description: 'Please try again.', variant: 'destructive' });
     } finally {
