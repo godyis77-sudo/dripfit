@@ -59,53 +59,8 @@ serve(async (req) => {
       productId = sub.items.data[0]?.price?.product ?? null;
       logStep("Active subscription found", { productId, subscriptionEnd });
 
-      // ─── Award referrer commission on Premium upgrade ──────────────────
-      // Idempotent via UNIQUE INDEX (creator_id, referee_id) on creator_commissions.
-      try {
-        const { data: referral } = await supabaseClient
-          .from("referrals")
-          .select("id, referrer_id")
-          .eq("referee_id", user.id)
-          .maybeSingle();
-
-        if (referral?.referrer_id) {
-          const { data: isCreator } = await supabaseClient.rpc("has_role", {
-            _user_id: referral.referrer_id,
-            _role: "creator",
-          });
-
-          if (isCreator) {
-            const d = new Date();
-            const monthKey = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
-            const { data: monthCount } = await supabaseClient.rpc("get_creator_month_count", {
-              p_creator_id: referral.referrer_id,
-              p_month_key: monthKey,
-            });
-            const count = monthCount ?? 0;
-            const isBonus = count + 1 >= 100;
-            const amountCents = isBonus ? 150 : 100;
-            const tierLabel = isBonus ? "bonus" : "base";
-
-            const { error: insErr } = await supabaseClient.from("creator_commissions").insert({
-              creator_id: referral.referrer_id,
-              referee_id: user.id,
-              referral_id: referral.id,
-              amount_cents: amountCents,
-              currency: "USD",
-              tier_label: tierLabel,
-              status: "pending",
-              month_key: monthKey,
-            });
-            if (insErr && !String(insErr.message).toLowerCase().includes("duplicate")) {
-              logStep("Commission insert error", { message: insErr.message });
-            } else if (!insErr) {
-              logStep("Premium commission awarded", { creator_id: referral.referrer_id, amountCents, tierLabel });
-            }
-          }
-        }
-      } catch (commissionErr) {
-        logStep("Commission award skipped", { message: commissionErr instanceof Error ? commissionErr.message : String(commissionErr) });
-      }
+      // Award referrer commission on Premium upgrade (idempotent)
+      await awardPremiumCommission(supabaseClient, user.id, "stripe");
     }
 
     return successResponse({
