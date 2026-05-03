@@ -87,23 +87,12 @@ export function useWeeklyOutfits(gender?: string) {
   const normalizedGender = gender && gender !== 'all' ? gender : undefined;
 
   return useQuery({
-    queryKey: ['weekly-outfits', weekId, waiting ? '__wait__' : (normalizedGender ?? 'all')],
+    queryKey: ['weekly-outfits', 'pooled', waiting ? '__wait__' : (normalizedGender ?? 'all')],
     enabled: !waiting,
     placeholderData: keepPreviousData,
     queryFn: async () => {
-      const hasUsableHero = (list: WeeklyOutfit[]) => list.some(o => o.hero_image_url);
-      let results = await fetchOutfits(weekId, normalizedGender);
-      // Walk back up to 4 prior weeks until we find outfits with at least one hero image.
-      let cursor = weekId;
-      for (let i = 0; i < 4 && (results.length === 0 || !hasUsableHero(results)); i++) {
-        cursor = getPreviousWeekId(cursor);
-        const prev = await fetchOutfits(cursor, normalizedGender);
-        if (prev.length > 0 && hasUsableHero(prev)) {
-          results = prev;
-          break;
-        }
-      }
-      return results;
+      // Pool outfits from ALL weeks, newest first, filtered by gender at DB level.
+      return await fetchOutfits(null, normalizedGender);
     },
     staleTime: 10 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
