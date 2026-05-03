@@ -83,6 +83,7 @@ const Closet = lazy(() => import("./pages/Closet"));
 const OutfitDetail = lazy(() => import("./pages/OutfitDetail"));
 const Landing = lazy(() => import("./pages/Landing"));
 const InfiniteCloset = lazy(() => import("./pages/InfiniteCloset"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
 
 // ── Suspense fallback (branded skeleton, prevents perceived freeze) ──
 import { PageSkeleton } from "@/components/ui/page-skeleton";
@@ -191,6 +192,7 @@ const AnimatedRoutes = () => {
           <Route path="/closet" element={<PageTransition><Closet /></PageTransition>} />
           <Route path="/infinite-closet" element={<PageTransition><InfiniteCloset /></PageTransition>} />
           <Route path="/landing" element={<GuestOnlyLanding><PageTransition><Landing /></PageTransition></GuestOnlyLanding>} />
+          <Route path="/unsubscribe" element={<PageTransition><Unsubscribe /></PageTransition>} />
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
