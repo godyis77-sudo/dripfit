@@ -39,10 +39,11 @@ export default function CommunitySwipeStack({
   const [index, setIndex] = useState(0);
   const [copCount, setCopCount] = useState(0);
   const [dropCount, setDropCount] = useState(0);
+  const { data: weeklyOutfits = [] } = useWeeklyOutfits();
 
-  // Map Post -> SwipeCard
+  // Map Post -> SwipeCard, then interleave with weekly curated outfits
   const cards: SwipeCard[] = useMemo(() => {
-    return posts
+    const postCards: SwipeCard[] = posts
       .filter((p) => isValidImageUrl(p.result_photo_url) && !failedImages.has(p.id))
       .map<SwipeCard>((p) => ({
         id: `post-${p.id}`,
@@ -53,7 +54,30 @@ export default function CommunitySwipeStack({
         postId: p.id,
         authorName: p.profile?.display_name || undefined,
       }));
-  }, [posts, failedImages]);
+
+    const outfitCards: SwipeCard[] = weeklyOutfits
+      .filter((o) => o.hero_image_url)
+      .map<SwipeCard>((o) => ({
+        id: `outfit-${o.id}`,
+        kind: 'outfit',
+        outfitId: o.id,
+        imageUrl: o.hero_image_url!,
+        title: o.title,
+        subtitle: o.occasion_label,
+      }));
+
+    // Interleave: 1 outfit, then 2 posts, repeat
+    const shuffledOutfits = shuffleArray(outfitCards);
+    const shuffledPosts = shuffleArray(postCards);
+    const result: SwipeCard[] = [];
+    let pi = 0;
+    let oi = 0;
+    while (oi < shuffledOutfits.length || pi < shuffledPosts.length) {
+      if (oi < shuffledOutfits.length) result.push(shuffledOutfits[oi++]);
+      for (let k = 0; k < 2 && pi < shuffledPosts.length; k++) result.push(shuffledPosts[pi++]);
+    }
+    return result;
+  }, [posts, failedImages, weeklyOutfits]);
 
   const advance = useCallback(() => setIndex((i) => i + 1), []);
 
