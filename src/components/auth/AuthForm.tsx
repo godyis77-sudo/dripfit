@@ -86,6 +86,13 @@ const AuthForm = ({ onComplete, showGuestContinue = false, showBackButton = fals
           });
           if (claimed) {
             toast({ title: '🏆 Founder Access Granted!', description: 'Welcome to the Founding 100. You have unlimited scans.', className: 'border-primary bg-primary/10' });
+            supabase.functions.invoke('send-transactional-email', {
+              body: {
+                templateName: 'founder-welcome',
+                recipientEmail: email.toLowerCase().trim(),
+                idempotencyKey: `founder-${data.user.id}`,
+              },
+            }).catch(() => {});
           } else {
             toast({ title: 'Invalid code', description: 'This code is invalid or has already been claimed.', variant: 'destructive' });
           }
