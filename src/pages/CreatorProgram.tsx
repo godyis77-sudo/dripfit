@@ -72,7 +72,7 @@ const CreatorProgram = () => {
             <span className="text-primary">Cash, not credits.</span>
           </h1>
           <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-            Share DripFit with your audience. Earn real cash for every install.
+            Share DripFit with your audience. Earn real cash for every Premium upgrade.
             Real-time tracking. $25 minimum payout. No gimmicks.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
