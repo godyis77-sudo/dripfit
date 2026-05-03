@@ -87,13 +87,16 @@ export function useWeeklyOutfits(gender?: string) {
     enabled: !waiting,
     placeholderData: keepPreviousData,
     queryFn: async () => {
-      let results = await fetchOutfits(weekId, normalizedGender);
       const hasUsableHero = (list: WeeklyOutfit[]) => list.some(o => o.hero_image_url);
-      // Only fall back to previous week if current week is fully empty or has zero hero images.
-      if (results.length === 0 || !hasUsableHero(results)) {
-        const prev = await fetchOutfits(getPreviousWeekId(weekId), normalizedGender);
+      let results = await fetchOutfits(weekId, normalizedGender);
+      // Walk back up to 4 prior weeks until we find outfits with at least one hero image.
+      let cursor = weekId;
+      for (let i = 0; i < 4 && (results.length === 0 || !hasUsableHero(results)); i++) {
+        cursor = getPreviousWeekId(cursor);
+        const prev = await fetchOutfits(cursor, normalizedGender);
         if (prev.length > 0 && hasUsableHero(prev)) {
           results = prev;
+          break;
         }
       }
       return results;
