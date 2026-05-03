@@ -532,6 +532,14 @@ ${modelDesc}
 POSE: ${pose}
 Dynamic natural energy — NOT stiff or mannequin-like. ${genderKey === "womens" ? "Feminine silhouette, natural curves." : "Masculine build, clean lines."}
 
+ANATOMY LOCK (non-negotiable):
+- EXACTLY one head, one neck, one torso, two arms, two hands with five fingers each, two legs, two feet.
+- Feet point in the natural forward direction of the leg they are attached to — NEVER backward, sideways, or detached.
+- Knees and elbows bend in anatomically correct directions only. No double joints, no inverted limbs.
+- Hands have correct finger count and natural proportions — no fused, missing, extra, or warped fingers.
+- Eyes are level and symmetrical. Ears match. No facial distortion, no melted features, no doubled faces.
+- Body proportions are realistic — no extra limbs, no floating limbs, no limbs passing through clothing or the body.
+
 ═══ LAYER 4: LOCATION + ARCHITECTURE ═══
 ${campaign.location}
 ${campaign.architecture}
