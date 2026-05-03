@@ -315,12 +315,52 @@ const CAMPAIGNS: Record<string, CampaignRef> = {
 };
 
 
-/* ── Gender model descriptions ────────────────────────────────── */
+/* ── Gender model variation pools ─────────────────────────────── */
+/* Each outfit gets a UNIQUE model — varied ethnicity, age, hair, and
+   features. We rotate through deep pools (deterministic per outfit id)
+   so the same face/look never repeats across the weekly drop. */
 
-const GENDER_MODELS: Record<string, string> = {
-  mens: "a fit male model in his mid-20s with contemporary hairstyle, subtle stubble, strong jawline, naturally confident expression — think Vogue Homme or GQ editorial",
-  womens: "a stylish female model in her mid-20s with contemporary hairstyle, natural makeup, effortlessly chic expression — think Vogue or SSENSE editorial",
-};
+const MENS_MODELS: string[] = [
+  "a tall East Asian male model, late 20s, sharp cheekbones, jet-black undercut, clean-shaven, lean athletic build, calm confident expression",
+  "a Black male model, mid-20s, close-cropped natural hair, defined jawline, deep brown skin, broad shoulders, quietly intense gaze",
+  "a Latino male model, early 30s, wavy dark brown hair swept back, neatly trimmed beard, olive skin, lean build, easy charisma",
+  "a Scandinavian male model, mid-20s, ash-blonde tousled hair, light stubble, fair skin with subtle freckles, slim runway build",
+  "a South Asian male model, late 20s, thick black hair with a side part, full beard, warm brown skin, athletic frame, magnetic stare",
+  "a mixed-race male model, early 20s, curly dark brown hair, hazel eyes, golden-tan skin, swimmer's build, soft confident smile",
+  "a Middle Eastern male model, late 20s, dark wavy hair, neatly groomed beard, deep olive skin, broad chest, sculptural features",
+  "a Korean male model, early 20s, soft straight black hair with a curtain fringe, smooth fair skin, slender frame, refined editorial energy",
+  "a French male model, early 30s, salt-and-pepper short hair, fine stubble, fair skin, elegant lean build, intellectual gaze",
+  "a Brazilian male model, mid-20s, sun-kissed brown skin, dark curly hair, athletic surfer build, relaxed confident posture",
+  "a Pacific Islander male model, late 20s, long black hair tied back, broad-shouldered, warm brown skin, grounded quiet presence",
+  "a redheaded Irish male model, mid-20s, copper hair, freckled fair skin, lean wiry build, sharp blue eyes, understated cool",
+];
+
+const WOMENS_MODELS: string[] = [
+  "a Black female model, mid-20s, natural curly afro, deep brown skin, long limbs, high cheekbones, serene editorial gaze",
+  "a East Asian female model, early 20s, sleek straight black hair past shoulders, porcelain skin, delicate features, minimalist elegance",
+  "a Latina female model, late 20s, long wavy chestnut hair, bronzed skin, warm brown eyes, soft hourglass silhouette",
+  "a Scandinavian female model, mid-20s, platinum blonde blunt bob, fair skin, sharp jaw, slim runway frame, cool unbothered stare",
+  "a South Asian female model, late 20s, glossy black hair half-up, deep golden-brown skin, defined brows, graceful tall posture",
+  "a mixed-race female model, early 20s, voluminous curly chestnut hair, golden-tan skin, freckled nose, athletic feminine build",
+  "a Middle Eastern female model, mid-20s, long dark brown hair with subtle waves, olive skin, striking dark eyes, refined poise",
+  "a Korean female model, early 20s, glossy short bob with curtain bangs, smooth fair skin, dewy minimal makeup, soft confident posture",
+  "a French female model, late 20s, undone shoulder-length brunette hair, fair skin, slim frame, effortless Parisian cool",
+  "a Brazilian female model, mid-20s, long honey-brown beach waves, sun-kissed skin, athletic curves, radiant easy smile",
+  "a Pacific Islander female model, late 20s, long black wavy hair, warm brown skin, full features, grounded sensual presence",
+  "a redheaded Scottish female model, early 20s, long copper waves, freckled porcelain skin, slender build, quietly intense gaze",
+];
+
+function hashString(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function pickModelDescription(genderKey: "mens" | "womens", outfitId: string): string {
+  const pool = genderKey === "womens" ? WOMENS_MODELS : MENS_MODELS;
+  const idx = hashString(outfitId || Math.random().toString()) % pool.length;
+  return pool[idx];
+}
 
 /* ── Pose pool ────────────────────────────────────────────────── */
 
