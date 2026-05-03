@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { forwardRef, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Flame } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,7 +13,7 @@ interface SwipeFeedSectionProps {
   gender?: string;
 }
 
-export default function SwipeFeedSection({ gender }: SwipeFeedSectionProps) {
+const SwipeFeedSection = forwardRef<HTMLElement, SwipeFeedSectionProps>(function SwipeFeedSection({ gender }, ref) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { cards, isLoading } = useHomeSwipeFeed(gender);
@@ -77,7 +77,7 @@ export default function SwipeFeedSection({ gender }: SwipeFeedSectionProps) {
   // Loading skeleton
   if (isLoading && cards.length === 0) {
     return (
-      <section className="mb-6">
+      <section ref={ref} className="mb-6">
         <SectionHeader navigate={navigate} />
         <div className="w-full aspect-[3/4] rounded-2xl skeleton-gold" />
       </section>
@@ -90,7 +90,7 @@ export default function SwipeFeedSection({ gender }: SwipeFeedSectionProps) {
   // End state
   if (index >= cards.length) {
     return (
-      <section className="mb-6">
+      <section ref={ref} className="mb-6">
         <SectionHeader navigate={navigate} />
         <div className="w-full aspect-[3/4] rounded-2xl glass-dark border border-border/8 flex flex-col items-center justify-center text-center px-6">
           <Flame className="h-8 w-8 text-primary mb-3" />
@@ -116,7 +116,7 @@ export default function SwipeFeedSection({ gender }: SwipeFeedSectionProps) {
   const copPercent = total > 0 ? Math.round((counts!.yes / total) * 100) : undefined;
 
   return (
-    <section className="mb-6">
+    <section ref={ref} className="mb-6">
       <SectionHeader navigate={navigate} />
       <div className="relative">
         {/* Peek of next card — sits behind, becomes the new top after swipe */}
@@ -147,7 +147,9 @@ export default function SwipeFeedSection({ gender }: SwipeFeedSectionProps) {
       </div>
     </section>
   );
-}
+});
+
+export default SwipeFeedSection;
 
 function SectionHeader({ navigate }: { navigate: ReturnType<typeof useNavigate> }) {
   return (

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { forwardRef, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Share2 } from 'lucide-react';
@@ -31,7 +31,7 @@ function handleShare(title: string, e: React.MouseEvent) {
   }
 }
 
-const WeeklyOutfitsSection = () => {
+const WeeklyOutfitsSection = forwardRef<HTMLDivElement>((_props, ref) => {
   const navigate = useNavigate();
   const { userGender, genderLoaded, loading: authLoading } = useAuth();
   const mappedGender = userGender === 'male' ? 'mens' : userGender === 'female' ? 'womens' : undefined;
@@ -49,8 +49,7 @@ const WeeklyOutfitsSection = () => {
     const withHero = shuffleArray(ready.filter(o => !!o.hero_image_url));
     const withoutHero = shuffleArray(ready.filter(o => !o.hero_image_url));
     return [...withHero, ...withoutHero];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [outfits?.length]);
+  }, [outfits]);
 
   const occasions = useMemo(() => {
     const seen = new Map<string, { label: string; emoji: string | null }>();
@@ -67,7 +66,7 @@ const WeeklyOutfitsSection = () => {
 
   if (isLoading && readyOutfits.length === 0) {
     return (
-      <div className="mt-2 mb-4">
+      <div ref={ref} className="mt-2 mb-4">
         <div className="h-5 w-40 rounded bg-white/5 animate-pulse mb-3" />
         <div className="flex gap-3 overflow-hidden">
           {[1, 2].map(i => (
@@ -81,7 +80,7 @@ const WeeklyOutfitsSection = () => {
   if (readyOutfits.length === 0) return null;
 
   return (
-    <div className="mt-2 mb-4">
+    <div ref={ref} className="mt-2 mb-4">
       {/* Section divider — bridges from scan card */}
       <div className="flex justify-center mb-5">
         <div className="h-px w-20" style={{ background: 'rgba(200,169,81,0.2)' }} />
@@ -123,7 +122,8 @@ const WeeklyOutfitsSection = () => {
       </div>
     </div>
   );
-};
+});
+WeeklyOutfitsSection.displayName = 'WeeklyOutfitsSection';
 
 function OccasionPill({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
   return (
