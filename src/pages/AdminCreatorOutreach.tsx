@@ -13,6 +13,8 @@ import {
   ExternalLink,
   Trash2,
   Search,
+  Send,
+  Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,6 +38,8 @@ type Lead = {
   follower_count: number | null;
   last_contacted_at: string | null;
   admin_notes: string | null;
+  tier: string | null;
+  segment: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -52,15 +56,30 @@ type OutreachNote = {
 const STATUS_OPTIONS = [
   { value: "new", label: "New", color: "bg-sky-500/15 text-sky-300 border-sky-500/30" },
   { value: "contacted", label: "Contacted", color: "bg-amber-500/15 text-amber-300 border-amber-500/30" },
+  { value: "followed_up", label: "Followed Up", color: "bg-orange-500/15 text-orange-300 border-orange-500/30" },
   { value: "replied", label: "Replied", color: "bg-violet-500/15 text-violet-300 border-violet-500/30" },
   { value: "approved", label: "Approved", color: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
   { value: "active", label: "Active", color: "bg-primary/15 text-primary border-primary/30" },
   { value: "declined", label: "Declined", color: "bg-muted text-muted-foreground border-border" },
+  { value: "ghosted", label: "Ghosted", color: "bg-muted text-muted-foreground border-border" },
 ];
+
+const TIER_OPTIONS = [
+  { value: "nano", label: "Nano (<10K)" },
+  { value: "micro", label: "Micro (10–50K)" },
+  { value: "mid", label: "Mid (50–250K)" },
+  { value: "macro", label: "Macro (250K+)" },
+];
+
+const daysSince = (iso: string | null) => {
+  if (!iso) return Infinity;
+  return (Date.now() - new Date(iso).getTime()) / 86400000;
+};
 
 const KIND_ICON: Record<string, any> = {
   note: StickyNote,
   email: Mail,
+  email_sent: Send,
   dm: MessageSquare,
   call: Phone,
   status_change: StickyNote,
@@ -82,6 +101,8 @@ export default function AdminCreatorOutreach() {
   const qc = useQueryClient();
 
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [tierFilter, setTierFilter] = useState<string>("all");
+  const [cadenceMode, setCadenceMode] = useState<"none" | "due" | "stale" | "awaiting">("none");
   const [search, setSearch] = useState("");
   const [activeLead, setActiveLead] = useState<Lead | null>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -112,16 +133,39 @@ export default function AdminCreatorOutreach() {
     enabled: !!user && isAdmin === true,
   });
 
+  const cadenceBuckets = useMemo(() => {
+    const due: Lead[] = [];
+    const stale: Lead[] = [];
+    const awaiting: Lead[] = [];
+    leads.forEach((l) => {
+      const d = daysSince(l.last_contacted_at);
+      if (l.status === "contacted") {
+        if (d >= 4) due.push(l);
+        else awaiting.push(l);
+      } else if (l.status === "followed_up") {
+        if (d >= 10) stale.push(l);
+        else awaiting.push(l);
+      }
+    });
+    return { due, stale, awaiting };
+  }, [leads]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return leads.filter((l) => {
-      if (statusFilter !== "all" && l.status !== statusFilter) return false;
+    let base: Lead[] = leads;
+    if (cadenceMode === "due") base = cadenceBuckets.due;
+    else if (cadenceMode === "stale") base = cadenceBuckets.stale;
+    else if (cadenceMode === "awaiting") base = cadenceBuckets.awaiting;
+
+    return base.filter((l) => {
+      if (cadenceMode === "none" && statusFilter !== "all" && l.status !== statusFilter) return false;
+      if (tierFilter !== "all" && l.tier !== tierFilter) return false;
       if (!q) return true;
-      return [l.name, l.email, l.handle, l.platform]
+      return [l.name, l.email, l.handle, l.platform, l.segment]
         .filter(Boolean)
         .some((v) => v!.toString().toLowerCase().includes(q));
     });
-  }, [leads, statusFilter, search]);
+  }, [leads, statusFilter, tierFilter, search, cadenceMode, cadenceBuckets]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: leads.length };
@@ -169,6 +213,8 @@ export default function AdminCreatorOutreach() {
       "email",
       "platform",
       "audience_size",
+      "tier",
+      "segment",
       "follower_count",
       "handle",
       "profile_url",
@@ -228,24 +274,71 @@ export default function AdminCreatorOutreach() {
       <AdminNav />
 
       <div className="px-4 pt-4 space-y-4">
-        {/* Stat strip */}
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-          {[{ value: "all", label: "Total" }, ...STATUS_OPTIONS].map((opt) => (
+        {/* Cadence row — Day 4 / Day 10 playbook */}
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { value: "due" as const, label: "Due Follow-up", count: cadenceBuckets.due.length, hint: "≥4d, contacted" },
+            { value: "stale" as const, label: "Stale", count: cadenceBuckets.stale.length, hint: "≥10d, no reply" },
+            { value: "awaiting" as const, label: "Awaiting", count: cadenceBuckets.awaiting.length, hint: "in window" },
+          ].map((b) => (
             <button
-              key={opt.value}
-              onClick={() => setStatusFilter(opt.value)}
+              key={b.value}
+              onClick={() => {
+                setCadenceMode((prev) => (prev === b.value ? "none" : b.value));
+                setStatusFilter("all");
+              }}
               className={`rounded-xl border p-3 text-left transition-colors ${
-                statusFilter === opt.value
-                  ? "border-primary/50 bg-primary/5"
+                cadenceMode === b.value
+                  ? "border-primary bg-primary/10"
                   : "border-border bg-card hover:border-border/80"
               }`}
             >
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
-                {opt.label}
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 inline-flex items-center gap-1">
+                <Clock className="w-3 h-3" /> {b.label}
               </div>
-              <div className="font-display text-xl font-bold text-foreground">
-                {counts[opt.value] ?? 0}
-              </div>
+              <div className="font-display text-xl font-bold text-foreground">{b.count}</div>
+              <div className="text-[10px] text-muted-foreground/70 font-mono mt-0.5">{b.hint}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Status strip — only when not in cadence mode */}
+        {cadenceMode === "none" && (
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+            {[{ value: "all", label: "Total" }, ...STATUS_OPTIONS].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setStatusFilter(opt.value)}
+                className={`rounded-xl border p-3 text-left transition-colors ${
+                  statusFilter === opt.value
+                    ? "border-primary/50 bg-primary/5"
+                    : "border-border bg-card hover:border-border/80"
+                }`}
+              >
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                  {opt.label}
+                </div>
+                <div className="font-display text-xl font-bold text-foreground">
+                  {counts[opt.value] ?? 0}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Tier chips */}
+        <div className="flex flex-wrap gap-1.5">
+          {[{ value: "all", label: "All Tiers" }, ...TIER_OPTIONS].map((t) => (
+            <button
+              key={t.value}
+              onClick={() => setTierFilter(t.value)}
+              className={`px-2.5 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider border transition-colors ${
+                tierFilter === t.value
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border bg-card text-muted-foreground hover:border-border/60"
+              }`}
+            >
+              {t.label}
             </button>
           ))}
         </div>
@@ -256,7 +349,7 @@ export default function AdminCreatorOutreach() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search name, email, handle, platform…"
+            placeholder="Search name, email, handle, segment…"
             className="w-full bg-secondary border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60"
           />
         </div>
@@ -268,30 +361,50 @@ export default function AdminCreatorOutreach() {
               No leads match the current filter.
             </div>
           ) : (
-            filtered.map((lead) => (
-              <button
-                key={lead.id}
-                onClick={() => setActiveLead(lead)}
-                className="w-full text-left px-4 py-3 hover:bg-secondary/40 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm text-foreground truncate">{lead.name}</span>
-                      {statusBadge(lead.status)}
+            filtered.map((lead) => {
+              const d = daysSince(lead.last_contacted_at);
+              const cadenceTag =
+                lead.status === "contacted" && d >= 4
+                  ? { label: `Bump (${Math.floor(d)}d)`, cls: "text-amber-300 border-amber-500/40" }
+                  : lead.status === "followed_up" && d >= 10
+                  ? { label: `Stale (${Math.floor(d)}d)`, cls: "text-muted-foreground border-border" }
+                  : null;
+              return (
+                <button
+                  key={lead.id}
+                  onClick={() => setActiveLead(lead)}
+                  className="w-full text-left px-4 py-3 hover:bg-secondary/40 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-sm text-foreground truncate">{lead.name}</span>
+                        {statusBadge(lead.status)}
+                        {lead.tier && (
+                          <Badge variant="outline" className="text-[10px] uppercase tracking-wider border-border text-muted-foreground">
+                            {lead.tier}
+                          </Badge>
+                        )}
+                        {cadenceTag && (
+                          <Badge variant="outline" className={`text-[10px] uppercase tracking-wider ${cadenceTag.cls}`}>
+                            {cadenceTag.label}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate mt-0.5">{lead.email}</div>
+                      <div className="text-[11px] text-muted-foreground/80 mt-1 font-mono">
+                        {lead.platform} · {lead.audience_size}
+                        {lead.handle ? ` · @${lead.handle}` : ""}
+                        {lead.segment ? ` · ${lead.segment}` : ""}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground truncate mt-0.5">{lead.email}</div>
-                    <div className="text-[11px] text-muted-foreground/80 mt-1 font-mono">
-                      {lead.platform} · {lead.audience_size}
-                      {lead.handle ? ` · @${lead.handle}` : ""}
+                    <div className="text-[10px] text-muted-foreground/70 whitespace-nowrap font-mono">
+                      {new Date(lead.created_at).toLocaleDateString()}
                     </div>
                   </div>
-                  <div className="text-[10px] text-muted-foreground/70 whitespace-nowrap font-mono">
-                    {new Date(lead.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-              </button>
-            ))
+                </button>
+              );
+            })
           )}
         </div>
       </div>
@@ -342,7 +455,12 @@ function LeadDetailDrawer({
   const [handle, setHandle] = useState(lead.handle ?? "");
   const [profileUrl, setProfileUrl] = useState(lead.profile_url ?? "");
   const [followers, setFollowers] = useState(lead.follower_count?.toString() ?? "");
+  const [segment, setSegment] = useState(lead.segment ?? "");
   const [adminNotes, setAdminNotes] = useState(lead.admin_notes ?? "");
+  const [pitchOpen, setPitchOpen] = useState(false);
+  const [pitchKind, setPitchKind] = useState<"pitch" | "followup">("pitch");
+  const [personalNote, setPersonalNote] = useState("");
+  const [sendingPitch, setSendingPitch] = useState(false);
 
   const { data: notes = [], isLoading: notesLoading } = useQuery<OutreachNote[]>({
     queryKey: ["outreach-notes", lead.id],
@@ -393,9 +511,70 @@ function LeadDetailDrawer({
       handle: handle.trim() || null,
       profile_url: profileUrl.trim() || null,
       follower_count: followers ? parseInt(followers, 10) || null : null,
+      segment: segment.trim() || null,
       admin_notes: adminNotes.trim() || null,
     });
     toast({ title: "Saved" });
+  };
+
+  const sendPitch = async () => {
+    setSendingPitch(true);
+    try {
+      const templateName = pitchKind === "pitch" ? "creator-pitch" : "creator-pitch-followup";
+      const templateData =
+        pitchKind === "pitch"
+          ? {
+              name: lead.name?.split(" ")[0] || lead.name,
+              personalNote: personalNote.trim() || undefined,
+              ctaUrl: "https://dripfitcheck.com",
+            }
+          : {
+              name: lead.name?.split(" ")[0] || lead.name,
+              ctaUrl: "https://dripfitcheck.com",
+            };
+
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName,
+          recipientEmail: lead.email,
+          idempotencyKey: `creator-${pitchKind}-${lead.id}-${Date.now()}`,
+          templateData,
+        },
+      });
+      if (error) throw error;
+
+      // Log activity + advance status
+      await supabase.from("creator_outreach_notes" as any).insert({
+        lead_id: lead.id,
+        author_id: userId,
+        kind: "email_sent",
+        body:
+          pitchKind === "pitch"
+            ? `Sent pitch email${personalNote.trim() ? `\n\nPersonal note: ${personalNote.trim()}` : ""}`
+            : "Sent Day 4 follow-up email",
+      });
+
+      const nextStatus =
+        pitchKind === "pitch" && (lead.status === "new" || lead.status === "contacted")
+          ? "contacted"
+          : pitchKind === "followup"
+          ? "followed_up"
+          : lead.status;
+
+      const patch: Partial<Lead> = { last_contacted_at: new Date().toISOString() };
+      if (nextStatus !== lead.status) patch.status = nextStatus;
+      onPatch(patch);
+
+      qc.invalidateQueries({ queryKey: ["outreach-notes", lead.id] });
+      qc.invalidateQueries({ queryKey: ["admin-creator-leads"] });
+      setPitchOpen(false);
+      setPersonalNote("");
+      toast({ title: pitchKind === "pitch" ? "Pitch sent" : "Follow-up sent" });
+    } catch (err: any) {
+      toast({ title: "Send failed", description: err?.message ?? "Unknown error", variant: "destructive" });
+    } finally {
+      setSendingPitch(false);
+    }
   };
 
   return (
@@ -451,6 +630,46 @@ function LeadDetailDrawer({
             </div>
           </div>
 
+          {/* Send Pitch */}
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 space-y-2">
+            <div className="text-[10px] uppercase tracking-wider text-primary/80 inline-flex items-center gap-1">
+              <Send className="w-3 h-3" /> Email Outreach
+            </div>
+            {!pitchOpen ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Button size="sm" onClick={() => { setPitchKind("pitch"); setPitchOpen(true); }} className="text-xs">
+                  Send Pitch
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => { setPitchKind("followup"); setPitchOpen(true); }} className="text-xs">
+                  Send Follow-up
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {pitchKind === "pitch" ? "Initial Pitch" : "Day 4 Follow-up"} · to {lead.email}
+                </div>
+                {pitchKind === "pitch" && (
+                  <textarea
+                    value={personalNote}
+                    onChange={(e) => setPersonalNote(e.target.value)}
+                    placeholder="Personal note (1-2 sentences referencing their content). Leave blank to skip."
+                    rows={3}
+                    className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60"
+                  />
+                )}
+                <div className="grid grid-cols-2 gap-2">
+                  <Button size="sm" variant="outline" onClick={() => { setPitchOpen(false); setPersonalNote(""); }} className="text-xs">
+                    Cancel
+                  </Button>
+                  <Button size="sm" onClick={sendPitch} disabled={sendingPitch} className="text-xs">
+                    {sendingPitch ? "Sending…" : "Send Email"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Editable details */}
           <div className="space-y-2">
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Details</div>
@@ -469,8 +688,14 @@ function LeadDetailDrawer({
             <input
               value={followers}
               onChange={(e) => setFollowers(e.target.value.replace(/[^0-9]/g, ""))}
-              placeholder="Follower count"
+              placeholder="Follower count (auto-sets tier)"
               inputMode="numeric"
+              className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60"
+            />
+            <input
+              value={segment}
+              onChange={(e) => setSegment(e.target.value)}
+              placeholder="Segment (e.g. fit check TikTok, menswear minimalist)"
               className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60"
             />
             <textarea
@@ -583,6 +808,7 @@ function AddLeadDrawer({ onClose, onCreated }: { onClose: () => void; onCreated:
     handle: "",
     profile_url: "",
     follower_count: "",
+    segment: "",
     admin_notes: "",
   });
   const [saving, setSaving] = useState(false);
@@ -601,6 +827,7 @@ function AddLeadDrawer({ onClose, onCreated }: { onClose: () => void; onCreated:
       handle: form.handle.trim() || null,
       profile_url: form.profile_url.trim() || null,
       follower_count: form.follower_count ? parseInt(form.follower_count, 10) : null,
+      segment: form.segment.trim() || null,
       admin_notes: form.admin_notes.trim() || null,
       source: "manual_outreach",
       status: "new",
@@ -677,10 +904,16 @@ function AddLeadDrawer({ onClose, onCreated }: { onClose: () => void; onCreated:
             className={inputClass}
           />
           <input
-            placeholder="Follower count"
+            placeholder="Follower count (auto-sets tier)"
             inputMode="numeric"
             value={form.follower_count}
             onChange={(e) => setForm({ ...form, follower_count: e.target.value.replace(/[^0-9]/g, "") })}
+            className={inputClass}
+          />
+          <input
+            placeholder="Segment (e.g. fit check TikTok)"
+            value={form.segment}
+            onChange={(e) => setForm({ ...form, segment: e.target.value })}
             className={inputClass}
           />
           <textarea

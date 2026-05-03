@@ -494,8 +494,10 @@ export type Database = {
           name: string
           platform: string
           profile_url: string | null
+          segment: string | null
           source: string
           status: string
+          tier: string | null
           updated_at: string
         }
         Insert: {
@@ -512,8 +514,10 @@ export type Database = {
           name: string
           platform: string
           profile_url?: string | null
+          segment?: string | null
           source?: string
           status?: string
+          tier?: string | null
           updated_at?: string
         }
         Update: {
@@ -530,8 +534,10 @@ export type Database = {
           name?: string
           platform?: string
           profile_url?: string | null
+          segment?: string | null
           source?: string
           status?: string
+          tier?: string | null
           updated_at?: string
         }
         Relationships: []
