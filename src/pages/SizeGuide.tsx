@@ -85,7 +85,7 @@ const SizeGuide = () => {
         if (user) {
           const { data: scans } = await supabase
             .from('body_scans')
-            .select('*')
+            .select('id, created_at, height_cm, shoulder_min, shoulder_max, chest_min, chest_max, bust_min, bust_max, waist_min, waist_max, hip_min, hip_max, inseam_min, inseam_max, sleeve_min, sleeve_max, confidence, recommended_size')
             .eq('user_id', user.id)
             .order('created_at', { ascending: false });
           if (scans && scans.length > 0) {

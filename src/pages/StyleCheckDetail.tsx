@@ -37,7 +37,7 @@ const StyleCheckDetail = () => {
     (async () => {
       const { data } = await supabase
         .from('tryon_posts')
-        .select('*')
+        .select('id, user_id, clothing_photo_url, result_photo_url, caption, is_public, created_at, product_urls, clothing_category')
         .eq('id', postId)
         .eq('is_public', true)
         .maybeSingle();
