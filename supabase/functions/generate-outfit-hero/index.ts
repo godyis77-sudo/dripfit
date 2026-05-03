@@ -411,11 +411,12 @@ function buildPrompt(
   items: OutfitItem[],
   occasion: string,
   gender: string | null,
-  poseIndex?: number
+  poseIndex?: number,
+  outfitId?: string,
 ): { text: string; imageUrls: string[] } {
   const campaign = CAMPAIGNS[occasion] || CAMPAIGNS.weekend_casual;
   const genderKey = gender === "womens" ? "womens" : "mens";
-  const modelDesc = GENDER_MODELS[genderKey];
+  const modelDesc = pickModelDescription(genderKey, outfitId || `${occasion}-${Math.random()}`);
   const pose = POSE_POOL[(poseIndex ?? Math.floor(Math.random() * POSE_POOL.length)) % POSE_POOL.length];
 
   const brands = [...new Set(items.map(i => i.brand).filter(Boolean))];
