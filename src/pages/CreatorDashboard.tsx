@@ -138,7 +138,7 @@ export default function CreatorDashboard() {
       <div className="px-4 pt-4 space-y-4">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <StatCard icon={Users} label="Total Referred" value={String(commissions.length)} />
+          <StatCard icon={Users} label="Premium Conversions" value={String(commissions.length)} />
           <StatCard icon={TrendingUp} label="This Month" value={String(monthConversions)} sub={monthKey} />
           <StatCard icon={Wallet} label="Pending" value={`${CURRENCY_SYMBOL}${(pendingCents / 100).toFixed(2)}`} />
           <StatCard icon={Clock} label="Paid Out" value={`${CURRENCY_SYMBOL}${(paidCents / 100).toFixed(2)}`} />
