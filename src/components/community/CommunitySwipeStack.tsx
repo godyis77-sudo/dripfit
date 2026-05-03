@@ -7,7 +7,8 @@ import type { Post } from './community-types';
 import { isValidImageUrl } from './community-types';
 import { trackEvent } from '@/lib/analytics';
 import { TYPE } from '@/lib/design-tokens';
-import { cn } from '@/lib/utils';
+import { cn, shuffleArray } from '@/lib/utils';
+import { useWeeklyOutfits } from '@/hooks/useWeeklyOutfits';
 
 interface CommunitySwipeStackProps {
   posts: Post[];
