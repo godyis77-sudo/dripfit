@@ -69,6 +69,13 @@ const SettingsTab = ({
   const [shoeSize, setShoeSize] = useState('');
   const [editingShoe, setEditingShoe] = useState(false);
   const [shoeValue, setShoeValue] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' as any }).then(({ data }) => {
+      setIsAdmin(!!data);
+    });
+  }, [user.id]);
 
   // Load gender + shoe size from DB
   useEffect(() => {
@@ -283,6 +290,32 @@ const SettingsTab = ({
           </button>
         </div>
       </div>
+
+      {/* Admin Tools */}
+      {isAdmin && (
+        <>
+          <SectionHeader>
+            <span className="flex items-center gap-1"><Shield className="h-3 w-3 text-primary" /> Admin Tools</span>
+          </SectionHeader>
+          <div className="bg-card border border-border rounded-xl divide-y divide-border mb-1">
+            {[
+              { to: '/admin/creator-outreach', label: 'Creator Outreach' },
+              { to: '/admin/try-on-funnel', label: 'Try-On Funnel' },
+              { to: '/admin/retailers', label: 'Retailers' },
+              { to: '/admin/commissions', label: 'Commissions' },
+            ].map(item => (
+              <button
+                key={item.to}
+                onClick={() => navigate(item.to)}
+                className="w-full flex items-center justify-between px-3 py-2.5 active:bg-muted/50 transition-colors"
+              >
+                <span className="text-[12px] text-foreground">{item.label}</span>
+                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Fit Preferences */}
       <SectionHeader>Fit Preferences</SectionHeader>

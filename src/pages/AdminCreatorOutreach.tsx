@@ -20,6 +20,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 type Lead = {
   id: string;
@@ -223,6 +224,8 @@ export default function AdminCreatorOutreach() {
           <Download className="w-3.5 h-3.5" /> CSV
         </Button>
       </div>
+
+      <AdminNav />
 
       <div className="px-4 pt-4 space-y-4">
         {/* Stat strip */}

@@ -11,6 +11,7 @@ import { directAffiliateOverrides } from "@/lib/affiliateOverrides";
 import { AdminListSkeleton } from "@/components/ui/page-skeleton";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { RETAILER_KEY_TO_NAME, type RetailerKey, type AffiliateStatus } from "@/lib/affiliateTypes";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 const STATUS_META: Record<AffiliateStatus, { label: string; icon: typeof CheckCircle2; color: string }> = {
   active: { label: "Active", icon: CheckCircle2, color: "text-emerald-400" },
@@ -117,6 +118,8 @@ export default function AdminRetailers() {
           </div>
         </div>
       </div>
+
+      <AdminNav />
 
       {/* Stats bar */}
       <div className="grid grid-cols-4 gap-2 px-4 py-3">

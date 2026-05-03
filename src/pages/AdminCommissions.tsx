@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 const CURRENCY = "$";
 
@@ -125,6 +126,8 @@ export default function AdminCommissions() {
           <Download className="w-3.5 h-3.5" /> CSV
         </Button>
       </div>
+
+      <AdminNav />
 
       <div className="px-4 pt-4 space-y-4">
         <div className="grid grid-cols-2 gap-3">

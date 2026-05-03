@@ -8,6 +8,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 type FunnelMetrics = {
   window_days: number;
@@ -94,6 +95,8 @@ export default function AdminTryOnFunnel() {
           <div className="w-9" />
         </div>
       </header>
+
+      <AdminNav />
 
       <main className="max-w-5xl mx-auto px-4 pt-6 space-y-6">
         {/* Window selector */}
