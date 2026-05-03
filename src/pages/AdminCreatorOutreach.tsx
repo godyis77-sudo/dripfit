@@ -274,24 +274,71 @@ export default function AdminCreatorOutreach() {
       <AdminNav />
 
       <div className="px-4 pt-4 space-y-4">
-        {/* Stat strip */}
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-          {[{ value: "all", label: "Total" }, ...STATUS_OPTIONS].map((opt) => (
+        {/* Cadence row — Day 4 / Day 10 playbook */}
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { value: "due" as const, label: "Due Follow-up", count: cadenceBuckets.due.length, hint: "≥4d, contacted" },
+            { value: "stale" as const, label: "Stale", count: cadenceBuckets.stale.length, hint: "≥10d, no reply" },
+            { value: "awaiting" as const, label: "Awaiting", count: cadenceBuckets.awaiting.length, hint: "in window" },
+          ].map((b) => (
             <button
-              key={opt.value}
-              onClick={() => setStatusFilter(opt.value)}
+              key={b.value}
+              onClick={() => {
+                setCadenceMode((prev) => (prev === b.value ? "none" : b.value));
+                setStatusFilter("all");
+              }}
               className={`rounded-xl border p-3 text-left transition-colors ${
-                statusFilter === opt.value
-                  ? "border-primary/50 bg-primary/5"
+                cadenceMode === b.value
+                  ? "border-primary bg-primary/10"
                   : "border-border bg-card hover:border-border/80"
               }`}
             >
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
-                {opt.label}
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 inline-flex items-center gap-1">
+                <Clock className="w-3 h-3" /> {b.label}
               </div>
-              <div className="font-display text-xl font-bold text-foreground">
-                {counts[opt.value] ?? 0}
-              </div>
+              <div className="font-display text-xl font-bold text-foreground">{b.count}</div>
+              <div className="text-[10px] text-muted-foreground/70 font-mono mt-0.5">{b.hint}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Status strip — only when not in cadence mode */}
+        {cadenceMode === "none" && (
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+            {[{ value: "all", label: "Total" }, ...STATUS_OPTIONS].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setStatusFilter(opt.value)}
+                className={`rounded-xl border p-3 text-left transition-colors ${
+                  statusFilter === opt.value
+                    ? "border-primary/50 bg-primary/5"
+                    : "border-border bg-card hover:border-border/80"
+                }`}
+              >
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                  {opt.label}
+                </div>
+                <div className="font-display text-xl font-bold text-foreground">
+                  {counts[opt.value] ?? 0}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Tier chips */}
+        <div className="flex flex-wrap gap-1.5">
+          {[{ value: "all", label: "All Tiers" }, ...TIER_OPTIONS].map((t) => (
+            <button
+              key={t.value}
+              onClick={() => setTierFilter(t.value)}
+              className={`px-2.5 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider border transition-colors ${
+                tierFilter === t.value
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border bg-card text-muted-foreground hover:border-border/60"
+              }`}
+            >
+              {t.label}
             </button>
           ))}
         </div>
@@ -302,7 +349,7 @@ export default function AdminCreatorOutreach() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search name, email, handle, platform…"
+            placeholder="Search name, email, handle, segment…"
             className="w-full bg-secondary border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60"
           />
         </div>
@@ -314,30 +361,50 @@ export default function AdminCreatorOutreach() {
               No leads match the current filter.
             </div>
           ) : (
-            filtered.map((lead) => (
-              <button
-                key={lead.id}
-                onClick={() => setActiveLead(lead)}
-                className="w-full text-left px-4 py-3 hover:bg-secondary/40 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm text-foreground truncate">{lead.name}</span>
-                      {statusBadge(lead.status)}
+            filtered.map((lead) => {
+              const d = daysSince(lead.last_contacted_at);
+              const cadenceTag =
+                lead.status === "contacted" && d >= 4
+                  ? { label: `Bump (${Math.floor(d)}d)`, cls: "text-amber-300 border-amber-500/40" }
+                  : lead.status === "followed_up" && d >= 10
+                  ? { label: `Stale (${Math.floor(d)}d)`, cls: "text-muted-foreground border-border" }
+                  : null;
+              return (
+                <button
+                  key={lead.id}
+                  onClick={() => setActiveLead(lead)}
+                  className="w-full text-left px-4 py-3 hover:bg-secondary/40 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-sm text-foreground truncate">{lead.name}</span>
+                        {statusBadge(lead.status)}
+                        {lead.tier && (
+                          <Badge variant="outline" className="text-[10px] uppercase tracking-wider border-border text-muted-foreground">
+                            {lead.tier}
+                          </Badge>
+                        )}
+                        {cadenceTag && (
+                          <Badge variant="outline" className={`text-[10px] uppercase tracking-wider ${cadenceTag.cls}`}>
+                            {cadenceTag.label}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate mt-0.5">{lead.email}</div>
+                      <div className="text-[11px] text-muted-foreground/80 mt-1 font-mono">
+                        {lead.platform} · {lead.audience_size}
+                        {lead.handle ? ` · @${lead.handle}` : ""}
+                        {lead.segment ? ` · ${lead.segment}` : ""}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground truncate mt-0.5">{lead.email}</div>
-                    <div className="text-[11px] text-muted-foreground/80 mt-1 font-mono">
-                      {lead.platform} · {lead.audience_size}
-                      {lead.handle ? ` · @${lead.handle}` : ""}
+                    <div className="text-[10px] text-muted-foreground/70 whitespace-nowrap font-mono">
+                      {new Date(lead.created_at).toLocaleDateString()}
                     </div>
                   </div>
-                  <div className="text-[10px] text-muted-foreground/70 whitespace-nowrap font-mono">
-                    {new Date(lead.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-              </button>
-            ))
+                </button>
+              );
+            })
           )}
         </div>
       </div>
