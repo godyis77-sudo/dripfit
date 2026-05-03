@@ -47,15 +47,19 @@ function getPreviousWeekId(weekId: string): string {
   return `${year}-W${String(w - 1).padStart(2, '0')}`;
 }
 
-async function fetchOutfits(weekId: string, gender?: string): Promise<WeeklyOutfit[]> {
-  // Single round-trip: outfits with embedded items, ordered, gender-filtered at DB level.
+async function fetchOutfits(weekId: string | null, gender?: string): Promise<WeeklyOutfit[]> {
+  // Pool across all weeks when weekId is null. Newest weeks first.
   let query = supabase
     .from('weekly_outfits')
     .select('*, weekly_outfit_items(*)')
-    .eq('week_id', weekId)
     .eq('is_active', true)
+    .order('week_id', { ascending: false })
     .order('sort_order', { ascending: true })
-    .limit(40);
+    .limit(200);
+
+  if (weekId) {
+    query = query.eq('week_id', weekId);
+  }
 
   if (gender && gender !== 'all') {
     // Match exact gender or null (unisex / unspecified)
@@ -83,23 +87,12 @@ export function useWeeklyOutfits(gender?: string) {
   const normalizedGender = gender && gender !== 'all' ? gender : undefined;
 
   return useQuery({
-    queryKey: ['weekly-outfits', weekId, waiting ? '__wait__' : (normalizedGender ?? 'all')],
+    queryKey: ['weekly-outfits', 'pooled', waiting ? '__wait__' : (normalizedGender ?? 'all')],
     enabled: !waiting,
     placeholderData: keepPreviousData,
     queryFn: async () => {
-      const hasUsableHero = (list: WeeklyOutfit[]) => list.some(o => o.hero_image_url);
-      let results = await fetchOutfits(weekId, normalizedGender);
-      // Walk back up to 4 prior weeks until we find outfits with at least one hero image.
-      let cursor = weekId;
-      for (let i = 0; i < 4 && (results.length === 0 || !hasUsableHero(results)); i++) {
-        cursor = getPreviousWeekId(cursor);
-        const prev = await fetchOutfits(cursor, normalizedGender);
-        if (prev.length > 0 && hasUsableHero(prev)) {
-          results = prev;
-          break;
-        }
-      }
-      return results;
+      // Pool outfits from ALL weeks, newest first, filtered by gender at DB level.
+      return await fetchOutfits(null, normalizedGender);
     },
     staleTime: 10 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
