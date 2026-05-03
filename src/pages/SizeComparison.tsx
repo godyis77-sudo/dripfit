@@ -150,7 +150,7 @@ const SizeComparison = () => {
     try {
       const { data: scans } = await supabase
         .from('body_scans')
-        .select('*')
+        .select('shoulder_min, shoulder_max, chest_min, chest_max, waist_min, waist_max, hip_min, hip_max, inseam_min, inseam_max, sleeve_min, sleeve_max, height_cm')
         .eq('user_id', user!.id)
         .order('created_at', { ascending: false })
         .limit(1);

@@ -109,7 +109,7 @@ const Profile = () => {
     try {
       const { data: dbScans } = await supabase
         .from('body_scans')
-        .select('*')
+        .select('id, user_id, created_at, height_cm, shoulder_min, shoulder_max, chest_min, chest_max, bust_min, bust_max, waist_min, waist_max, hip_min, hip_max, inseam_min, inseam_max, sleeve_min, sleeve_max, confidence, recommended_size, reference_object, side_photo_used, front_photo_used')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       const exportData = dbScans || [];
