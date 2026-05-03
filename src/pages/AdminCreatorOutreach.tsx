@@ -630,6 +630,46 @@ function LeadDetailDrawer({
             </div>
           </div>
 
+          {/* Send Pitch */}
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 space-y-2">
+            <div className="text-[10px] uppercase tracking-wider text-primary/80 inline-flex items-center gap-1">
+              <Send className="w-3 h-3" /> Email Outreach
+            </div>
+            {!pitchOpen ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Button size="sm" onClick={() => { setPitchKind("pitch"); setPitchOpen(true); }} className="text-xs">
+                  Send Pitch
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => { setPitchKind("followup"); setPitchOpen(true); }} className="text-xs">
+                  Send Follow-up
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {pitchKind === "pitch" ? "Initial Pitch" : "Day 4 Follow-up"} · to {lead.email}
+                </div>
+                {pitchKind === "pitch" && (
+                  <textarea
+                    value={personalNote}
+                    onChange={(e) => setPersonalNote(e.target.value)}
+                    placeholder="Personal note (1-2 sentences referencing their content). Leave blank to skip."
+                    rows={3}
+                    className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60"
+                  />
+                )}
+                <div className="grid grid-cols-2 gap-2">
+                  <Button size="sm" variant="outline" onClick={() => { setPitchOpen(false); setPersonalNote(""); }} className="text-xs">
+                    Cancel
+                  </Button>
+                  <Button size="sm" onClick={sendPitch} disabled={sendingPitch} className="text-xs">
+                    {sendingPitch ? "Sending…" : "Send Email"}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Editable details */}
           <div className="space-y-2">
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Details</div>
@@ -648,8 +688,14 @@ function LeadDetailDrawer({
             <input
               value={followers}
               onChange={(e) => setFollowers(e.target.value.replace(/[^0-9]/g, ""))}
-              placeholder="Follower count"
+              placeholder="Follower count (auto-sets tier)"
               inputMode="numeric"
+              className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60"
+            />
+            <input
+              value={segment}
+              onChange={(e) => setSegment(e.target.value)}
+              placeholder="Segment (e.g. fit check TikTok, menswear minimalist)"
               className="w-full bg-secondary border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60"
             />
             <textarea
