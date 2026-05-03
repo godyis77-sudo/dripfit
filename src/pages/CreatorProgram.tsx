@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, DollarSign, Link2, BarChart3, Wallet, ArrowRight, CheckCircle2, Mail } from 'lucide-react';
+import { Sparkles, DollarSign, Link2, BarChart3, Wallet, ArrowRight, CheckCircle2, Users } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import CreatorApplicationForm from '@/components/creator/CreatorApplicationForm';
 
 const HOW_IT_WORKS = [
   { icon: Link2, title: 'Get Your Link', desc: 'Approved creators receive a unique referral URL and custom promo codes that drop 10 bonus try-ons for every redeemer.' },
@@ -39,6 +42,21 @@ const CreatorProgram = () => {
     path: '/creators',
   });
   const { user } = useAuth();
+  const [founderStat, setFounderStat] = useState<{ claimed: number; total: number } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const [{ count: total }, { count: claimed }] = await Promise.all([
+        supabase.from('access_codes').select('*', { count: 'exact', head: true }),
+        supabase.from('access_codes').select('*', { count: 'exact', head: true }).eq('is_used', true),
+      ]);
+      if (active && typeof total === 'number' && typeof claimed === 'number') {
+        setFounderStat({ claimed, total: Math.max(total, 100) });
+      }
+    })();
+    return () => { active = false; };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-24">
@@ -58,7 +76,7 @@ const CreatorProgram = () => {
             Real-time tracking. $25 minimum payout. No gimmicks.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="mailto:hello@dripfitcheck.com?subject=Creator%20Program%20Application">
+            <a href="#apply">
               <Button size="lg" className="w-full sm:w-auto gap-2">
                 Apply Now <ArrowRight className="h-4 w-4" />
               </Button>
@@ -72,6 +90,24 @@ const CreatorProgram = () => {
             )}
           </div>
         </div>
+      </section>
+
+      {/* ── Social Proof ────────────────────────────────── */}
+      <section className="max-w-3xl mx-auto px-6 -mt-4 mb-4">
+        <Link
+          to="/founders"
+          className="block rounded-xl border border-primary/25 bg-primary/5 px-5 py-3 text-center hover:bg-primary/10 transition-colors"
+        >
+          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary/80 mb-1 inline-flex items-center gap-2">
+            <Users className="h-3 w-3" /> Founding Members Program
+          </p>
+          <p className="text-sm text-foreground">
+            <span className="font-display font-bold text-primary">
+              {founderStat ? `${founderStat.claimed}/${founderStat.total}` : '—/100'}
+            </span>{' '}
+            spots claimed · Creator Program launching alongside
+          </p>
+        </Link>
       </section>
 
       {/* ── Commission Tiers ────────────────────────────── */}
@@ -169,22 +205,24 @@ const CreatorProgram = () => {
         </div>
       </section>
 
-      {/* ── Final CTA ───────────────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-6 py-16">
-        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-8 text-center">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold mb-3">
-            Ready to drop the fit?
-          </h2>
-          <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto mb-6">
-            Send a short note about your audience and platforms. We respond within 48 hours.
-          </p>
-          <a href="mailto:hello@dripfitcheck.com?subject=Creator%20Program%20Application">
-            <Button size="lg" className="gap-2">
-              <Mail className="h-4 w-4" /> hello@dripfitcheck.com
-            </Button>
-          </a>
+      {/* ── Final CTA / Application Form ─────────────────── */}
+      <section id="apply" className="max-w-2xl mx-auto px-6 py-16 scroll-mt-20">
+        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8">
+          <div className="text-center mb-6">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary/80 mb-3">
+              Apply to Join
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl font-bold mb-3">
+              Ready to drop the fit?
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
+              Tell us about your audience. We respond within 48 hours.
+            </p>
+          </div>
+          <CreatorApplicationForm />
         </div>
       </section>
+
     </div>
   );
 };

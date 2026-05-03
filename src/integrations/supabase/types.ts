@@ -479,6 +479,36 @@ export type Database = {
           },
         ]
       }
+      creator_leads: {
+        Row: {
+          audience_size: string
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          platform: string
+        }
+        Insert: {
+          audience_size: string
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          platform: string
+        }
+        Update: {
+          audience_size?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          platform?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
