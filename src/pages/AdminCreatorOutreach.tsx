@@ -213,6 +213,8 @@ export default function AdminCreatorOutreach() {
       "email",
       "platform",
       "audience_size",
+      "tier",
+      "segment",
       "follower_count",
       "handle",
       "profile_url",
