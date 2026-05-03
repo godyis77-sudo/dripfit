@@ -224,6 +224,8 @@ export default function AdminCreatorOutreach() {
         </Button>
       </div>
 
+      <AdminNav />
+
       <div className="px-4 pt-4 space-y-4">
         {/* Stat strip */}
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
