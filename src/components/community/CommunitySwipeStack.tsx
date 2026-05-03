@@ -103,10 +103,14 @@ export default function CommunitySwipeStack({
 
   const handleTap = useCallback(
     (card: SwipeCard) => {
+      if (card.kind === 'outfit' && card.outfitId) {
+        navigate(`/outfit/${card.outfitId}`);
+        return;
+      }
       const post = posts.find((p) => p.id === card.postId);
       if (post) onOpenDetail(post);
     },
-    [posts, onOpenDetail],
+    [posts, onOpenDetail, navigate],
   );
 
   // Loading skeleton
