@@ -1,0 +1,1 @@
+ALTER TABLE public.creator_commissions ALTER COLUMN amount_cents SET DEFAULT 100;
