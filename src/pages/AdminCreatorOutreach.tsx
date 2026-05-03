@@ -808,6 +808,7 @@ function AddLeadDrawer({ onClose, onCreated }: { onClose: () => void; onCreated:
     handle: "",
     profile_url: "",
     follower_count: "",
+    segment: "",
     admin_notes: "",
   });
   const [saving, setSaving] = useState(false);
@@ -826,6 +827,7 @@ function AddLeadDrawer({ onClose, onCreated }: { onClose: () => void; onCreated:
       handle: form.handle.trim() || null,
       profile_url: form.profile_url.trim() || null,
       follower_count: form.follower_count ? parseInt(form.follower_count, 10) : null,
+      segment: form.segment.trim() || null,
       admin_notes: form.admin_notes.trim() || null,
       source: "manual_outreach",
       status: "new",
@@ -902,10 +904,16 @@ function AddLeadDrawer({ onClose, onCreated }: { onClose: () => void; onCreated:
             className={inputClass}
           />
           <input
-            placeholder="Follower count"
+            placeholder="Follower count (auto-sets tier)"
             inputMode="numeric"
             value={form.follower_count}
             onChange={(e) => setForm({ ...form, follower_count: e.target.value.replace(/[^0-9]/g, "") })}
+            className={inputClass}
+          />
+          <input
+            placeholder="Segment (e.g. fit check TikTok)"
+            value={form.segment}
+            onChange={(e) => setForm({ ...form, segment: e.target.value })}
             className={inputClass}
           />
           <textarea
