@@ -205,22 +205,24 @@ const CreatorProgram = () => {
         </div>
       </section>
 
-      {/* ── Final CTA ───────────────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-6 py-16">
-        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-8 text-center">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold mb-3">
-            Ready to drop the fit?
-          </h2>
-          <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto mb-6">
-            Send a short note about your audience and platforms. We respond within 48 hours.
-          </p>
-          <a href="mailto:hello@dripfitcheck.com?subject=Creator%20Program%20Application">
-            <Button size="lg" className="gap-2">
-              <Mail className="h-4 w-4" /> hello@dripfitcheck.com
-            </Button>
-          </a>
+      {/* ── Final CTA / Application Form ─────────────────── */}
+      <section id="apply" className="max-w-2xl mx-auto px-6 py-16 scroll-mt-20">
+        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8">
+          <div className="text-center mb-6">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary/80 mb-3">
+              Apply to Join
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl font-bold mb-3">
+              Ready to drop the fit?
+            </h2>
+            <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
+              Tell us about your audience. We respond within 48 hours.
+            </p>
+          </div>
+          <CreatorApplicationForm />
         </div>
       </section>
+
     </div>
   );
 };
