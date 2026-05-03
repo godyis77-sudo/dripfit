@@ -20,9 +20,9 @@ const CreatorApplication = ({ name }: Props) => (
         </Text>
         <Section style={tierGrid}>
           <Text style={tierLabel}>BASE COMMISSION</Text>
-          <Text style={tierValue}>$0.50 / install</Text>
+          <Text style={tierValue}>$1.00 / Premium upgrade</Text>
           <Text style={tierLabelB}>BONUS TIER (100+ / mo)</Text>
-          <Text style={tierValue}>$1.50 / install</Text>
+          <Text style={tierValue}>$1.50 / Premium upgrade</Text>
         </Section>
         <Text style={text}>
           We review applications weekly. Approved creators get dashboard access, custom promo codes, and a $25 minimum payout.
