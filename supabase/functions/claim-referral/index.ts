@@ -1,25 +1,12 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/validation.ts";
 
-// ─── Commission Tier Config ─────────────────────────────────────────────────
-const COMMISSION_TIERS = [
-  { minConversions: 100, amountCents: 150, label: "bonus" },
-  { minConversions: 1, amountCents: 50, label: "base" },
-];
-const COMMISSION_CURRENCY = "USD";
+// Commissions are no longer paid at signup — only on Premium upgrade.
+// See check-subscription for the conversion → commission insert path.
 
 function getMonthKey() {
   const d = new Date();
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
-}
-
-function resolveCommission(monthlyCount: number) {
-  for (const tier of COMMISSION_TIERS) {
-    if (monthlyCount + 1 >= tier.minConversions) {
-      return { amountCents: tier.amountCents, tierLabel: tier.label };
-    }
-  }
-  return { amountCents: 50, tierLabel: "base" };
 }
 
 Deno.serve(async (req) => {
