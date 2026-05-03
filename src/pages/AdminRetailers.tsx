@@ -119,6 +119,8 @@ export default function AdminRetailers() {
         </div>
       </div>
 
+      <AdminNav />
+
       {/* Stats bar */}
       <div className="grid grid-cols-4 gap-2 px-4 py-3">
         {([
