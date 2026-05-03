@@ -562,6 +562,7 @@ ${campaign.colorGrade}
 ═══ LAYER 8: NEGATIVE DIRECTION ═══
 ${campaign.negative}
 No text overlays. No watermarks. No mannequins. No flat-lay. No product-only shots. Only styled on-body editorial.
+ANATOMY NEGATIVES: No backward feet, no rotated/twisted ankles, no extra fingers, no missing fingers, no fused fingers, no extra limbs, no missing limbs, no detached limbs, no floating limbs, no warped hands, no deformed face, no asymmetric eyes, no melted features, no doubled heads, no second face, no body horror, no anatomical impossibilities, no limbs clipping through fabric or body.
 
 ═══ FINAL CHECK ═══
 Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette AND respects its per-item shape lock, (4) accessory count is exact — ${bagCount === 0 ? "ZERO bags visible" : `exactly ${bagCount} bag${bagCount === 1 ? "" : "s"}`} and ONE pair of shoes only.`;
