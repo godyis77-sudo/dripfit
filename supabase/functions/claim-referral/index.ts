@@ -1,25 +1,12 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/validation.ts";
 
-// ─── Commission Tier Config ─────────────────────────────────────────────────
-const COMMISSION_TIERS = [
-  { minConversions: 100, amountCents: 150, label: "bonus" },
-  { minConversions: 1, amountCents: 50, label: "base" },
-];
-const COMMISSION_CURRENCY = "USD";
+// Commissions are no longer paid at signup — only on Premium upgrade.
+// See check-subscription for the conversion → commission insert path.
 
 function getMonthKey() {
   const d = new Date();
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
-}
-
-function resolveCommission(monthlyCount: number) {
-  for (const tier of COMMISSION_TIERS) {
-    if (monthlyCount + 1 >= tier.minConversions) {
-      return { amountCents: tier.amountCents, tierLabel: tier.label };
-    }
-  }
-  return { amountCents: 50, tierLabel: "base" };
 }
 
 Deno.serve(async (req) => {
@@ -158,32 +145,9 @@ Deno.serve(async (req) => {
     }
 
     // ─── Creator Commission Logic ───────────────────────────────────────
-    const { data: isCreator } = await admin.rpc("has_role", {
-      _user_id: referrer.user_id,
-      _role: "creator",
-    });
-
-    if (isCreator) {
-      const monthKey = getMonthKey();
-
-      const { data: monthCount } = await admin.rpc("get_creator_month_count", {
-        p_creator_id: referrer.user_id,
-        p_month_key: monthKey,
-      });
-
-      const { amountCents, tierLabel } = resolveCommission(monthCount ?? 0);
-
-      await admin.from("creator_commissions").insert({
-        creator_id: referrer.user_id,
-        referee_id: userId,
-        referral_id: referralRow?.id ?? null,
-        amount_cents: amountCents,
-        currency: COMMISSION_CURRENCY,
-        tier_label: tierLabel,
-        status: "pending",
-        month_key: monthKey,
-      });
-    }
+    // Commissions are NO LONGER awarded at signup.
+    // They are awarded only when the referee upgrades to Premium —
+    // see supabase/functions/check-subscription/index.ts.
 
     return new Response(JSON.stringify({ data: { success: true, promo_applied: promoApplied, bonus_tryons: bonusTryons } }), {
       status: 200,

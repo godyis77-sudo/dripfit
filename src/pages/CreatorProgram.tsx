@@ -10,19 +10,19 @@ import CreatorApplicationForm from '@/components/creator/CreatorApplicationForm'
 
 const HOW_IT_WORKS = [
   { icon: Link2, title: 'Get Your Link', desc: 'Approved creators receive a unique referral URL and custom promo codes that drop 10 bonus try-ons for every redeemer.' },
-  { icon: Sparkles, title: 'Share The Drop', desc: 'Post fits, link in bio, share with your community. Every install attributed to you tracks automatically — no pixels, no plugins.' },
-  { icon: BarChart3, title: 'Track In Real Time', desc: 'Your dashboard shows installs, conversions, monthly tier progress, and pending earnings — updated the moment they happen.' },
+  { icon: Sparkles, title: 'Share The Drop', desc: 'Post fits, link in bio, share with your community. Every signup attributed to you tracks automatically — no pixels, no plugins.' },
+  { icon: BarChart3, title: 'Track In Real Time', desc: 'Your dashboard shows referrals, Premium conversions, monthly tier progress, and pending earnings — updated the moment they happen.' },
   { icon: Wallet, title: 'Get Paid', desc: 'Request payout once you hit $25. PayPal or bank transfer. Processed within 7 business days.' },
 ];
 
 const TIERS = [
-  { label: 'BASE TIER', rate: '$0.50', unit: 'per install', detail: 'First 99 verified installs each calendar month.' },
-  { label: 'BONUS TIER', rate: '$1.50', unit: 'per install', detail: 'Auto-unlocks at install #100. Resets monthly.', highlight: true },
+  { label: 'BASE TIER', rate: '$1.00', unit: 'per Premium upgrade', detail: 'First 99 referred Premium upgrades each calendar month.' },
+  { label: 'BONUS TIER', rate: '$1.50', unit: 'per Premium upgrade', detail: 'Auto-unlocks at upgrade #100. Resets monthly.', highlight: true },
 ];
 
 const PERKS = [
   'Custom promo code dropping 10 bonus try-ons for your audience',
-  'Real-time dashboard with install, conversion, and earnings data',
+  'Real-time dashboard with referral, conversion, and earnings data',
   'Lifetime Premium access while active in the program',
   'Early access to new features, drops, and editorial campaigns',
   'Priority support and direct line to the founding team',
@@ -30,15 +30,15 @@ const PERKS = [
 
 const FAQ = [
   { q: 'Who qualifies?', a: 'Style creators, stylists, fashion editors, and community builders with an engaged audience. We look at fit, not follower count.' },
-  { q: 'When do I get paid?', a: 'Once your pending balance hits $25. Submit a payout request from your dashboard — processed within 7 business days.' },
-  { q: 'How is attribution tracked?', a: 'Each creator gets a unique referral URL and promo code. Both are tied to your account on install — no third-party cookies required.' },
-  { q: 'Can I be removed from the program?', a: 'Yes. Fraudulent installs, self-referrals, or violating brand guidelines will end your access and forfeit pending commissions.' },
+  { q: 'When do I get paid?', a: 'Commissions are paid only when a referred user upgrades to Premium. Request payout once your pending balance hits $25 — processed within 7 business days.' },
+  { q: 'How is attribution tracked?', a: 'Each creator gets a unique referral URL and promo code. Both are tied to a user on signup. Commission triggers the moment that user activates Premium.' },
+  { q: 'Can I be removed from the program?', a: 'Yes. Fraudulent referrals, self-referrals, or violating brand guidelines will end your access and forfeit pending commissions.' },
 ];
 
 const CreatorProgram = () => {
   usePageMeta({
     title: 'DripFit — Creator Program',
-    description: 'Earn cash for every install you drive. Real-time dashboard, custom promo codes, $25 minimum payout. Apply to join the DripFit Creator Program.',
+    description: 'Earn cash for every Premium upgrade you drive. Real-time dashboard, custom promo codes, $25 minimum payout. Apply to join the DripFit Creator Program.',
     path: '/creators',
   });
   const { user } = useAuth();
@@ -72,7 +72,7 @@ const CreatorProgram = () => {
             <span className="text-primary">Cash, not credits.</span>
           </h1>
           <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-            Share DripFit with your audience. Earn real cash for every install.
+            Share DripFit with your audience. Earn real cash for every Premium upgrade.
             Real-time tracking. $25 minimum payout. No gimmicks.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">

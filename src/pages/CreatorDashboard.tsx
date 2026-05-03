@@ -138,7 +138,7 @@ export default function CreatorDashboard() {
       <div className="px-4 pt-4 space-y-4">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <StatCard icon={Users} label="Total Referred" value={String(commissions.length)} />
+          <StatCard icon={Users} label="Premium Conversions" value={String(commissions.length)} />
           <StatCard icon={TrendingUp} label="This Month" value={String(monthConversions)} sub={monthKey} />
           <StatCard icon={Wallet} label="Pending" value={`${CURRENCY_SYMBOL}${(pendingCents / 100).toFixed(2)}`} />
           <StatCard icon={Clock} label="Paid Out" value={`${CURRENCY_SYMBOL}${(paidCents / 100).toFixed(2)}`} />
@@ -156,7 +156,7 @@ export default function CreatorDashboard() {
             {CURRENCY_SYMBOL}{(totalEarnings / 100).toFixed(2)}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            {monthConversions >= 100 ? "🔥 Bonus tier active — $1.50/install" : `${100 - monthConversions} more to unlock bonus tier`}
+            {monthConversions >= 100 ? "Bonus tier active — $1.50 / Premium upgrade" : `${100 - monthConversions} more Premium upgrades to unlock $1.50 tier`}
           </p>
         </motion.div>
 
