@@ -18,8 +18,8 @@ export interface SwipeCard {
   authorName?: string | null;
 }
 
-const TOP_POSTS_LIMIT = 10;
-const TOP_OUTFITS_LIMIT = 20;
+const TOP_POSTS_LIMIT = 100;
+const TOP_OUTFITS_LIMIT = 100;
 
 async function fetchTopWeeklyPosts(): Promise<SwipeCard[]> {
   // 90-day window so recent (but not last-7-day) posts still surface in the home swipe.
