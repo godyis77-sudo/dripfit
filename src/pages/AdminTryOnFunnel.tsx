@@ -96,6 +96,8 @@ export default function AdminTryOnFunnel() {
         </div>
       </header>
 
+      <AdminNav />
+
       <main className="max-w-5xl mx-auto px-4 pt-6 space-y-6">
         {/* Window selector */}
         <div className="flex items-center gap-2">
