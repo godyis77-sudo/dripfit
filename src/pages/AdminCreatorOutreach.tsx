@@ -101,6 +101,8 @@ export default function AdminCreatorOutreach() {
   const qc = useQueryClient();
 
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [tierFilter, setTierFilter] = useState<string>("all");
+  const [cadenceMode, setCadenceMode] = useState<"none" | "due" | "stale" | "awaiting">("none");
   const [search, setSearch] = useState("");
   const [activeLead, setActiveLead] = useState<Lead | null>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -131,16 +133,39 @@ export default function AdminCreatorOutreach() {
     enabled: !!user && isAdmin === true,
   });
 
+  const cadenceBuckets = useMemo(() => {
+    const due: Lead[] = [];
+    const stale: Lead[] = [];
+    const awaiting: Lead[] = [];
+    leads.forEach((l) => {
+      const d = daysSince(l.last_contacted_at);
+      if (l.status === "contacted") {
+        if (d >= 4) due.push(l);
+        else awaiting.push(l);
+      } else if (l.status === "followed_up") {
+        if (d >= 10) stale.push(l);
+        else awaiting.push(l);
+      }
+    });
+    return { due, stale, awaiting };
+  }, [leads]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return leads.filter((l) => {
-      if (statusFilter !== "all" && l.status !== statusFilter) return false;
+    let base: Lead[] = leads;
+    if (cadenceMode === "due") base = cadenceBuckets.due;
+    else if (cadenceMode === "stale") base = cadenceBuckets.stale;
+    else if (cadenceMode === "awaiting") base = cadenceBuckets.awaiting;
+
+    return base.filter((l) => {
+      if (cadenceMode === "none" && statusFilter !== "all" && l.status !== statusFilter) return false;
+      if (tierFilter !== "all" && l.tier !== tierFilter) return false;
       if (!q) return true;
-      return [l.name, l.email, l.handle, l.platform]
+      return [l.name, l.email, l.handle, l.platform, l.segment]
         .filter(Boolean)
         .some((v) => v!.toString().toLowerCase().includes(q));
     });
-  }, [leads, statusFilter, search]);
+  }, [leads, statusFilter, tierFilter, search, cadenceMode, cadenceBuckets]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: leads.length };
