@@ -47,15 +47,19 @@ function getPreviousWeekId(weekId: string): string {
   return `${year}-W${String(w - 1).padStart(2, '0')}`;
 }
 
-async function fetchOutfits(weekId: string, gender?: string): Promise<WeeklyOutfit[]> {
-  // Single round-trip: outfits with embedded items, ordered, gender-filtered at DB level.
+async function fetchOutfits(weekId: string | null, gender?: string): Promise<WeeklyOutfit[]> {
+  // Pool across all weeks when weekId is null. Newest weeks first.
   let query = supabase
     .from('weekly_outfits')
     .select('*, weekly_outfit_items(*)')
-    .eq('week_id', weekId)
     .eq('is_active', true)
+    .order('week_id', { ascending: false })
     .order('sort_order', { ascending: true })
-    .limit(40);
+    .limit(200);
+
+  if (weekId) {
+    query = query.eq('week_id', weekId);
+  }
 
   if (gender && gender !== 'all') {
     // Match exact gender or null (unisex / unspecified)
