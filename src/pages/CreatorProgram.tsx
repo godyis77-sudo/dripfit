@@ -10,8 +10,8 @@ import CreatorApplicationForm from '@/components/creator/CreatorApplicationForm'
 
 const HOW_IT_WORKS = [
   { icon: Link2, title: 'Get Your Link', desc: 'Approved creators receive a unique referral URL and custom promo codes that drop 10 bonus try-ons for every redeemer.' },
-  { icon: Sparkles, title: 'Share The Drop', desc: 'Post fits, link in bio, share with your community. Every install attributed to you tracks automatically — no pixels, no plugins.' },
-  { icon: BarChart3, title: 'Track In Real Time', desc: 'Your dashboard shows installs, conversions, monthly tier progress, and pending earnings — updated the moment they happen.' },
+  { icon: Sparkles, title: 'Share The Drop', desc: 'Post fits, link in bio, share with your community. Every signup attributed to you tracks automatically — no pixels, no plugins.' },
+  { icon: BarChart3, title: 'Track In Real Time', desc: 'Your dashboard shows referrals, Premium conversions, monthly tier progress, and pending earnings — updated the moment they happen.' },
   { icon: Wallet, title: 'Get Paid', desc: 'Request payout once you hit $25. PayPal or bank transfer. Processed within 7 business days.' },
 ];
 
