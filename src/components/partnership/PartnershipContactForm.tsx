@@ -41,6 +41,14 @@ export default function PartnershipContactForm() {
       if (error) throw error;
       setSubmitted(true);
       toast({ title: 'Thanks — we\u2019ll be in touch within 48 hours.' });
+      supabase.functions.invoke('send-transactional-email', {
+        body: {
+          templateName: 'partnership-confirmation',
+          recipientEmail: form.email.toLowerCase().trim(),
+          idempotencyKey: `partnership-${form.email.toLowerCase().trim()}-${Date.now()}`,
+          templateData: { companyName: form.company_name, role: form.role },
+        },
+      }).catch(() => {});
     } catch (err: any) {
       toast({
         title: 'Something went wrong.',
