@@ -833,7 +833,7 @@ async function processOutfit(
   console.log(`Generating v3 hero for "${outfit.title}" (${items.length} items, ${outfit.gender || "unisex"}, occasion: ${outfit.occasion})`);
 
   // deno-lint-ignore no-explicit-any
-  const prompt = buildPrompt(items as any, outfit.occasion, outfit.gender, poseIndex);
+  const prompt = buildPrompt(items as any, outfit.occasion, outfit.gender, poseIndex, outfitId);
   const base64 = await generateHeroImage(prompt, apiKey);
 
   if (!base64) {
