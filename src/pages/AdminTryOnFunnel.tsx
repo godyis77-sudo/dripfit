@@ -8,6 +8,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 type FunnelMetrics = {
   window_days: number;
