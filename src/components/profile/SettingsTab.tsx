@@ -69,6 +69,13 @@ const SettingsTab = ({
   const [shoeSize, setShoeSize] = useState('');
   const [editingShoe, setEditingShoe] = useState(false);
   const [shoeValue, setShoeValue] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' as any }).then(({ data }) => {
+      setIsAdmin(!!data);
+    });
+  }, [user.id]);
 
   // Load gender + shoe size from DB
   useEffect(() => {
