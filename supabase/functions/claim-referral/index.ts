@@ -145,32 +145,9 @@ Deno.serve(async (req) => {
     }
 
     // ─── Creator Commission Logic ───────────────────────────────────────
-    const { data: isCreator } = await admin.rpc("has_role", {
-      _user_id: referrer.user_id,
-      _role: "creator",
-    });
-
-    if (isCreator) {
-      const monthKey = getMonthKey();
-
-      const { data: monthCount } = await admin.rpc("get_creator_month_count", {
-        p_creator_id: referrer.user_id,
-        p_month_key: monthKey,
-      });
-
-      const { amountCents, tierLabel } = resolveCommission(monthCount ?? 0);
-
-      await admin.from("creator_commissions").insert({
-        creator_id: referrer.user_id,
-        referee_id: userId,
-        referral_id: referralRow?.id ?? null,
-        amount_cents: amountCents,
-        currency: COMMISSION_CURRENCY,
-        tier_label: tierLabel,
-        status: "pending",
-        month_key: monthKey,
-      });
-    }
+    // Commissions are NO LONGER awarded at signup.
+    // They are awarded only when the referee upgrades to Premium —
+    // see supabase/functions/check-subscription/index.ts.
 
     return new Response(JSON.stringify({ data: { success: true, promo_applied: promoApplied, bonus_tryons: bonusTryons } }), {
       status: 200,
