@@ -67,6 +67,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const AdminRetailers = lazy(() => import("./pages/AdminRetailers"));
 const AdminCommissions = lazy(() => import("./pages/AdminCommissions"));
 const AdminTryOnFunnel = lazy(() => import("./pages/AdminTryOnFunnel"));
+const AdminCreatorOutreach = lazy(() => import("./pages/AdminCreatorOutreach"));
 const CreatorDashboard = lazy(() => import("./pages/CreatorDashboard"));
 const CreatorProgram = lazy(() => import("./pages/CreatorProgram"));
 const Waitlist = lazy(() => import("./pages/Waitlist"));
