@@ -42,6 +42,21 @@ const CreatorProgram = () => {
     path: '/creators',
   });
   const { user } = useAuth();
+  const [founderStat, setFounderStat] = useState<{ claimed: number; total: number } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const [{ count: total }, { count: claimed }] = await Promise.all([
+        supabase.from('access_codes').select('*', { count: 'exact', head: true }),
+        supabase.from('access_codes').select('*', { count: 'exact', head: true }).eq('is_used', true),
+      ]);
+      if (active && typeof total === 'number' && typeof claimed === 'number') {
+        setFounderStat({ claimed, total: Math.max(total, 100) });
+      }
+    })();
+    return () => { active = false; };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-24">
@@ -61,7 +76,7 @@ const CreatorProgram = () => {
             Real-time tracking. $25 minimum payout. No gimmicks.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="mailto:hello@dripfitcheck.com?subject=Creator%20Program%20Application">
+            <a href="#apply">
               <Button size="lg" className="w-full sm:w-auto gap-2">
                 Apply Now <ArrowRight className="h-4 w-4" />
               </Button>
@@ -75,6 +90,24 @@ const CreatorProgram = () => {
             )}
           </div>
         </div>
+      </section>
+
+      {/* ── Social Proof ────────────────────────────────── */}
+      <section className="max-w-3xl mx-auto px-6 -mt-4 mb-4">
+        <Link
+          to="/founders"
+          className="block rounded-xl border border-primary/25 bg-primary/5 px-5 py-3 text-center hover:bg-primary/10 transition-colors"
+        >
+          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary/80 mb-1 inline-flex items-center gap-2">
+            <Users className="h-3 w-3" /> Founding Members Program
+          </p>
+          <p className="text-sm text-foreground">
+            <span className="font-display font-bold text-primary">
+              {founderStat ? `${founderStat.claimed}/${founderStat.total}` : '—/100'}
+            </span>{' '}
+            spots claimed · Creator Program launching alongside
+          </p>
+        </Link>
       </section>
 
       {/* ── Commission Tiers ────────────────────────────── */}
