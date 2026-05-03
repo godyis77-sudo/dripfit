@@ -455,7 +455,12 @@ function LeadDetailDrawer({
   const [handle, setHandle] = useState(lead.handle ?? "");
   const [profileUrl, setProfileUrl] = useState(lead.profile_url ?? "");
   const [followers, setFollowers] = useState(lead.follower_count?.toString() ?? "");
+  const [segment, setSegment] = useState(lead.segment ?? "");
   const [adminNotes, setAdminNotes] = useState(lead.admin_notes ?? "");
+  const [pitchOpen, setPitchOpen] = useState(false);
+  const [pitchKind, setPitchKind] = useState<"pitch" | "followup">("pitch");
+  const [personalNote, setPersonalNote] = useState("");
+  const [sendingPitch, setSendingPitch] = useState(false);
 
   const { data: notes = [], isLoading: notesLoading } = useQuery<OutreachNote[]>({
     queryKey: ["outreach-notes", lead.id],
@@ -506,9 +511,70 @@ function LeadDetailDrawer({
       handle: handle.trim() || null,
       profile_url: profileUrl.trim() || null,
       follower_count: followers ? parseInt(followers, 10) || null : null,
+      segment: segment.trim() || null,
       admin_notes: adminNotes.trim() || null,
     });
     toast({ title: "Saved" });
+  };
+
+  const sendPitch = async () => {
+    setSendingPitch(true);
+    try {
+      const templateName = pitchKind === "pitch" ? "creator-pitch" : "creator-pitch-followup";
+      const templateData =
+        pitchKind === "pitch"
+          ? {
+              name: lead.name?.split(" ")[0] || lead.name,
+              personalNote: personalNote.trim() || undefined,
+              ctaUrl: "https://dripfitcheck.com",
+            }
+          : {
+              name: lead.name?.split(" ")[0] || lead.name,
+              ctaUrl: "https://dripfitcheck.com",
+            };
+
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName,
+          recipientEmail: lead.email,
+          idempotencyKey: `creator-${pitchKind}-${lead.id}-${Date.now()}`,
+          templateData,
+        },
+      });
+      if (error) throw error;
+
+      // Log activity + advance status
+      await supabase.from("creator_outreach_notes" as any).insert({
+        lead_id: lead.id,
+        author_id: userId,
+        kind: "email_sent",
+        body:
+          pitchKind === "pitch"
+            ? `Sent pitch email${personalNote.trim() ? `\n\nPersonal note: ${personalNote.trim()}` : ""}`
+            : "Sent Day 4 follow-up email",
+      });
+
+      const nextStatus =
+        pitchKind === "pitch" && (lead.status === "new" || lead.status === "contacted")
+          ? "contacted"
+          : pitchKind === "followup"
+          ? "followed_up"
+          : lead.status;
+
+      const patch: Partial<Lead> = { last_contacted_at: new Date().toISOString() };
+      if (nextStatus !== lead.status) patch.status = nextStatus;
+      onPatch(patch);
+
+      qc.invalidateQueries({ queryKey: ["outreach-notes", lead.id] });
+      qc.invalidateQueries({ queryKey: ["admin-creator-leads"] });
+      setPitchOpen(false);
+      setPersonalNote("");
+      toast({ title: pitchKind === "pitch" ? "Pitch sent" : "Follow-up sent" });
+    } catch (err: any) {
+      toast({ title: "Send failed", description: err?.message ?? "Unknown error", variant: "destructive" });
+    } finally {
+      setSendingPitch(false);
+    }
   };
 
   return (
