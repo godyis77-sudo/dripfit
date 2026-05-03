@@ -13,6 +13,8 @@ import {
   ExternalLink,
   Trash2,
   Search,
+  Send,
+  Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,6 +38,8 @@ type Lead = {
   follower_count: number | null;
   last_contacted_at: string | null;
   admin_notes: string | null;
+  tier: string | null;
+  segment: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -52,11 +56,25 @@ type OutreachNote = {
 const STATUS_OPTIONS = [
   { value: "new", label: "New", color: "bg-sky-500/15 text-sky-300 border-sky-500/30" },
   { value: "contacted", label: "Contacted", color: "bg-amber-500/15 text-amber-300 border-amber-500/30" },
+  { value: "followed_up", label: "Followed Up", color: "bg-orange-500/15 text-orange-300 border-orange-500/30" },
   { value: "replied", label: "Replied", color: "bg-violet-500/15 text-violet-300 border-violet-500/30" },
   { value: "approved", label: "Approved", color: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
   { value: "active", label: "Active", color: "bg-primary/15 text-primary border-primary/30" },
   { value: "declined", label: "Declined", color: "bg-muted text-muted-foreground border-border" },
+  { value: "ghosted", label: "Ghosted", color: "bg-muted text-muted-foreground border-border" },
 ];
+
+const TIER_OPTIONS = [
+  { value: "nano", label: "Nano (<10K)" },
+  { value: "micro", label: "Micro (10–50K)" },
+  { value: "mid", label: "Mid (50–250K)" },
+  { value: "macro", label: "Macro (250K+)" },
+];
+
+const daysSince = (iso: string | null) => {
+  if (!iso) return Infinity;
+  return (Date.now() - new Date(iso).getTime()) / 86400000;
+};
 
 const KIND_ICON: Record<string, any> = {
   note: StickyNote,
