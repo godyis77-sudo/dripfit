@@ -315,12 +315,52 @@ const CAMPAIGNS: Record<string, CampaignRef> = {
 };
 
 
-/* ── Gender model descriptions ────────────────────────────────── */
+/* ── Gender model variation pools ─────────────────────────────── */
+/* Each outfit gets a UNIQUE model — varied ethnicity, age, hair, and
+   features. We rotate through deep pools (deterministic per outfit id)
+   so the same face/look never repeats across the weekly drop. */
 
-const GENDER_MODELS: Record<string, string> = {
-  mens: "a fit male model in his mid-20s with contemporary hairstyle, subtle stubble, strong jawline, naturally confident expression — think Vogue Homme or GQ editorial",
-  womens: "a stylish female model in her mid-20s with contemporary hairstyle, natural makeup, effortlessly chic expression — think Vogue or SSENSE editorial",
-};
+const MENS_MODELS: string[] = [
+  "a tall East Asian male model, late 20s, sharp cheekbones, jet-black undercut, clean-shaven, lean athletic build, calm confident expression",
+  "a Black male model, mid-20s, close-cropped natural hair, defined jawline, deep brown skin, broad shoulders, quietly intense gaze",
+  "a Latino male model, early 30s, wavy dark brown hair swept back, neatly trimmed beard, olive skin, lean build, easy charisma",
+  "a Scandinavian male model, mid-20s, ash-blonde tousled hair, light stubble, fair skin with subtle freckles, slim runway build",
+  "a South Asian male model, late 20s, thick black hair with a side part, full beard, warm brown skin, athletic frame, magnetic stare",
+  "a mixed-race male model, early 20s, curly dark brown hair, hazel eyes, golden-tan skin, swimmer's build, soft confident smile",
+  "a Middle Eastern male model, late 20s, dark wavy hair, neatly groomed beard, deep olive skin, broad chest, sculptural features",
+  "a Korean male model, early 20s, soft straight black hair with a curtain fringe, smooth fair skin, slender frame, refined editorial energy",
+  "a French male model, early 30s, salt-and-pepper short hair, fine stubble, fair skin, elegant lean build, intellectual gaze",
+  "a Brazilian male model, mid-20s, sun-kissed brown skin, dark curly hair, athletic surfer build, relaxed confident posture",
+  "a Pacific Islander male model, late 20s, long black hair tied back, broad-shouldered, warm brown skin, grounded quiet presence",
+  "a redheaded Irish male model, mid-20s, copper hair, freckled fair skin, lean wiry build, sharp blue eyes, understated cool",
+];
+
+const WOMENS_MODELS: string[] = [
+  "a Black female model, mid-20s, natural curly afro, deep brown skin, long limbs, high cheekbones, serene editorial gaze",
+  "a East Asian female model, early 20s, sleek straight black hair past shoulders, porcelain skin, delicate features, minimalist elegance",
+  "a Latina female model, late 20s, long wavy chestnut hair, bronzed skin, warm brown eyes, soft hourglass silhouette",
+  "a Scandinavian female model, mid-20s, platinum blonde blunt bob, fair skin, sharp jaw, slim runway frame, cool unbothered stare",
+  "a South Asian female model, late 20s, glossy black hair half-up, deep golden-brown skin, defined brows, graceful tall posture",
+  "a mixed-race female model, early 20s, voluminous curly chestnut hair, golden-tan skin, freckled nose, athletic feminine build",
+  "a Middle Eastern female model, mid-20s, long dark brown hair with subtle waves, olive skin, striking dark eyes, refined poise",
+  "a Korean female model, early 20s, glossy short bob with curtain bangs, smooth fair skin, dewy minimal makeup, soft confident posture",
+  "a French female model, late 20s, undone shoulder-length brunette hair, fair skin, slim frame, effortless Parisian cool",
+  "a Brazilian female model, mid-20s, long honey-brown beach waves, sun-kissed skin, athletic curves, radiant easy smile",
+  "a Pacific Islander female model, late 20s, long black wavy hair, warm brown skin, full features, grounded sensual presence",
+  "a redheaded Scottish female model, early 20s, long copper waves, freckled porcelain skin, slender build, quietly intense gaze",
+];
+
+function hashString(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function pickModelDescription(genderKey: "mens" | "womens", outfitId: string): string {
+  const pool = genderKey === "womens" ? WOMENS_MODELS : MENS_MODELS;
+  const idx = hashString(outfitId || Math.random().toString()) % pool.length;
+  return pool[idx];
+}
 
 /* ── Pose pool ────────────────────────────────────────────────── */
 
@@ -371,11 +411,12 @@ function buildPrompt(
   items: OutfitItem[],
   occasion: string,
   gender: string | null,
-  poseIndex?: number
+  poseIndex?: number,
+  outfitId?: string,
 ): { text: string; imageUrls: string[] } {
   const campaign = CAMPAIGNS[occasion] || CAMPAIGNS.weekend_casual;
   const genderKey = gender === "womens" ? "womens" : "mens";
-  const modelDesc = GENDER_MODELS[genderKey];
+  const modelDesc = pickModelDescription(genderKey, outfitId || `${occasion}-${Math.random()}`);
   const pose = POSE_POOL[(poseIndex ?? Math.floor(Math.random() * POSE_POOL.length)) % POSE_POOL.length];
 
   const brands = [...new Set(items.map(i => i.brand).filter(Boolean))];
@@ -491,6 +532,14 @@ ${modelDesc}
 POSE: ${pose}
 Dynamic natural energy — NOT stiff or mannequin-like. ${genderKey === "womens" ? "Feminine silhouette, natural curves." : "Masculine build, clean lines."}
 
+ANATOMY LOCK (non-negotiable):
+- EXACTLY one head, one neck, one torso, two arms, two hands with five fingers each, two legs, two feet.
+- Feet point in the natural forward direction of the leg they are attached to — NEVER backward, sideways, or detached.
+- Knees and elbows bend in anatomically correct directions only. No double joints, no inverted limbs.
+- Hands have correct finger count and natural proportions — no fused, missing, extra, or warped fingers.
+- Eyes are level and symmetrical. Ears match. No facial distortion, no melted features, no doubled faces.
+- Body proportions are realistic — no extra limbs, no floating limbs, no limbs passing through clothing or the body.
+
 ═══ LAYER 4: LOCATION + ARCHITECTURE ═══
 ${campaign.location}
 ${campaign.architecture}
@@ -513,9 +562,10 @@ ${campaign.colorGrade}
 ═══ LAYER 8: NEGATIVE DIRECTION ═══
 ${campaign.negative}
 No text overlays. No watermarks. No mannequins. No flat-lay. No product-only shots. Only styled on-body editorial.
+ANATOMY NEGATIVES: No backward feet, no rotated/twisted ankles, no extra fingers, no missing fingers, no fused fingers, no extra limbs, no missing limbs, no detached limbs, no floating limbs, no warped hands, no deformed face, no asymmetric eyes, no melted features, no doubled heads, no second face, no body horror, no anatomical impossibilities, no limbs clipping through fabric or body.
 
 ═══ FINAL CHECK ═══
-Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette AND respects its per-item shape lock, (4) accessory count is exact — ${bagCount === 0 ? "ZERO bags visible" : `exactly ${bagCount} bag${bagCount === 1 ? "" : "s"}`} and ONE pair of shoes only.`;
+Portrait orientation (3:4). Confirm BEFORE rendering: (1) head fully in frame with breathing room above, (2) BOTH FEET AND FULL SHOES visible with floor padding beneath them — no ankle/toe crop, (3) every listed garment matches its reference image in color, pattern, graphic, and silhouette AND respects its per-item shape lock, (4) accessory count is exact — ${bagCount === 0 ? "ZERO bags visible" : `exactly ${bagCount} bag${bagCount === 1 ? "" : "s"}`} and ONE pair of shoes only, (5) anatomy is correct — feet point forward, hands have five natural fingers, no extra/missing limbs, no rotated joints, no facial distortion.`;
 
   return { text, imageUrls };
 }
@@ -792,7 +842,7 @@ async function processOutfit(
   console.log(`Generating v3 hero for "${outfit.title}" (${items.length} items, ${outfit.gender || "unisex"}, occasion: ${outfit.occasion})`);
 
   // deno-lint-ignore no-explicit-any
-  const prompt = buildPrompt(items as any, outfit.occasion, outfit.gender, poseIndex);
+  const prompt = buildPrompt(items as any, outfit.occasion, outfit.gender, poseIndex, outfitId);
   const base64 = await generateHeroImage(prompt, apiKey);
 
   if (!base64) {
