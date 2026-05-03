@@ -8,7 +8,7 @@ import { useCart } from '@/hooks/useCart';
 import type { Post, SeedPost, Retailer, FilterType, GenderKey } from '@/components/community/community-types';
 import { seedToPost, isValidImageUrl } from '@/components/community/community-types';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 100;
 
 interface UseCommunityFeedOptions {
   userId?: string;
