@@ -481,33 +481,95 @@ export type Database = {
       }
       creator_leads: {
         Row: {
+          admin_notes: string | null
+          assigned_to: string | null
           audience_size: string
           created_at: string
           email: string
+          follower_count: number | null
+          handle: string | null
           id: string
+          last_contacted_at: string | null
           message: string | null
           name: string
           platform: string
+          profile_url: string | null
+          source: string
+          status: string
+          updated_at: string
         }
         Insert: {
+          admin_notes?: string | null
+          assigned_to?: string | null
           audience_size: string
           created_at?: string
           email: string
+          follower_count?: number | null
+          handle?: string | null
           id?: string
+          last_contacted_at?: string | null
           message?: string | null
           name: string
           platform: string
+          profile_url?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
         }
         Update: {
+          admin_notes?: string | null
+          assigned_to?: string | null
           audience_size?: string
           created_at?: string
           email?: string
+          follower_count?: number | null
+          handle?: string | null
           id?: string
+          last_contacted_at?: string | null
           message?: string | null
           name?: string
           platform?: string
+          profile_url?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
+      }
+      creator_outreach_notes: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          lead_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lead_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lead_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_outreach_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "creator_leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_send_log: {
         Row: {
