@@ -16,13 +16,13 @@ const HOW_IT_WORKS = [
 ];
 
 const TIERS = [
-  { label: 'BASE TIER', rate: '$0.50', unit: 'per install', detail: 'First 99 verified installs each calendar month.' },
-  { label: 'BONUS TIER', rate: '$1.50', unit: 'per install', detail: 'Auto-unlocks at install #100. Resets monthly.', highlight: true },
+  { label: 'BASE TIER', rate: '$1.00', unit: 'per Premium upgrade', detail: 'First 99 referred Premium upgrades each calendar month.' },
+  { label: 'BONUS TIER', rate: '$1.50', unit: 'per Premium upgrade', detail: 'Auto-unlocks at upgrade #100. Resets monthly.', highlight: true },
 ];
 
 const PERKS = [
   'Custom promo code dropping 10 bonus try-ons for your audience',
-  'Real-time dashboard with install, conversion, and earnings data',
+  'Real-time dashboard with referral, conversion, and earnings data',
   'Lifetime Premium access while active in the program',
   'Early access to new features, drops, and editorial campaigns',
   'Priority support and direct line to the founding team',
@@ -30,9 +30,9 @@ const PERKS = [
 
 const FAQ = [
   { q: 'Who qualifies?', a: 'Style creators, stylists, fashion editors, and community builders with an engaged audience. We look at fit, not follower count.' },
-  { q: 'When do I get paid?', a: 'Once your pending balance hits $25. Submit a payout request from your dashboard — processed within 7 business days.' },
-  { q: 'How is attribution tracked?', a: 'Each creator gets a unique referral URL and promo code. Both are tied to your account on install — no third-party cookies required.' },
-  { q: 'Can I be removed from the program?', a: 'Yes. Fraudulent installs, self-referrals, or violating brand guidelines will end your access and forfeit pending commissions.' },
+  { q: 'When do I get paid?', a: 'Commissions are paid only when a referred user upgrades to Premium. Request payout once your pending balance hits $25 — processed within 7 business days.' },
+  { q: 'How is attribution tracked?', a: 'Each creator gets a unique referral URL and promo code. Both are tied to a user on signup. Commission triggers the moment that user activates Premium.' },
+  { q: 'Can I be removed from the program?', a: 'Yes. Fraudulent referrals, self-referrals, or violating brand guidelines will end your access and forfeit pending commissions.' },
 ];
 
 const CreatorProgram = () => {
