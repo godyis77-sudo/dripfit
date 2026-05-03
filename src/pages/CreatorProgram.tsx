@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, DollarSign, Link2, BarChart3, Wallet, ArrowRight, CheckCircle2, Mail } from 'lucide-react';
+import { Sparkles, DollarSign, Link2, BarChart3, Wallet, ArrowRight, CheckCircle2, Users } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import BrandLogo from '@/components/ui/BrandLogo';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import CreatorApplicationForm from '@/components/creator/CreatorApplicationForm';
 
 const HOW_IT_WORKS = [
   { icon: Link2, title: 'Get Your Link', desc: 'Approved creators receive a unique referral URL and custom promo codes that drop 10 bonus try-ons for every redeemer.' },
