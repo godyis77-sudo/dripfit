@@ -153,13 +153,15 @@ const Analyze = () => {
     setRevealedKeys(REVEAL_ORDER);
     setScanComplete(true);
     saveToDatabase(data);
-    const scanResult = { id: crypto.randomUUID(), date: new Date().toISOString(), ...data };
-    setTimeout(() => {
-      navigate('/scan-success', {
-        state: { result: scanResult },
-        replace: true,
-      });
-    }, 1400);
+  };
+
+  const handleViewBodyMap = () => {
+    if (!realData) return;
+    const scanResult = { id: crypto.randomUUID(), date: new Date().toISOString(), ...realData };
+    navigate('/scan-success', {
+      state: { result: scanResult },
+      replace: true,
+    });
   };
 
   const analyzePhotos = async () => {
@@ -264,6 +266,23 @@ const Analyze = () => {
       <p className="text-[10px] font-mono text-primary/50 mt-3 tracking-wider">
         {revealedKeys.length} of {REVEAL_ORDER.length} measurements found
       </p>
+
+      {/* See body map CTA — appears on scan completion */}
+      {scanComplete && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-6"
+        >
+          <Button
+            onClick={handleViewBodyMap}
+            className="rounded-xl h-12 px-8 text-xs font-bold tracking-[0.2em] uppercase bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            See Body Map
+          </Button>
+        </motion.div>
+      )}
     </div>
   );
 };

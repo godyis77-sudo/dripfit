@@ -11,19 +11,30 @@ interface Props {
  * Rapidly cycles random digits for 600ms, then snaps to actual value.
  */
 const NeuralDataValue = ({ value, isHeight = false }: Props) => {
+  const hasValue = value !== null && value !== undefined;
   const [scrambling, setScrambling] = useState(true);
   const [display, setDisplay] = useState('---');
   const intervalRef = useRef<number>(0);
 
   useEffect(() => {
-    // Start scramble
+    // Continuous scramble until a real value is provided
     setScrambling(true);
     intervalRef.current = window.setInterval(() => {
-      const r1 = Math.floor(Math.random() * 900 + 100);
-      const r2 = Math.floor(Math.random() * 900 + 100);
-      setDisplay(`${r1}–${r2}`);
-    }, 30);
+      if (isHeight) {
+        const r = Math.floor(Math.random() * 60 + 150);
+        setDisplay(`${r}`);
+      } else {
+        const r1 = Math.floor(Math.random() * 60 + 60);
+        const r2 = r1 + Math.floor(Math.random() * 8 + 2);
+        setDisplay(`${r1}–${r2}`);
+      }
+    }, 60);
 
+    if (!hasValue) {
+      return () => clearInterval(intervalRef.current);
+    }
+
+    // Lock-in once the real value arrives
     const timer = window.setTimeout(() => {
       clearInterval(intervalRef.current);
       setScrambling(false);
@@ -33,7 +44,7 @@ const NeuralDataValue = ({ value, isHeight = false }: Props) => {
       clearInterval(intervalRef.current);
       clearTimeout(timer);
     };
-  }, [value]);
+  }, [value, hasValue, isHeight]);
 
   const finalText = (() => {
     if (!value) return '---';
