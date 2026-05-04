@@ -49,8 +49,8 @@ const MEASUREMENT_POSITIONS: Record<string, { top: string; topPct: number; side:
   inseam:   { top: '68%', topPct: 68, side: 'left: 4%',  align: 'left' },
 };
 
-/* Reduced from 24 → 16 to keep DOM under 40 active nodes */
-const HARVEST_PARTICLES = Array.from({ length: 16 }, (_, i) => {
+/* Reduced 16 → 10 to keep mid-scan animated DOM under 40 */
+const HARVEST_PARTICLES = Array.from({ length: 10 }, (_, i) => {
   const topPct = 5 + Math.random() * 88;
   const leftPct = 20 + Math.random() * 60;
   const positions = Object.values(MEASUREMENT_POSITIONS);
