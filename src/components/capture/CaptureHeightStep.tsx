@@ -29,9 +29,9 @@ const CaptureHeightStep = ({
   onHeightCmChange, onHeightFtChange, onHeightInChange, onUseCmChange,
   onRefObjectChange, onGenderSelect,
 }: CaptureHeightStepProps) => (
-  <motion.div key="height" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm pt-4">
+  <motion.div key="height" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm pt-1">
     <h2 className="font-display text-xl text-white mb-1 uppercase tracking-wider">Height.</h2>
-    <p className="text-[13px] text-white/40 mb-6">Improves mapping accuracy by 23%.</p>
+    <p className="text-[13px] text-white/40 mb-3">Improves mapping accuracy by 23%.</p>
 
     {/* Gender selector */}
     {genderLoaded && !genderSet && (
