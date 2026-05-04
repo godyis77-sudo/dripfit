@@ -13,22 +13,22 @@ interface Props {
   scanComplete?: boolean;
 }
 
+// Sleeve moved to right side at top:38% to avoid stacking with chest (top:26% left)
 const MEASUREMENT_POSITIONS: Record<string, { top: string; topPct: number; side: string; align: string }> = {
   height:   { top: '8%',  topPct: 8,  side: 'left: 4%',  align: 'left' },
   shoulder: { top: '20%', topPct: 20, side: 'right: 4%', align: 'right' },
   chest:    { top: '26%', topPct: 26, side: 'left: 4%',  align: 'left' },
-  bust:     { top: '30%', topPct: 30, side: 'right: 4%', align: 'right' },
-  sleeve:   { top: '36%', topPct: 36, side: 'left: 4%',  align: 'left' },
-  waist:    { top: '42%', topPct: 42, side: 'right: 4%', align: 'right' },
-  hips:     { top: '49%', topPct: 49, side: 'right: 4%', align: 'right' },
-  inseam:   { top: '65%', topPct: 65, side: 'left: 4%',  align: 'left' },
+  bust:     { top: '32%', topPct: 32, side: 'left: 4%',  align: 'left' },
+  sleeve:   { top: '38%', topPct: 38, side: 'right: 4%', align: 'right' },
+  waist:    { top: '45%', topPct: 45, side: 'left: 4%',  align: 'left' },
+  hips:     { top: '52%', topPct: 52, side: 'right: 4%', align: 'right' },
+  inseam:   { top: '68%', topPct: 68, side: 'left: 4%',  align: 'left' },
 };
 
-/* Stage 2: Particles spawn at fixed positions and burst toward nearest measurement */
-const HARVEST_PARTICLES = Array.from({ length: 24 }, (_, i) => {
+/* Reduced from 24 → 16 to keep DOM under 40 active nodes */
+const HARVEST_PARTICLES = Array.from({ length: 16 }, (_, i) => {
   const topPct = 5 + Math.random() * 88;
   const leftPct = 20 + Math.random() * 60;
-  // Find nearest measurement position
   const positions = Object.values(MEASUREMENT_POSITIONS);
   let nearest = positions[0];
   let minDist = Infinity;
@@ -49,7 +49,8 @@ const HARVEST_PARTICLES = Array.from({ length: 24 }, (_, i) => {
   };
 });
 
-const SPARKLES = Array.from({ length: 14 }, (_, i) => ({
+/* Reduced from 14 → 8 */
+const SPARKLES = Array.from({ length: 8 }, (_, i) => ({
   id: i,
   left: `${10 + Math.random() * 80}%`,
   top: `${10 + Math.random() * 80}%`,
@@ -71,7 +72,6 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
     }
   }, [revealedCount]);
 
-  // Stage 4: Haptic/visual pop on completion
   useEffect(() => {
     if (scanComplete) {
       setCompletionFlash(true);
@@ -84,7 +84,6 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
   const brightnessRamp = 0.55 + revealedCount * 0.07;
   const glowIntensity = 30 + revealedCount * 8;
 
-  // Stage 1: LiDAR rim-light mask — silhouette visible only near scan line
   const rimMask = useMemo(() => {
     const center = scanLineY;
     const range = 12;
@@ -93,15 +92,15 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
 
   return (
     <div
-      className="relative w-full max-w-[380px] mx-auto rounded-2xl overflow-hidden mb-6"
+      className="relative w-full max-w-[380px] mx-auto rounded-2xl overflow-hidden mb-6 bg-background"
       style={{
-        boxShadow: `0 0 ${glowIntensity}px ${6 + revealedCount * 3}px hsl(45 88% 50% / ${0.2 + revealedCount * 0.04}), 0 0 ${glowIntensity * 2}px ${glowIntensity / 2}px hsl(45 88% 50% / 0.1), inset 0 0 30px 5px hsl(45 88% 50% / 0.05)`,
-        border: '1px solid hsl(45 88% 50% / 0.15)',
+        boxShadow: `0 0 ${glowIntensity}px ${6 + revealedCount * 3}px hsl(var(--primary) / ${0.2 + revealedCount * 0.04}), 0 0 ${glowIntensity * 2}px ${glowIntensity / 2}px hsl(var(--primary) / 0.1), inset 0 0 30px 5px hsl(var(--primary) / 0.05)`,
+        border: '1px solid hsl(var(--primary) / 0.15)',
         filter: completionFlash ? 'saturate(200%) contrast(120%)' : 'none',
         transition: 'filter 0.15s ease-out',
       }}
     >
-      {/* Hidden full-brightness image for layout sizing */}
+      {/* Hidden sizing image */}
       <img
         src={bodySilhouette}
         className="w-full h-auto block invisible"
@@ -109,7 +108,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         aria-hidden
       />
 
-      {/* Stage 1: LiDAR rim-light silhouette — masked to scan line */}
+      {/* Rim-light masked silhouette with luminous gold edge-glow */}
       <motion.div
         className="absolute inset-0 z-[3]"
         style={{
@@ -118,8 +117,8 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         }}
         animate={{
           filter: scanComplete
-            ? 'brightness(1.35) saturate(1.3) contrast(1.05) drop-shadow(0 0 0px transparent)'
-            : `brightness(${brightnessRamp + 0.3}) saturate(1.2) drop-shadow(0 0 15px hsl(45 95% 60% / 0.8))`,
+            ? 'brightness(1.35) saturate(1.3) contrast(1.05) drop-shadow(0 0 8px hsl(var(--primary) / 0.9)) drop-shadow(0 0 20px hsl(var(--primary) / 0.5))'
+            : `brightness(${brightnessRamp + 0.3}) saturate(1.2) drop-shadow(0 0 4px hsl(var(--primary) / 0.7)) drop-shadow(0 0 15px hsl(var(--primary) / 0.4))`,
         }}
         transition={{ duration: scanComplete ? 1 : 0.15 }}
       >
@@ -130,13 +129,13 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         />
       </motion.div>
 
-      {/* Dim base layer visible behind the mask */}
+      {/* Dim base layer with edge glow */}
       <motion.div
         className="absolute inset-0 z-[2]"
         animate={{
           filter: scanComplete
-            ? 'brightness(1.2) saturate(1.2)'
-            : `brightness(${brightnessRamp * 0.5}) saturate(0.6)`,
+            ? 'brightness(1.2) saturate(1.2) drop-shadow(0 0 6px hsl(var(--primary) / 0.6))'
+            : `brightness(${brightnessRamp * 0.5}) saturate(0.6) drop-shadow(0 0 3px hsl(var(--primary) / 0.35))`,
         }}
         transition={{ duration: 0.8 }}
       >
@@ -148,11 +147,15 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         />
       </motion.div>
 
-      {/* Dark overlay — fades gradually */}
+      {/* Background fill — keep DARK throughout; only slight fade for body reveal */}
       <motion.div
-        className="absolute inset-0 z-[4]"
-        style={{ background: 'hsl(var(--background))' }}
-        animate={{ opacity: Math.max(0.1, 0.45 - revealedCount * 0.05) }}
+        className="absolute inset-0 z-[1] bg-background"
+      />
+
+      {/* Soft overlay during scan */}
+      <motion.div
+        className="absolute inset-0 z-[4] bg-background"
+        animate={{ opacity: scanComplete ? 0 : Math.max(0.15, 0.4 - revealedCount * 0.04) }}
         transition={{ duration: 0.8 }}
       />
 
@@ -160,59 +163,58 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
       <motion.div
         className="absolute inset-0 pointer-events-none z-[5]"
         style={{
-          background: 'radial-gradient(ellipse at 50% 45%, hsl(45 88% 50% / 0.15) 0%, transparent 60%)',
+          background: 'radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.15) 0%, transparent 60%)',
         }}
         animate={{ opacity: [0.2, 0.6, 0.2] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      {/* Primary scan line — vibrant laser */}
+      {/* Primary scan line laser */}
       <motion.div
         className="absolute inset-x-0 pointer-events-none z-10"
         style={{
           top: `${scanLineY}%`,
           height: '1px',
-          background: 'linear-gradient(to right, transparent 0%, hsl(45 90% 55%) 10%, hsl(45 95% 70%) 50%, hsl(45 90% 55%) 90%, transparent 100%)',
-          boxShadow: '0 0 6px 3px hsl(45 88% 50% / 0.95), 0 0 16px 6px hsl(45 88% 50% / 0.5), 0 0 40px 12px hsl(45 88% 50% / 0.2)',
+          background: 'linear-gradient(to right, transparent 0%, hsl(var(--primary)) 10%, hsl(var(--primary) / 0.95) 50%, hsl(var(--primary)) 90%, transparent 100%)',
+          boxShadow: '0 0 6px 3px hsl(var(--primary) / 0.95), 0 0 16px 6px hsl(var(--primary) / 0.5), 0 0 40px 12px hsl(var(--primary) / 0.2)',
         }}
         animate={{ opacity: scanComplete ? 0 : 1 }}
         transition={{ duration: 0.5 }}
       />
 
-      {/* Scan line halo */}
+      {/* Wide scan halo above + below */}
       <div
         className="absolute inset-x-0 pointer-events-none z-[9] transition-all duration-100"
         style={{
-          top: `${Math.max(0, scanLineY - 4)}%`,
-          height: '5%',
-          background: 'linear-gradient(to bottom, transparent, hsl(45 88% 50% / 0.15), transparent)',
-          opacity: scanComplete ? 0 : 0.6,
+          top: `${Math.max(0, scanLineY - 5)}%`,
+          height: '10%',
+          background: 'linear-gradient(to bottom, transparent, hsl(var(--primary) / 0.18), transparent)',
+          opacity: scanComplete ? 0 : 0.7,
         }}
       />
 
-      {/* Trailing echo line */}
+      {/* Trailing wake below scan line */}
       <div
-        className="absolute inset-x-0 pointer-events-none z-[8]"
+        className="absolute inset-x-0 pointer-events-none transition-all duration-150 z-[7]"
         style={{
-          top: `${Math.max(0, scanLineY - 1.5)}%`,
-          height: '1px',
-          background: 'linear-gradient(to right, transparent 12%, hsl(45 88% 50% / 0.3) 35%, hsl(45 88% 50% / 0.3) 65%, transparent 88%)',
-          boxShadow: '0 0 4px 1px hsl(45 88% 50% / 0.2)',
+          top: `${scanLineY}%`,
+          height: '10%',
+          background: 'linear-gradient(to bottom, hsl(var(--primary) / 0.08), transparent)',
           opacity: scanComplete ? 0 : 1,
         }}
       />
 
-      {/* Wake trail */}
+      {/* Wake trail above */}
       <div
         className="absolute inset-x-0 top-0 pointer-events-none transition-all duration-150 z-[7]"
         style={{
           height: `${scanLineY}%`,
-          background: 'linear-gradient(to bottom, transparent, hsl(45 88% 50% / 0.02), hsl(45 88% 50% / 0.04))',
+          background: 'linear-gradient(to bottom, transparent, hsl(var(--primary) / 0.02), hsl(var(--primary) / 0.04))',
           opacity: scanComplete ? 0 : 1,
         }}
       />
 
-      {/* Horizontal grid lines */}
+      {/* Horizontal grid lines — every ~12% */}
       {[12, 24, 36, 48, 60, 72, 84].map(y => (
         <motion.div
           key={y}
@@ -220,9 +222,9 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
           style={{
             top: `${y}%`,
             height: '1px',
-            background: `hsl(45 88% 50% / ${scanLineY > y ? 0.1 : 0.02})`,
+            background: `hsl(var(--primary) / ${scanLineY > y ? 0.1 : 0.03})`,
           }}
-          animate={{ opacity: scanLineY > y ? 1 : 0.3 }}
+          animate={{ opacity: scanLineY > y ? 1 : 0.4 }}
           transition={{ duration: 0.4 }}
         />
       ))}
@@ -231,14 +233,14 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
       {SPARKLES.map(s => (
         <motion.div
           key={`sparkle-${s.id}`}
-          className="absolute rounded-full pointer-events-none z-[11]"
-          style={{ left: s.left, top: s.top, width: 2, height: 2, background: 'hsl(45 88% 75%)' }}
+          className="absolute rounded-full pointer-events-none z-[11] bg-primary"
+          style={{ left: s.left, top: s.top, width: 2, height: 2 }}
           animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5] }}
           transition={{ duration: s.duration, delay: s.delay, repeat: Infinity, ease: 'easeInOut' }}
         />
       ))}
 
-      {/* Stage 2: Harvest particles — triggered by scan line, drift to measurement tags */}
+      {/* Harvest particles */}
       {HARVEST_PARTICLES.map(p => {
         const activated = scanLineY >= p.topPct;
         if (!activated) return null;
@@ -251,23 +253,22 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               left: `${p.left}%`,
               top: `${p.topPct}%`,
               opacity: 0,
-              background: 'hsl(45 70% 45%)',
-              boxShadow: `0 0 4px 1px hsl(45 70% 45% / 0.4)`,
+              background: 'hsl(var(--primary) / 0.7)',
+              boxShadow: '0 0 4px 1px hsl(var(--primary) / 0.4)',
             }}
             animate={{
               left: [`${p.left + p.burstDx * 0.3}%`, `${p.targetLeft}%`],
               top: [`${p.topPct + p.burstDy * 0.3}%`, `${p.targetTop}%`],
               opacity: [0, 0.9, 0.7, 0],
-              background: ['hsl(45 70% 45%)', 'hsl(45 95% 85%)', 'hsl(45 95% 85%)'],
               boxShadow: [
-                '0 0 4px 1px hsl(45 70% 45% / 0.4)',
-                '0 0 8px 3px hsl(45 95% 80% / 0.7)',
-                '0 0 2px 1px hsl(45 88% 50% / 0.2)',
+                '0 0 4px 1px hsl(var(--primary) / 0.4)',
+                '0 0 8px 3px hsl(var(--primary) / 0.7)',
+                '0 0 2px 1px hsl(var(--primary) / 0.2)',
               ],
             }}
             transition={{
               duration: 0.8,
-              ease: [0.16, 1, 0.3, 1],
+              ease: luxuryEase,
               times: [0, 0.2, 0.7, 1],
             }}
           />
@@ -281,7 +282,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
             key={flashKey}
             className="absolute inset-0 pointer-events-none z-20"
             style={{
-              background: 'radial-gradient(ellipse at 50% 50%, hsl(45 90% 65% / 0.45) 0%, hsl(45 88% 50% / 0.15) 35%, transparent 65%)',
+              background: 'radial-gradient(ellipse at 50% 50%, hsl(var(--primary) / 0.45) 0%, hsl(var(--primary) / 0.15) 35%, transparent 65%)',
             }}
             initial={{ opacity: 1, scale: 0.98 }}
             animate={{ opacity: 0, scale: 1.02 }}
@@ -303,11 +304,11 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
           className={`absolute ${pos} ${border} border-primary w-7 h-7 rounded-sm`}
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 1.25, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' }}
-          style={{ boxShadow: '0 0 8px 2px hsl(45 88% 50% / 0.25)' }}
+          style={{ boxShadow: '0 0 8px 2px hsl(var(--primary) / 0.25)' }}
         />
       ))}
 
-      {/* Measurement labels with Stage 3: NeuralDataValue scramble */}
+      {/* Editorial measurement labels */}
       {revealedKeys.map((key) => {
         const pos = MEASUREMENT_POSITIONS[key];
         if (!pos) return null;
@@ -324,13 +325,12 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.5, ease: luxuryEase }}
           >
-            {/* Connecting line dot */}
+            {/* Connecting gold dot */}
             <motion.div
-              className="absolute rounded-full"
+              className="absolute rounded-full bg-primary"
               style={{
                 width: 4, height: 4,
-                background: 'hsl(45 88% 55%)',
-                boxShadow: '0 0 6px 2px hsl(45 88% 50% / 0.6)',
+                boxShadow: '0 0 6px 2px hsl(var(--primary) / 0.6)',
                 top: '50%',
                 [pos.align === 'left' ? 'right' : 'left']: -6,
                 transform: 'translateY(-50%)',
@@ -343,14 +343,11 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               style={{
                 textAlign: pos.align as 'left' | 'right',
                 background: 'hsl(var(--background) / 0.6)',
-                border: '1px solid hsl(45 88% 50% / 0.3)',
-                boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3), inset 0 0 12px hsl(45 88% 50% / 0.05)',
+                border: '1px solid hsl(var(--primary) / 0.3)',
+                boxShadow: '0 2px 8px hsl(0 0% 0% / 0.3), inset 0 0 12px hsl(var(--primary) / 0.05)',
               }}
             >
-              <p
-                className="text-[7px] font-bold tracking-[0.15em] uppercase opacity-70"
-                style={{ color: 'hsl(45 88% 60%)' }}
-              >
+              <p className="text-[7px] font-bold tracking-[0.15em] uppercase text-primary opacity-80">
                 {key}
               </p>
               {val ? (
@@ -379,72 +376,55 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
       <AnimatePresence>
         {scanComplete && (
           <>
-            {/* Stage 4: 3D Wireframe Crescendo */}
             <WireframeMesh />
 
-            {/* Initial bright flash */}
+            {/* Brief bright flash (0.3s) */}
             <motion.div
               className="absolute inset-0 pointer-events-none z-30"
-              style={{ background: 'hsl(45 90% 75%)' }}
+              style={{ background: 'hsl(var(--primary) / 0.85)' }}
               initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.95, 0] }}
-              transition={{ duration: 0.35, ease: 'easeOut' }}
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
             />
 
-            {/* Sustained gold illumination */}
+            {/* Subtle gold ring pulse expanding outward — body glows, not the bg */}
             <motion.div
               className="absolute inset-0 pointer-events-none z-[25]"
               style={{
-                background: 'radial-gradient(ellipse at 50% 40%, hsl(45 90% 55% / 0.55) 0%, hsl(45 88% 50% / 0.2) 45%, transparent 75%)',
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 1, 0.55, 1, 0.7] }}
-              transition={{ duration: 1.25, ease: 'easeInOut', times: [0, 0.12, 0.4, 0.65, 1] }}
-            />
-
-            {/* Gold ring burst */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none z-[25]"
-              style={{
-                border: '2px solid hsl(45 90% 55%)',
+                border: '1.5px solid hsl(var(--primary))',
                 borderRadius: '1rem',
-                boxShadow: 'inset 0 0 50px 12px hsl(45 88% 50% / 0.35), 0 0 70px 20px hsl(45 88% 50% / 0.45)',
+                boxShadow: '0 0 40px 8px hsl(var(--primary) / 0.35)',
               }}
-              initial={{ opacity: 0, scale: 0.94 }}
-              animate={{ opacity: [0, 1, 0.5, 1], scale: [0.94, 1.03, 0.98, 1] }}
-              transition={{ duration: 1.1, ease: 'easeOut' }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: [0, 0.9, 0], scale: [0.95, 1.08, 1.15] }}
+              transition={{ duration: 1.4, ease: 'easeOut', delay: 0.2 }}
             />
 
-            {/* Radial rays */}
+            {/* Second softer ring pulse */}
             <motion.div
-              className="absolute inset-0 pointer-events-none z-[24]"
+              className="absolute inset-0 pointer-events-none z-[25]"
               style={{
-                background: 'conic-gradient(from 0deg, transparent 0%, hsl(45 88% 50% / 0.08) 5%, transparent 10%, hsl(45 88% 50% / 0.06) 15%, transparent 20%, hsl(45 88% 50% / 0.08) 25%, transparent 30%, hsl(45 88% 50% / 0.06) 35%, transparent 40%, hsl(45 88% 50% / 0.08) 45%, transparent 50%, hsl(45 88% 50% / 0.06) 55%, transparent 60%, hsl(45 88% 50% / 0.08) 65%, transparent 70%, hsl(45 88% 50% / 0.06) 75%, transparent 80%, hsl(45 88% 50% / 0.08) 85%, transparent 90%, hsl(45 88% 50% / 0.06) 95%, transparent 100%)',
+                border: '1px solid hsl(var(--primary) / 0.6)',
+                borderRadius: '1rem',
               }}
-              initial={{ opacity: 0, rotate: 0 }}
-              animate={{ opacity: [0, 0.7, 0.4], rotate: 25 }}
-              transition={{ duration: 1.5, ease: 'easeOut' }}
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{ opacity: [0, 0.6, 0], scale: [1, 1.18, 1.25] }}
+              transition={{ duration: 1.6, ease: 'easeOut', delay: 0.5 }}
             />
 
-            {/* "SCAN COMPLETE" text */}
+            {/* "YOUR BODY. MAPPED." */}
             <motion.div
-              className="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: [0, 1, 1], scale: [0.8, 1.05, 1] }}
-              transition={{ duration: 0.6, delay: 0.4, ease: luxuryEase }}
+              className="absolute inset-x-0 bottom-10 flex flex-col items-center justify-center pointer-events-none z-30 gap-1"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.45, ease: luxuryEase }}
             >
-              <div
-                className="px-6 py-3 rounded-xl backdrop-blur-lg"
-                style={{
-                  background: 'hsl(var(--background) / 0.7)',
-                  border: '1px solid hsl(45 88% 50% / 0.4)',
-                  boxShadow: '0 0 40px 10px hsl(45 88% 50% / 0.3)',
-                }}
-              >
-                <p className="text-sm font-black tracking-[0.2em] uppercase" style={{ color: 'hsl(45 88% 60%)' }}>
-                  Scan Complete
-                </p>
-              </div>
+              <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-primary">
+                Your Body.
+              </p>
+              <p className="font-display text-lg italic text-primary leading-none">
+                Mapped.
+              </p>
             </motion.div>
           </>
         )}
@@ -453,10 +433,9 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
       {/* Bottom progress glow bar */}
       <div className="absolute bottom-0 left-0 right-0 h-[3px] z-20">
         <motion.div
-          className="h-full"
+          className="h-full bg-primary"
           style={{
-            background: 'linear-gradient(90deg, hsl(45 88% 45%), hsl(45 95% 60%), hsl(45 88% 45%))',
-            boxShadow: '0 0 12px 4px hsl(45 88% 50% / 0.7)',
+            boxShadow: '0 0 12px 4px hsl(var(--primary) / 0.7)',
           }}
           animate={{ width: `${progressPct}%` }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
