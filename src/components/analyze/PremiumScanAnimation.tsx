@@ -403,13 +403,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
                   isHeight={isHeight}
                 />
               ) : (
-                <div className="flex items-center h-4">
-                  <motion.div
-                    className="w-1 h-1 rounded-full bg-primary"
-                    animate={{ opacity: [0.3, 1, 0.3] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  />
-                </div>
+                <NeuralDataValue value={null} isHeight={isHeight} />
               )}
             </div>
           </motion.div>
