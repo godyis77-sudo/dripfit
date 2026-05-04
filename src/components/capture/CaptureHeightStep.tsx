@@ -59,7 +59,7 @@ const CaptureHeightStep = ({
       </div>
     )}
 
-    <div className="flex items-center justify-between mb-3">
+    <div className="flex items-center justify-between mb-2">
       <p className="text-[13px] font-semibold text-white flex items-center gap-1.5">
         <Ruler className="h-3.5 w-3.5 text-primary" /> Height
       </p>
@@ -74,7 +74,7 @@ const CaptureHeightStep = ({
       <Input
         type="number" placeholder="e.g. 175" value={heightCm}
         onChange={e => onHeightCmChange(e.target.value)}
-        className={`rounded-xl h-14 text-2xl text-center font-display bg-white/5 backdrop-blur-sm border-white/10 text-white placeholder:text-white/30 ${heightTouched && !heightValid ? 'field-error' : ''}`}
+        className={`rounded-xl h-12 text-xl text-center font-display bg-white/5 backdrop-blur-sm border-white/10 text-white placeholder:text-white/30 ${heightTouched && !heightValid ? 'field-error' : ''}`}
         min={120} max={230}
       />
     ) : (
@@ -82,13 +82,13 @@ const CaptureHeightStep = ({
         <Input
           type="number" placeholder="5" value={heightFt}
           onChange={e => onHeightFtChange(e.target.value)}
-          className={`rounded-xl flex-1 h-14 text-2xl text-center font-display bg-white/5 backdrop-blur-sm border-white/10 text-white placeholder:text-white/30 ${heightTouched && !heightValid ? 'field-error' : ''}`}
+          className={`rounded-xl flex-1 h-12 text-xl text-center font-display bg-white/5 backdrop-blur-sm border-white/10 text-white placeholder:text-white/30 ${heightTouched && !heightValid ? 'field-error' : ''}`}
           min={4} max={7}
         />
         <Input
           type="number" placeholder="10" value={heightIn}
           onChange={e => onHeightInChange(e.target.value)}
-          className={`rounded-xl flex-1 h-14 text-2xl text-center font-display bg-white/5 backdrop-blur-sm border-white/10 text-white placeholder:text-white/30 ${heightTouched && !heightValid ? 'field-error' : ''}`}
+          className={`rounded-xl flex-1 h-12 text-xl text-center font-display bg-white/5 backdrop-blur-sm border-white/10 text-white placeholder:text-white/30 ${heightTouched && !heightValid ? 'field-error' : ''}`}
           min={0} max={11}
         />
       </div>
