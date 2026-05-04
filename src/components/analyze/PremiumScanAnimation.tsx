@@ -63,7 +63,14 @@ const luxuryEase = [0.16, 1, 0.3, 1] as const;
 const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount, totalCount, scanComplete = false }: Props) => {
   const [flashKey, setFlashKey] = useState(0);
   const [completionFlash, setCompletionFlash] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
   const prevCount = useRef(0);
+
+  useEffect(() => {
+    if (scanComplete) return;
+    const interval = setInterval(() => setElapsed(e => e + 1), 1000);
+    return () => clearInterval(interval);
+  }, [scanComplete]);
 
   useEffect(() => {
     if (revealedCount > prevCount.current) {
