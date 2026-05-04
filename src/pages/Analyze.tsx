@@ -253,7 +253,7 @@ const Analyze = () => {
         <motion.div
           className="h-full rounded-full bg-primary"
           style={{
-            boxShadow: '0 0 10px 2px hsl(45 88% 50% / 0.5)',
+            boxShadow: '0 0 10px 2px hsl(var(--primary) / 0.5)',
           }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3 }}
