@@ -49,8 +49,8 @@ const MEASUREMENT_POSITIONS: Record<string, { top: string; topPct: number; side:
   inseam:   { top: '68%', topPct: 68, side: 'left: 4%',  align: 'left' },
 };
 
-/* Reduced from 24 → 16 to keep DOM under 40 active nodes */
-const HARVEST_PARTICLES = Array.from({ length: 16 }, (_, i) => {
+/* Reduced 16 → 10 to keep mid-scan animated DOM under 40 */
+const HARVEST_PARTICLES = Array.from({ length: 10 }, (_, i) => {
   const topPct = 5 + Math.random() * 88;
   const leftPct = 20 + Math.random() * 60;
   const positions = Object.values(MEASUREMENT_POSITIONS);
@@ -387,15 +387,12 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
                   isHeight={isHeight}
                 />
               ) : (
-                <div className="flex items-center gap-1 h-4">
-                  {[0, 1, 2].map(i => (
-                    <motion.div
-                      key={i}
-                      className="w-1 h-1 rounded-full bg-primary"
-                      animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{ duration: 1, delay: i * 0.2, repeat: Infinity }}
-                    />
-                  ))}
+                <div className="flex items-center h-4">
+                  <motion.div
+                    className="w-1 h-1 rounded-full bg-primary"
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
                 </div>
               )}
             </div>
