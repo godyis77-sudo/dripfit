@@ -387,15 +387,12 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
                   isHeight={isHeight}
                 />
               ) : (
-                <div className="flex items-center gap-1 h-4">
-                  {[0, 1, 2].map(i => (
-                    <motion.div
-                      key={i}
-                      className="w-1 h-1 rounded-full bg-primary"
-                      animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{ duration: 1, delay: i * 0.2, repeat: Infinity }}
-                    />
-                  ))}
+                <div className="flex items-center h-4">
+                  <motion.div
+                    className="w-1 h-1 rounded-full bg-primary"
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
                 </div>
               )}
             </div>
