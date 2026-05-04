@@ -180,7 +180,20 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
         />
       </motion.div>
 
-      {/* Background fill — keep DARK throughout; only slight fade for body reveal */}
+      {/* Mapped silhouette overlay — cross-fades in on completion */}
+      <motion.div
+        className="absolute inset-0 z-[3] pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: scanComplete ? 1 : 0 }}
+        transition={{ duration: 0.8, ease: 'easeInOut' }}
+        style={{
+          filter: 'drop-shadow(0 0 6px hsl(var(--primary) / 0.6))',
+        }}
+      >
+        <img src={bodyMapped} className="w-full h-auto block" alt="" aria-hidden />
+      </motion.div>
+
+      {/* Background fill — keep DARK throughout */}
       <motion.div
         className="absolute inset-0 z-[1] bg-background"
       />
