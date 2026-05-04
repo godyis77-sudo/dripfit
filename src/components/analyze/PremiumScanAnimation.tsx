@@ -4,10 +4,34 @@ import bodySilhouette from '@/assets/body-silhouette-clean.webp';
 import NeuralDataValue from './NeuralDataValue';
 import WireframeMesh from './WireframeMesh';
 
+type MeasurementValue = number | { min: number; max: number } | null;
+
+interface MeasurementData {
+  height?: MeasurementValue;
+  heightCm?: number;
+  shoulder?: MeasurementValue;
+  chest?: MeasurementValue;
+  bust?: MeasurementValue;
+  sleeve?: MeasurementValue;
+  waist?: MeasurementValue;
+  hips?: MeasurementValue;
+  inseam?: MeasurementValue;
+  [key: string]: MeasurementValue | undefined;
+}
+
 interface Props {
   scanLineY: number;
   revealedKeys: string[];
-  realData: any;
+  realData: MeasurementData | null;
+  revealedCount: number;
+  totalCount: number;
+  scanComplete?: boolean;
+}
+
+interface Props {
+  scanLineY: number;
+  revealedKeys: string[];
+  realData: MeasurementData | null;
   revealedCount: number;
   totalCount: number;
   scanComplete?: boolean;
@@ -359,7 +383,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               </p>
               {val ? (
                 <NeuralDataValue
-                  value={isHeight ? (realData?.heightCm ?? val) : val}
+                  value={isHeight ? (realData?.heightCm ?? (val as number)) : (val as number | { min: number; max: number })}
                   isHeight={isHeight}
                 />
               ) : (
