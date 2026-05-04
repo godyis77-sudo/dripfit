@@ -383,7 +383,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               </p>
               {val ? (
                 <NeuralDataValue
-                  value={isHeight ? (realData?.heightCm ?? val) : (val as string | number)}
+                  value={isHeight ? (realData?.heightCm ?? (val as number)) : (val as number | { min: number; max: number })}
                   isHeight={isHeight}
                 />
               ) : (
