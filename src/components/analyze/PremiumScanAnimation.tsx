@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import bodySilhouette from '@/assets/body-silhouette-clean.webp';
+import bodyScan from '@/assets/body-silhouette-scan.webp';
+import bodyMapped from '@/assets/body-silhouette-mapped.webp';
+const bodySilhouette = bodyScan;
 import NeuralDataValue from './NeuralDataValue';
 import WireframeMesh from './WireframeMesh';
 
