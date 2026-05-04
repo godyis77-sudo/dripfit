@@ -127,6 +127,7 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
     <div
       className="relative w-full max-w-[380px] mx-auto rounded-2xl overflow-hidden mb-6 bg-background"
       style={{
+        backgroundColor: 'hsl(var(--background))',
         boxShadow: `0 0 ${glowIntensity}px ${6 + revealedCount * 3}px hsl(var(--primary) / ${0.2 + revealedCount * 0.04}), 0 0 ${glowIntensity * 2}px ${glowIntensity / 2}px hsl(var(--primary) / 0.1), inset 0 0 30px 5px hsl(var(--primary) / 0.05)`,
         border: '1px solid hsl(var(--primary) / 0.15)',
         filter: completionFlash ? 'saturate(200%) contrast(120%)' : 'none',

@@ -26,7 +26,7 @@ const MESSAGES = [
 ];
 
 const TOTAL_SCAN_TIME = 15000;
-const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'bust', 'waist', 'hips', 'inseam'];
+const REVEAL_ORDER = ['height', 'shoulder', 'chest', 'bust', 'sleeve', 'waist', 'hips', 'inseam'];
 
 interface AnalyzeState {
   photos: PhotoSet;
