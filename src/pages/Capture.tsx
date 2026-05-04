@@ -502,7 +502,7 @@ const Capture = () => {
       <input ref={galleryInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-y-auto pb-28">
+      <div className="flex-1 flex flex-col items-center px-4 pt-1 overflow-y-auto pb-24">
         <AnimatePresence mode="wait">
           {/* ─── STEP 1: INTRO ─── */}
           {flowStep === 'intro' && (
