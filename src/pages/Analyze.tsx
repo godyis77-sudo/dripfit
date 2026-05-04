@@ -153,13 +153,15 @@ const Analyze = () => {
     setRevealedKeys(REVEAL_ORDER);
     setScanComplete(true);
     saveToDatabase(data);
-    const scanResult = { id: crypto.randomUUID(), date: new Date().toISOString(), ...data };
-    setTimeout(() => {
-      navigate('/scan-success', {
-        state: { result: scanResult },
-        replace: true,
-      });
-    }, 1400);
+  };
+
+  const handleViewBodyMap = () => {
+    if (!realData) return;
+    const scanResult = { id: crypto.randomUUID(), date: new Date().toISOString(), ...realData };
+    navigate('/scan-success', {
+      state: { result: scanResult },
+      replace: true,
+    });
   };
 
   const analyzePhotos = async () => {
