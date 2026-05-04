@@ -564,7 +564,7 @@ const Capture = () => {
 
           {/* ─── STEP 3 & 4: FRONT / SIDE CAPTURE ─── */}
           {(flowStep === 'front' || flowStep === 'side') && !reviewing && (
-            <motion.div key={flowStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center">
+            <motion.div key={flowStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center mt-auto">
               <p className="type-body text-center mb-1.5" style={{ fontSize: 12 }}>{config.instruction}</p>
 
               <CaptureViewfinder captureStep={captureStep} photo={photos[captureStep]} />
