@@ -448,6 +448,16 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
           transition={{ duration: 0.5, ease: 'easeOut' }}
         />
       </div>
+
+      {/* Status row: neural mapping label + progress count */}
+      <div className="absolute bottom-3 left-0 right-0 flex justify-between px-4 z-20">
+        <span className="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground">
+          Neural Mapping · {elapsed}s
+        </span>
+        <span className="font-mono text-[10px] tracking-[0.15em] text-primary">
+          {revealedCount}/{totalCount}
+        </span>
+      </div>
     </div>
   );
 };
