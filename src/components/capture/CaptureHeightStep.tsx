@@ -101,10 +101,10 @@ const CaptureHeightStep = ({
     )}
 
     {/* Reference object */}
-    <div className="mt-6">
+    <div className="mt-3">
       <Accordion type="single" collapsible>
         <AccordionItem value="ref" className="bg-primary/8 backdrop-blur-md border border-primary/15 rounded-xl px-3">
-          <AccordionTrigger className="text-[12px] font-semibold text-white py-2.5 hover:no-underline">
+          <AccordionTrigger className="text-[12px] font-semibold text-white py-2 hover:no-underline">
             <span className="flex items-center gap-2">
               <Ruler className="h-3.5 w-3.5 text-primary" />
               Reference object <span className="text-white/40 font-normal">(optional)</span>
@@ -121,7 +121,7 @@ const CaptureHeightStep = ({
                   <button
                     key={key}
                     onClick={() => onRefObjectChange(refObject === key ? 'none' : key)}
-                    className={`text-center p-2 rounded-lg border transition-all active:scale-95 min-h-[44px] backdrop-blur-sm ${
+                    className={`text-center p-2 rounded-lg border transition-all active:scale-95 backdrop-blur-sm ${
                       refObject === key ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-white/5 border-white/10'
                     }`}
                   >
@@ -136,10 +136,10 @@ const CaptureHeightStep = ({
     </div>
 
     {/* Privacy tip card */}
-    <div className="mt-4 rounded-xl p-4 bg-black/40 backdrop-blur-md border border-white/8">
+    <div className="mt-2 rounded-xl p-3 bg-black/40 backdrop-blur-md border border-white/8">
       <div className="flex items-start gap-2.5">
         <Lock className="w-4 h-4 text-primary/70 shrink-0 mt-0.5" />
-        <p className="text-xs text-white/50">
+        <p className="text-[11px] text-white/50 leading-snug">
           Your height improves scan accuracy by 23%. We never store or share this data.
         </p>
       </div>
