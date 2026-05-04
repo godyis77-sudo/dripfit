@@ -506,15 +506,15 @@ const Capture = () => {
         <AnimatePresence mode="wait">
           {/* ─── STEP 1: INTRO ─── */}
           {flowStep === 'intro' && (
-            <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center text-center pt-2">
-              <BiometricScanShowcase height={320} />
+            <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="w-full max-w-sm flex flex-col items-center text-center">
+              <BiometricScanShowcase height={220} />
 
-              <h2 className="type-headline mt-4 mb-1 uppercase">
+              <h2 className="type-headline mt-2 mb-0.5 uppercase">
                 Your Biometric Scan.
               </h2>
-              <p className="type-body mb-4">AI-powered measurements in under 60 seconds</p>
+              <p className="type-body mb-3" style={{ fontSize: 12 }}>AI-powered measurements in under 60 seconds</p>
 
-              <div className="w-full space-y-1.5 text-left">
+              <div className="w-full space-y-1 text-left">
                 {[
                   { icon: Camera, text: '2 photos — front & side' },
                   { icon: Shirt, text: 'Wear fitted clothing' },
@@ -525,10 +525,10 @@ const Capture = () => {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 + i * 0.08 }}
-                    className="flex items-center gap-3 glass-dark rounded-xl px-4 py-2.5 min-h-[44px]"
+                    className="flex items-center gap-3 glass-dark rounded-xl px-3 py-1.5"
                   >
                     <item.icon className="h-4 w-4 text-primary/60 shrink-0" />
-                    <span className="type-body">{item.text}</span>
+                    <span className="type-body" style={{ fontSize: 12 }}>{item.text}</span>
                   </motion.div>
                 ))}
               </div>
@@ -538,7 +538,7 @@ const Capture = () => {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="w-full glass-dark border-l-2 border-l-primary/30 rounded-xl px-4 py-2.5 mt-4 flex items-start gap-3"
+                className="w-full glass-dark border-l-2 border-l-primary/30 rounded-xl px-3 py-2 mt-2 flex items-start gap-3"
               >
                 <Shield className="h-4 w-4 text-primary/60 shrink-0 mt-0.5" />
                 <div>
