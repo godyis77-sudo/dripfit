@@ -55,8 +55,8 @@ const ScanAnimation = ({ revealedCount = 0 }: ScanAnimationProps) => {
       <motion.div
         className="absolute left-0 right-0 h-[2px] pointer-events-none z-10"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, hsl(45 88% 50% / 0.3) 10%, hsl(45 88% 50%) 50%, hsl(45 88% 50% / 0.3) 90%, transparent 100%)',
-          boxShadow: '0 0 12px 6px hsl(45 88% 50% / 0.7)',
+          background: 'linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.3) 10%, hsl(var(--primary)) 50%, hsl(var(--primary) / 0.3) 90%, transparent 100%)',
+          boxShadow: '0 0 12px 6px hsl(var(--primary) / 0.7)',
         }}
         animate={{ top: ['3%', '95%', '3%'] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -66,7 +66,7 @@ const ScanAnimation = ({ revealedCount = 0 }: ScanAnimationProps) => {
       <motion.div
         className="absolute left-0 right-0 h-[60px] pointer-events-none z-[9]"
         style={{
-          background: 'linear-gradient(180deg, hsl(45 88% 50% / 0.08) 0%, transparent 100%)',
+          background: 'linear-gradient(180deg, hsl(var(--primary) / 0.08) 0%, transparent 100%)',
         }}
         animate={{ top: ['3%', '95%', '3%'] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -88,7 +88,7 @@ const ScanAnimation = ({ revealedCount = 0 }: ScanAnimationProps) => {
               <div
                 className="w-full h-[1px]"
                 style={{
-                  background: 'repeating-linear-gradient(90deg, hsl(45 88% 50% / 0.5) 0px, hsl(45 88% 50% / 0.5) 4px, transparent 4px, transparent 8px)',
+                  background: 'repeating-linear-gradient(90deg, hsl(var(--primary) / 0.5) 0px, hsl(var(--primary) / 0.5) 4px, transparent 4px, transparent 8px)',
                 }}
               />
               {/* Label */}
@@ -113,7 +113,7 @@ const ScanAnimation = ({ revealedCount = 0 }: ScanAnimationProps) => {
         key={revealedCount}
         className="absolute inset-0 pointer-events-none z-[15]"
         style={{
-          background: 'radial-gradient(ellipse at 50% 50%, hsl(45 88% 50% / 0.2) 0%, transparent 60%)',
+          background: 'radial-gradient(ellipse at 50% 50%, hsl(var(--primary) / 0.2) 0%, transparent 60%)',
         }}
         initial={{ opacity: 0.8 }}
         animate={{ opacity: 0 }}
@@ -125,8 +125,8 @@ const ScanAnimation = ({ revealedCount = 0 }: ScanAnimationProps) => {
         <motion.div
           className="h-full"
           style={{
-            background: 'hsl(45 88% 50%)',
-            boxShadow: '0 0 8px 2px hsl(45 88% 50% / 0.5)',
+            background: 'hsl(var(--primary))',
+            boxShadow: '0 0 8px 2px hsl(var(--primary) / 0.5)',
           }}
           animate={{ width: `${progressPercent}%` }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
