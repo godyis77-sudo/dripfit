@@ -4,17 +4,28 @@ import bodySilhouette from '@/assets/body-silhouette-clean.webp';
 import NeuralDataValue from './NeuralDataValue';
 import WireframeMesh from './WireframeMesh';
 
+type MeasurementValue = number | { min: number; max: number } | null;
+
 interface MeasurementData {
-  height?: number | string;
+  height?: MeasurementValue;
   heightCm?: number;
-  shoulder?: string;
-  chest?: string;
-  bust?: string;
-  sleeve?: string;
-  waist?: string;
-  hips?: string;
-  inseam?: string;
-  [key: string]: number | string | undefined;
+  shoulder?: MeasurementValue;
+  chest?: MeasurementValue;
+  bust?: MeasurementValue;
+  sleeve?: MeasurementValue;
+  waist?: MeasurementValue;
+  hips?: MeasurementValue;
+  inseam?: MeasurementValue;
+  [key: string]: MeasurementValue | undefined;
+}
+
+interface Props {
+  scanLineY: number;
+  revealedKeys: string[];
+  realData: MeasurementData | null;
+  revealedCount: number;
+  totalCount: number;
+  scanComplete?: boolean;
 }
 
 interface Props {
