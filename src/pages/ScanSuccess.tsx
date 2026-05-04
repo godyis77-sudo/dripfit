@@ -71,6 +71,16 @@ const ScanSuccess = () => {
         Skip →
       </button>
 
+      {/* Page title */}
+      <motion.h1
+        className="text-base font-bold tracking-[0.15em] uppercase text-foreground mt-6 mb-2 text-center"
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
+        Body Scan Results
+      </motion.h1>
+
       {/* Body diagram — same layout as Profile Body tab */}
       <motion.div
         className="w-full max-w-[400px] mx-auto mt-2 px-4"
