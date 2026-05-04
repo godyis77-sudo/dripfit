@@ -263,7 +263,7 @@ const Results = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-4 pb-safe-tab">
+    <div className="min-h-screen bg-background px-4 pt-2 pb-safe-tab">
       <SaveBanner
         visible={showSaveBanner}
         onDismiss={() => setShowSaveBanner(false)}
@@ -272,11 +272,12 @@ const Results = () => {
         subtext="View in Profile > Body"
       />
       <div>
-        <div className="flex items-center mb-3">
-          <Button variant="ghost" size="icon" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/home')} className="h-10 w-10 rounded-lg min-h-[44px] min-w-[44px]" aria-label="Go back">
+        <div className="flex items-center -ml-2 mb-1">
+          <Button variant="ghost" size="icon" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/home')} className="h-9 w-9 rounded-lg" aria-label="Go back">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </div>
+
 
         {/* Size Guide Tool — top of page */}
         <button
