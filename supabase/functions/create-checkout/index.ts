@@ -49,6 +49,7 @@ serve(async (req) => {
     return successResponse({ url: session.url }, 200, corsHeaders);
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    return errorResponse(msg, "INTERNAL_ERROR", 500, corsHeaders);
+    console.error("[create-checkout] error", msg);
+    return errorResponse("Service temporarily unavailable.", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });
