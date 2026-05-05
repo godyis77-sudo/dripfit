@@ -2,6 +2,7 @@ import { getCorsHeaders } from "../_shared/validation.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 // deno-lint-ignore no-explicit-any
+import { requireServiceRole } from "../_shared/require-service-role.ts";
 declare const EdgeRuntime: any;
 
 /**
@@ -921,6 +922,8 @@ async function processBatchInBackground(
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  const _auth = requireServiceRole(req);
+  if (!_auth.ok) return _auth.response;
 
   const apiKey = Deno.env.get("LOVABLE_API_KEY");
   if (!apiKey) {

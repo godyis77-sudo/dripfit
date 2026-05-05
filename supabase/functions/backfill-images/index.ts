@@ -4,6 +4,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+import { requireServiceRole } from "../_shared/require-service-role.ts";
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -204,6 +205,8 @@ function extractImagesFromHtml(html: string, pageUrl: string, primary: string): 
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  const _auth = requireServiceRole(req);
+  if (!_auth.ok) return _auth.response;
 
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,

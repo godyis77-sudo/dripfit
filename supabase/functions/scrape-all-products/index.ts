@@ -2,6 +2,7 @@ import { successResponse, errorResponse, getCorsHeaders } from "../_shared/valid
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // All brand/category combos — using granular, website-standard category terms
+import { requireServiceRole } from "../_shared/require-service-role.ts";
 const BRAND_CATEGORIES: Record<string, string[]> = {
   // ── Fast Fashion & Mass Market ──
   zara:           ['t-shirts', 'shirts', 'hoodies', 'sweaters', 'jeans', 'pants', 'shorts', 'skirts', 'jackets', 'coats', 'blazers', 'dresses', 'jumpsuits', 'sneakers', 'boots', 'sandals', 'bags', 'hats', 'belts', 'swimwear'],
@@ -214,6 +215,8 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+  const _auth = requireServiceRole(req);
+  if (!_auth.ok) return _auth.response;
 
   try {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;

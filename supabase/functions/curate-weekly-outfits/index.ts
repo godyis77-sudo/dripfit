@@ -1,6 +1,7 @@
 import { getCorsHeaders, errorResponse, successResponse } from "../_shared/validation.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
+import { requireServiceRole } from "../_shared/require-service-role.ts";
 /**
  * curate-weekly-outfits — Automated outfit curation from the product catalog.
  *
@@ -1274,6 +1275,8 @@ function buildOutfit(
 Deno.serve(async (req) => {
   const cors = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
+  const _auth = requireServiceRole(req);
+  if (!_auth.ok) return _auth.response;
 
   try {
     const body = await req.json().catch(() => ({}));

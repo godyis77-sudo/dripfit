@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { successResponse, errorResponse, getCorsHeaders } from "../_shared/validation.ts";
 
 // Default HTTP User-Agent for Shopify and direct requests
+import { requireServiceRole } from "../_shared/require-service-role.ts";
 const HTTP_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -4770,6 +4771,8 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+  const _auth = requireServiceRole(req);
+  if (!_auth.ok) return _auth.response;
 
   try {
     const { brand, category } = await req.json();

@@ -26,7 +26,15 @@ serve(async (req) => {
     }
 
     const userId = userData.user.id;
-    const { messages } = await req.json();
+    const { messages: rawMessages } = await req.json();
+    if (!Array.isArray(rawMessages)) {
+      return new Response(JSON.stringify({ error: "messages must be an array" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    // Sanitize: drop any system role injections, cap count and content length.
+    const messages = rawMessages
+      .filter((m: any) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+      .slice(-20)
+      .map((m: any) => ({ role: m.role, content: String(m.content).slice(0, 4000) }));
 
     // Fetch user context for personalization
     const [scanRes, profileRes, prefRes, feedbackRes] = await Promise.all([
