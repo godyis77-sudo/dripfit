@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { successResponse, errorResponse, getCorsHeaders } from "../_shared/validation.ts";
 
+import { requireServiceRole } from "../_shared/require-service-role.ts";
 interface RetailerConfig {
   brand_name: string;
   url: string;
@@ -731,6 +732,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  const _auth = requireServiceRole(req);
+  if (!_auth.ok) return _auth.response;
 
   try {
     const body = await req.json().catch(() => ({}));

@@ -1,6 +1,7 @@
 import { getCorsHeaders } from "../_shared/validation.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.49.1";
 
+import { requireServiceRole } from "../_shared/require-service-role.ts";
 const PEXELS_BASE = "https://api.pexels.com/v1";
 
 interface BgRow {
@@ -113,6 +114,8 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  const _auth = requireServiceRole(req);
+  if (!_auth.ok) return _auth.response;
 
   const pexelsKey = Deno.env.get("PEXELS_API_KEY");
   if (!pexelsKey) {
