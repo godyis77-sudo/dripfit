@@ -77,6 +77,6 @@ serve(async (req) => {
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: msg });
-    return errorResponse(msg, "INTERNAL_ERROR", 500, corsHeaders);
+    return errorResponse("Service temporarily unavailable.", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });
