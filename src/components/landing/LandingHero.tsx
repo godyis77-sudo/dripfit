@@ -10,12 +10,12 @@ export default function LandingHero() {
   const stats = useCatalogStats();
 
   return (
-    <section className="relative min-h-screen flex items-center">
+    <section className="relative flex items-center">
       {/* Ambient glows */}
       <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full pointer-events-none bg-primary/5 blur-[160px]" />
       <div className="absolute bottom-[-20%] left-[-10%] w-[400px] h-[400px] rounded-full pointer-events-none bg-primary/[0.03] blur-[160px]" />
 
-      <div className="max-w-6xl mx-auto px-6 pt-32 pb-20 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center relative z-10">
+      <div className="max-w-6xl mx-auto px-6 pt-32 pb-16 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center relative z-10">
         <div className="md:flex-1">
           <FadeIn>
             <div className="inline-flex items-center gap-2 mb-6">
@@ -48,14 +48,8 @@ export default function LandingHero() {
 
           <FadeIn delay={0.16}>
             <p className="type-body text-[15px] md:text-lg leading-[1.55] tracking-[-0.005em] max-w-[19rem] md:max-w-md mt-6 font-light text-balance">
-              Scan once. Try on anything. Sized across every brand. Community Verified Drip.
+              Scan once. Try on 8,500+ pieces. Sized across 142 brands. Community Verified Drip.
             </p>
-          </FadeIn>
-
-          <FadeIn delay={0.2}>
-            <div className="mt-4 mb-6 type-data text-primary/80">
-              {stats.brandsLabel} BRANDS · {stats.sizeChartsLabel} SIZE CHARTS · {stats.productsLabel} PIECES
-            </div>
           </FadeIn>
 
           <FadeIn delay={0.24}>
