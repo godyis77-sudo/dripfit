@@ -6,8 +6,7 @@ import { useCatalogStats } from '@/hooks/useCatalogStats';
 export default function LandingPricing() {
   const stats = useCatalogStats();
   const FREE_FEATURES = [
-    '3 try-ons per month',
-    'Top 20 brand size sync',
+    '3 try-ons per day',
     'Body Twin matching',
     'COP or DROP access',
     'Basic fit verification',
