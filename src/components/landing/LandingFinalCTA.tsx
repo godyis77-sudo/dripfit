@@ -19,17 +19,17 @@ export default function LandingFinalCTA() {
             className="type-display-editorial leading-[1.05] mb-6 text-foreground"
             style={{ fontSize: 'clamp(38px, 6vw, 64px)' }}
           >
-            STOP GUESSING.
+            STOP PRAYING
             <span
               className="type-display-editorial type-display-editorial--italic block text-primary mt-1"
               style={{ fontSize: 'clamp(38px, 6vw, 64px)' }}
             >
-              START KNOWING.
+              IT FITS.
             </span>
           </h2>
 
           <p className="type-body text-base md:text-lg leading-relaxed max-w-md mx-auto mb-10 font-light">
-            Scan once. Cop with confidence. Zero returns.
+            Scan your body. Enter Infinite Drape Studio. Buy with confidence.
           </p>
         </FadeIn>
         <FadeIn delay={0.1}>
@@ -50,7 +50,7 @@ export default function LandingFinalCTA() {
                   Start Your Scan <ArrowRight className="h-4 w-4" />
                 </Link>
                 <span className="text-xs text-center text-muted-foreground/85 mt-3">
-                  Your biometric data is encrypted and never sold.
+                  Biometric data encrypted end-to-end. Never sold.
                 </span>
               </div>
             )}

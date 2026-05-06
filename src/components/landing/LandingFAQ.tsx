@@ -35,7 +35,7 @@ export default function LandingFAQ() {
     { q: 'Is DripFit free?', a: 'Yes — body scanning, verified sizing across every brand, and browsing are free. Forever. DripFit Pro unlocks unlimited try-ons and advanced Body Twin matching.' },
   ];
   return (
-    <section id="faq" className="py-20 md:py-24 scroll-mt-20">
+    <section id="faq" className="pt-12 md:pt-14 pb-20 md:pb-24 scroll-mt-20">
       <div className="max-w-2xl mx-auto px-6">
         <FadeIn>
           <h2 className="type-headline font-bold text-center mb-14 leading-tight" style={{ letterSpacing: '-0.01em', fontSize: 'clamp(32px, 4vw, 48px)' }}>Questions. Answered.</h2>

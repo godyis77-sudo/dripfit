@@ -10,7 +10,7 @@ export default function LandingHowItWorks() {
     { n: '04', title: 'Cop. Zero Returns.', desc: 'Confirmed. Perfect drape. One size. One purchase. Done.' },
   ];
   return (
-    <section id="how-it-works" className="pt-20 md:pt-24 pb-10 md:pb-12 scroll-mt-20">
+    <section id="how-it-works" className="pt-20 md:pt-24 pb-6 md:pb-8 scroll-mt-20">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         <div>
           <FadeIn>
@@ -37,7 +37,7 @@ export default function LandingHowItWorks() {
 
           {/* Mobile-only stat — surfaces the 94% proof point on small viewports */}
           <FadeIn delay={0.4}>
-            <div className="lg:hidden mt-12 pt-8 border-t border-border/30 text-center">
+            <div className="lg:hidden mt-8 pt-6 border-t border-border/30 text-center">
               <div className="font-display font-bold text-primary leading-none" style={{ fontSize: 'clamp(48px, 14vw, 72px)', letterSpacing: '-0.03em' }}>
                 94<span className="text-primary/60">%</span>
               </div>

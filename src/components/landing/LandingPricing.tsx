@@ -7,7 +7,7 @@ export default function LandingPricing() {
   const stats = useCatalogStats();
   const FREE_FEATURES = [
     '3 try-ons per month',
-    `Full access to all ${stats.brands} brand size charts`,
+    'Top 20 brand size sync',
     'Body Twin matching',
     'COP or DROP access',
     'Basic fit verification',
@@ -23,7 +23,7 @@ export default function LandingPricing() {
     'Crown badge',
   ];
   return (
-    <section id="pricing" className="py-20 md:py-24 scroll-mt-20">
+    <section id="pricing" className="pt-12 md:pt-14 pb-14 md:pb-16 scroll-mt-20">
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn>
           <span className="type-data block mb-5 text-center text-muted-foreground">Pricing</span>
