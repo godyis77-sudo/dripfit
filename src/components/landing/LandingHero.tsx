@@ -2,12 +2,11 @@ import { ArrowRight, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { FadeIn } from './LandingAnimations';
 import { useAuth } from '@/hooks/useAuth';
-import { useCatalogStats } from '@/hooks/useCatalogStats';
+
 import heroPhoneMockup from '@/assets/hero-phone-mockup.webp';
 
 export default function LandingHero() {
   const { user } = useAuth();
-  const stats = useCatalogStats();
 
   return (
     <section className="relative flex items-center">
