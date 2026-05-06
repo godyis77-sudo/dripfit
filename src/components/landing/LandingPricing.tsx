@@ -7,6 +7,7 @@ export default function LandingPricing() {
   const stats = useCatalogStats();
   const FREE_FEATURES = [
     '3 try-ons per day',
+    'Top 20 brand size sync',
     'Body Twin matching',
     'COP or DROP access',
     'Basic fit verification',
@@ -16,6 +17,7 @@ export default function LandingPricing() {
     'Unlimited Infinite Drape Studio access',
     `Full ${stats.brands} brand size map`,
     'Side-by-side fit comparison',
+    'AI Style Assistant',
     'Early access to new features',
     'Crown badge',
   ];
