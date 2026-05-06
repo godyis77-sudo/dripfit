@@ -50,7 +50,7 @@ export default function LandingFinalCTA() {
                   Start Your Scan <ArrowRight className="h-4 w-4" />
                 </Link>
                 <span className="text-xs text-center text-muted-foreground/85 mt-3">
-                  Your biometric data is encrypted and never sold.
+                  Biometric data encrypted end-to-end. Never sold.
                 </span>
               </div>
             )}
