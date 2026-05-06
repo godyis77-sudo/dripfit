@@ -105,7 +105,7 @@ export function getCaptionSuggestions(category: string): string[] {
   return CAPTION_SUGGESTIONS[category] || CAPTION_SUGGESTIONS.default;
 }
 
-export const FREE_MONTHLY_LIMIT = 30;
+export const FREE_MONTHLY_LIMIT = 3;
 
 function getCurrentMonthKey(): string {
   const now = new Date();
