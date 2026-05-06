@@ -15,9 +15,7 @@ export default function LandingPricing() {
   const PREMIUM_FEATURES = [
     'Unlimited Infinite Drape Studio access',
     `Full ${stats.brands} brand size map`,
-    'Priority scan queue',
     'Side-by-side fit comparison',
-    'Advanced fit analytics',
     'Early access to new features',
     'Crown badge',
   ];
