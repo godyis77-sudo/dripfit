@@ -8,11 +8,6 @@ import heroPhoneMockup from '@/assets/hero-phone-mockup.webp';
 export default function LandingHero() {
   const { user } = useAuth();
   const stats = useCatalogStats();
-  const STATS = [
-    { v: stats.brandsLabel, l: 'Brands' },
-    { v: stats.sizeChartsLabel, l: 'Size Charts' },
-    { v: stats.productsLabel, l: 'Pieces' },
-  ];
 
   return (
     <section className="relative min-h-screen flex items-center">
@@ -52,9 +47,15 @@ export default function LandingHero() {
           </FadeIn>
 
           <FadeIn delay={0.16}>
-            <p className="type-body text-[15px] md:text-lg leading-[1.55] tracking-[-0.005em] max-w-[19rem] md:max-w-md mb-12 mt-6 font-light text-balance">
-              Scan once. Try on {stats.productsLabel} pieces. Sized across {stats.brandsLabel} brands. Community Verified Drip.
+            <p className="type-body text-[15px] md:text-lg leading-[1.55] tracking-[-0.005em] max-w-[19rem] md:max-w-md mt-6 font-light text-balance">
+              Scan once. Try on anything. Sized across every brand. Community Verified Drip.
             </p>
+          </FadeIn>
+
+          <FadeIn delay={0.2}>
+            <div className="mt-4 mb-6 type-data text-primary/80">
+              {stats.brandsLabel} BRANDS · {stats.sizeChartsLabel} SIZE CHARTS · {stats.productsLabel} PIECES
+            </div>
           </FadeIn>
 
           <FadeIn delay={0.24}>
@@ -87,16 +88,6 @@ export default function LandingHero() {
             )}
           </FadeIn>
 
-          <FadeIn delay={0.32}>
-            <div className="flex gap-8 mt-8 pt-6 border-t border-border/30">
-              {STATS.map((s) => (
-                <div key={s.l}>
-                  <div className="type-headline text-2xl text-primary">{s.v}</div>
-                  <div className="type-data mt-1">{s.l}</div>
-                </div>
-              ))}
-            </div>
-          </FadeIn>
 
           {/* Phone mockup — mobile only, painted immediately to avoid delayed scroll reveal */}
           <div className="md:hidden relative mx-auto w-full max-w-[260px] mt-10 animate-float">
