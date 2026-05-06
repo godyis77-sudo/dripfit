@@ -27,7 +27,10 @@ serve(async (req) => {
 
     const raw = await req.json();
     const parsed = parseOrError(CreateCheckoutSchema, raw);
-    if (!parsed.success) return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
+    if (!parsed.success) {
+      console.warn("[create-checkout] validation error", parsed.error);
+      return errorResponse("Invalid request.", "VALIDATION_ERROR", 400, corsHeaders);
+    }
     const { priceId } = parsed.data;
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
