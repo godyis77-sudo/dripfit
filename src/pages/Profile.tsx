@@ -1,13 +1,12 @@
-import { useState, lazy, Suspense, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogOut, Shirt, Camera, Settings, ShoppingBag, ShoppingCart, User, Globe, X, Gift, ChevronDown, Award, Wand2 } from 'lucide-react';
 import BrandLogo from '@/components/ui/BrandLogo';
 
 import { useAuth } from '@/hooks/useAuth';
-const GuestProfileView = lazy(() => import('@/components/guest/GuestProfileView'));
 import { supabase } from '@/integrations/supabase/client';
 import { getFitPreference, setFitPreference, getPremiumBannerDismissed, dismissPremiumBanner } from '@/lib/session';
 import { trackEvent } from '@/lib/analytics';
@@ -62,8 +61,8 @@ const Profile = () => {
   const scanConfidence = profileData?.scan_confidence ?? null;
   const savedProfile = scanData?.profile ?? null;
 
-  // Show guest profile view for unauthenticated users
-  if (!user) return <Suspense fallback={null}><GuestProfileView /></Suspense>;
+  // Guests have no profile — send them to landing
+  if (!user) return <Navigate to="/landing" replace />;
 
   const deleteWardrobeItem = async (id: string) => {
     const { error } = await supabase.from('clothing_wardrobe').delete().eq('id', id).eq('user_id', user.id);
