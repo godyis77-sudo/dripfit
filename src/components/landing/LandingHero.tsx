@@ -8,11 +8,6 @@ import heroPhoneMockup from '@/assets/hero-phone-mockup.webp';
 export default function LandingHero() {
   const { user } = useAuth();
   const stats = useCatalogStats();
-  const STATS = [
-    { v: stats.brandsLabel, l: 'Brands' },
-    { v: stats.sizeChartsLabel, l: 'Size Charts' },
-    { v: stats.productsLabel, l: 'Pieces' },
-  ];
 
   return (
     <section className="relative min-h-screen flex items-center">
