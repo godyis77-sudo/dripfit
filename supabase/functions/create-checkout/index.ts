@@ -20,11 +20,17 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
-    if (!user?.email) return errorResponse("User not authenticated or email not available", "AUTH_ERROR", 401, corsHeaders);
+    if (!user?.email) {
+      console.warn("[create-checkout] missing user/email");
+      return errorResponse("Unauthorized", "AUTH_ERROR", 401, corsHeaders);
+    }
 
     const raw = await req.json();
     const parsed = parseOrError(CreateCheckoutSchema, raw);
-    if (!parsed.success) return errorResponse(parsed.error, "VALIDATION_ERROR", 400, corsHeaders);
+    if (!parsed.success) {
+      console.warn("[create-checkout] validation error", parsed.error);
+      return errorResponse("Invalid request.", "VALIDATION_ERROR", 400, corsHeaders);
+    }
     const { priceId } = parsed.data;
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });

@@ -12,7 +12,10 @@ serve(async (req) => {
 
   try {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) return errorResponse("STRIPE_SECRET_KEY is not set", "CONFIG_ERROR", 500, corsHeaders);
+    if (!stripeKey) {
+      console.error("[customer-portal] STRIPE_SECRET_KEY is not set");
+      return errorResponse("Service temporarily unavailable.", "CONFIG_ERROR", 500, corsHeaders);
+    }
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -21,17 +24,23 @@ serve(async (req) => {
     );
 
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return errorResponse("No authorization header provided", "AUTH_ERROR", 401, corsHeaders);
+    if (!authHeader) return errorResponse("Unauthorized", "AUTH_ERROR", 401, corsHeaders);
 
     const token = authHeader.replace("Bearer ", "");
     const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) return errorResponse(`Authentication error: ${userError.message}`, "AUTH_ERROR", 401, corsHeaders);
+    if (userError) {
+      console.error("[customer-portal] auth error", userError.message);
+      return errorResponse("Unauthorized", "AUTH_ERROR", 401, corsHeaders);
+    }
     const user = userData.user;
-    if (!user?.email) return errorResponse("User not authenticated or email not available", "AUTH_ERROR", 401, corsHeaders);
+    if (!user?.email) return errorResponse("Unauthorized", "AUTH_ERROR", 401, corsHeaders);
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    if (customers.data.length === 0) return errorResponse("No Stripe customer found for this user", "NOT_FOUND", 404, corsHeaders);
+    if (customers.data.length === 0) {
+      console.warn("[customer-portal] no Stripe customer for user", user.id);
+      return errorResponse("No active subscription found.", "NOT_FOUND", 404, corsHeaders);
+    }
 
     const origin = req.headers.get("origin") || "https://dripfit.lovable.app";
     const portalSession = await stripe.billingPortal.sessions.create({
@@ -42,6 +51,7 @@ serve(async (req) => {
     return successResponse({ url: portalSession.url }, 200, corsHeaders);
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    return errorResponse(msg, "INTERNAL_ERROR", 500, corsHeaders);
+    console.error("[customer-portal] error", msg);
+    return errorResponse("Service temporarily unavailable.", "INTERNAL_ERROR", 500, corsHeaders);
   }
 });
