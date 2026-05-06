@@ -93,16 +93,6 @@ export default function LandingHero() {
             )}
           </FadeIn>
 
-          <FadeIn delay={0.32}>
-            <div className="flex gap-8 mt-8 pt-6 border-t border-border/30">
-              {STATS.map((s) => (
-                <div key={s.l}>
-                  <div className="type-headline text-2xl text-primary">{s.v}</div>
-                  <div className="type-data mt-1">{s.l}</div>
-                </div>
-              ))}
-            </div>
-          </FadeIn>
 
           {/* Phone mockup — mobile only, painted immediately to avoid delayed scroll reveal */}
           <div className="md:hidden relative mx-auto w-full max-w-[260px] mt-10 animate-float">
