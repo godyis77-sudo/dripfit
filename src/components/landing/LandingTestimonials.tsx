@@ -26,7 +26,7 @@ const TESTIMONIALS = [
 
 export default function LandingTestimonials() {
   return (
-    <section className="py-20 md:py-24">
+    <section className="pt-20 md:pt-24 pb-12">
       <div className="max-w-5xl mx-auto px-6">
         <FadeIn>
           <span className="type-data block mb-5 text-center text-muted-foreground">What Members Say</span>
