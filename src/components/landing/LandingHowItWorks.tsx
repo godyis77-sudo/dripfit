@@ -37,7 +37,7 @@ export default function LandingHowItWorks() {
 
           {/* Mobile-only stat — surfaces the 94% proof point on small viewports */}
           <FadeIn delay={0.4}>
-            <div className="lg:hidden mt-12 pt-8 border-t border-border/30 text-center">
+            <div className="lg:hidden mt-8 pt-6 border-t border-border/30 text-center">
               <div className="font-display font-bold text-primary leading-none" style={{ fontSize: 'clamp(48px, 14vw, 72px)', letterSpacing: '-0.03em' }}>
                 94<span className="text-primary/60">%</span>
               </div>
