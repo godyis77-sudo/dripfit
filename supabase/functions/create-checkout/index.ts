@@ -20,7 +20,10 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
-    if (!user?.email) return errorResponse("User not authenticated or email not available", "AUTH_ERROR", 401, corsHeaders);
+    if (!user?.email) {
+      console.warn("[create-checkout] missing user/email");
+      return errorResponse("Unauthorized", "AUTH_ERROR", 401, corsHeaders);
+    }
 
     const raw = await req.json();
     const parsed = parseOrError(CreateCheckoutSchema, raw);
