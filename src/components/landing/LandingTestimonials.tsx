@@ -51,7 +51,7 @@ export default function LandingTestimonials() {
           ))}
         </div>
         <FadeIn delay={0.3}>
-          <p className="text-xs italic text-muted-foreground/70 text-center mt-6">
+          <p className="text-xs italic text-muted-foreground/70 text-center mt-4">
             From early access members
           </p>
         </FadeIn>
