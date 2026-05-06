@@ -7,7 +7,7 @@ export default function LandingPricing() {
   const stats = useCatalogStats();
   const FREE_FEATURES = [
     '3 try-ons per month',
-    `Full access to all ${stats.brands} brand size charts`,
+    'Top 20 brand size sync',
     'Body Twin matching',
     'COP or DROP access',
     'Basic fit verification',
