@@ -22,10 +22,10 @@ export default function LandingCommunity() {
             <p className="text-sm text-muted-foreground/85 mt-2">Growing daily.</p>
           </div>
         </FadeIn>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {CARDS.map((c, i) => (
             <FadeIn key={c.title} delay={i * 0.08}>
-              <div className="bg-card border border-border rounded-2xl p-6 md:p-7 text-center">
+              <div className="bg-card border border-border rounded-2xl p-5 text-center">
                 <div className="type-data mb-3">{c.title}</div>
                 <div className="type-headline text-4xl text-primary mb-1.5">{c.value}</div>
                 <div className="type-data text-muted-foreground/85">{c.sub}</div>
