@@ -52,9 +52,15 @@ export default function LandingHero() {
           </FadeIn>
 
           <FadeIn delay={0.16}>
-            <p className="type-body text-[15px] md:text-lg leading-[1.55] tracking-[-0.005em] max-w-[19rem] md:max-w-md mb-12 mt-6 font-light text-balance">
-              Scan once. Try on {stats.productsLabel} pieces. Sized across {stats.brandsLabel} brands. Community Verified Drip.
+            <p className="type-body text-[15px] md:text-lg leading-[1.55] tracking-[-0.005em] max-w-[19rem] md:max-w-md mt-6 font-light text-balance">
+              Scan once. Try on anything. Sized across every brand. Community Verified Drip.
             </p>
+          </FadeIn>
+
+          <FadeIn delay={0.2}>
+            <div className="mt-4 mb-6 type-data text-primary/80">
+              {stats.brandsLabel} BRANDS · {stats.sizeChartsLabel} SIZE CHARTS · {stats.productsLabel} PIECES
+            </div>
           </FadeIn>
 
           <FadeIn delay={0.24}>
