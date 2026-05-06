@@ -69,9 +69,9 @@ export default function LandingHero() {
                 </Link>
                 <Link
                   to="/home"
-                  className="w-full mt-3 border border-primary text-primary bg-transparent rounded-full px-6 py-2 text-sm font-medium tracking-wide flex items-center justify-center hover:bg-primary/10 transition-colors duration-200"
+                  className="w-full mt-3 rounded-full px-6 py-2 text-sm font-medium tracking-wide flex items-center justify-center gap-1 text-primary border-0 md:border md:border-primary md:bg-transparent md:hover:bg-primary/10 transition-colors duration-200"
                 >
-                  Try as guest
+                  Try as guest <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
                 <div className="w-full inline-flex items-center justify-center gap-1.5 mt-3 text-[11px] text-muted-foreground/85">
                   <Lock className="h-3 w-3 text-primary/70" />
