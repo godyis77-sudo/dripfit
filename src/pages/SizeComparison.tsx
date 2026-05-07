@@ -263,7 +263,7 @@ const SizeComparison = () => {
     // Header
     ctx.textAlign = 'left';
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '700 42px "Cormorant Garamond", serif';
+    ctx.font = '700 42px "Playfair Display", Georgia, serif';
     ctx.fillText('YOUR VERIFIED SIZES', 60, 80);
     ctx.fillStyle = '#666666';
     ctx.font = '300 24px "DM Sans", sans-serif';
@@ -321,7 +321,7 @@ const SizeComparison = () => {
 
       // Size value
       ctx.fillStyle = '#D4AF37';
-      ctx.font = 'italic 700 72px "Cormorant Garamond", serif';
+      ctx.font = 'italic 700 72px "Playfair Display", Georgia, serif';
       ctx.fillText(brand.size, x + cardW / 2, y + cardH / 2 + 30);
 
       // Brand name
@@ -360,7 +360,7 @@ const SizeComparison = () => {
             <ArrowLeft className="h-5 w-5 text-white" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-white uppercase" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: '1.8rem', letterSpacing: '-0.02em' }}>Your Verified Sizes</h1>
+            <h1 className="text-white uppercase" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: '1.8rem', letterSpacing: '-0.02em' }}>Your Verified Sizes</h1>
             <p className="text-[11px] text-white/30">Every brand. Locked.</p>
           </div>
           <Button
@@ -689,7 +689,7 @@ const SizeComparison = () => {
                     .map(([size, brands]) => (
                       <div key={size}>
                         <div className="flex items-baseline gap-2 mb-2">
-                          <span className="text-primary" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: '2rem', lineHeight: 1 }}>{size}</span>
+                          <span className="text-primary" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: '2rem', lineHeight: 1 }}>{size}</span>
                           <span className="text-[12px]" style={{ color: '#888888', fontFamily: 'DM Sans' }}>({brands.length} {brands.length === 1 ? 'brand' : 'brands'})</span>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -720,7 +720,7 @@ const SizeComparison = () => {
                 <span className="text-[11px] font-semibold uppercase tracking-[0.1em]" style={{ color: '#D4AE2A', fontFamily: 'DM Sans' }}>
                   Unlock More Brands
                 </span>
-                <h2 className="mt-1.5 text-white" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: '1.75rem' }}>
+                <h2 className="mt-1.5 text-white" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: '1.75rem' }}>
                   {filtered.length} of {catalogStats.brands} brands.
                 </h2>
                 <p className="mt-1 text-[13px]" style={{ color: '#888888', fontFamily: 'DM Sans' }}>
