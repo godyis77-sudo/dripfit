@@ -91,10 +91,12 @@ const Analyze = () => {
       setScanLineY(eased * 100);
     }, 16);
 
-    const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
-    revealTimers.current = REVEAL_ORDER.map((key, i) =>
+    // Reveal labels (skip 'height' — already shown statically from start)
+    const revealKeys = REVEAL_ORDER.filter(k => k !== 'height');
+    const revealInterval = TOTAL_SCAN_TIME / (revealKeys.length + 1);
+    revealTimers.current = revealKeys.map((key, i) =>
       window.setTimeout(() => {
-        setRevealedKeys(prev => [...prev, key]);
+        setRevealedKeys(prev => prev.includes(key) ? prev : [...prev, key]);
       }, revealInterval * (i + 0.5))
     );
 
@@ -111,6 +113,8 @@ const Analyze = () => {
       clearInterval(scanLineInterval);
       revealTimers.current.forEach(id => window.clearTimeout(id));
       revealTimers.current = [];
+      lockTimers.current.forEach(id => window.clearTimeout(id));
+      lockTimers.current = [];
     };
   }, [state, navigate, user]);
 
