@@ -220,8 +220,6 @@ const Analyze = () => {
       if (resp?.error) throw new Error(resp.error.message || resp.error);
       const payload = resp?.data ?? resp;
 
-      setRealData(payload);
-
       if (minTimeElapsed.current) {
         navigateToResults(payload);
       } else {
