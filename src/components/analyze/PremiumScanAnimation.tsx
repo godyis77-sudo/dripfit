@@ -28,15 +28,7 @@ interface Props {
   revealedCount: number;
   totalCount: number;
   scanComplete?: boolean;
-}
-
-interface Props {
-  scanLineY: number;
-  revealedKeys: string[];
-  realData: MeasurementData | null;
-  revealedCount: number;
-  totalCount: number;
-  scanComplete?: boolean;
+  useCm?: boolean;
 }
 
 // Sleeve moved to right side at top:38% to avoid stacking with chest (top:26% left)
@@ -86,7 +78,7 @@ const SPARKLES = Array.from({ length: 8 }, (_, i) => ({
 
 const luxuryEase = [0.16, 1, 0.3, 1] as const;
 
-const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount, totalCount, scanComplete = false }: Props) => {
+const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount, totalCount, scanComplete = false, useCm = true }: Props) => {
   const [flashKey, setFlashKey] = useState(0);
   const [completionFlash, setCompletionFlash] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -397,13 +389,17 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               <p className="text-[7px] font-bold tracking-[0.15em] uppercase text-primary opacity-80">
                 {key}
               </p>
-              {val ? (
+              {isHeight ? (
                 <NeuralDataValue
-                  value={isHeight ? (realData?.heightCm ?? (val as number)) : (val as number | { min: number; max: number })}
-                  isHeight={isHeight}
+                  value={realData?.heightCm ?? null}
+                  isHeight
+                  useCm={useCm}
                 />
               ) : (
-                <NeuralDataValue value={null} isHeight={isHeight} />
+                <NeuralDataValue
+                  value={(val as number | { min: number; max: number } | undefined) ?? null}
+                  useCm={useCm}
+                />
               )}
             </div>
           </motion.div>

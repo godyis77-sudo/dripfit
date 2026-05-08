@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { compressPhoto } from '@/lib/imageUtils';
 import PremiumScanAnimation from '@/components/analyze/PremiumScanAnimation';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { getUseCm, setUseCm } from '@/lib/session';
 
 const MESSAGES = [
   'Initializing body scan…',
@@ -44,14 +45,23 @@ const Analyze = () => {
   const [msgIdx, setMsgIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
-  const [realData, setRealData] = useState<any>(null);
+  // Height is locked-in from the start; rest reveal as data arrives
+  const [revealedKeys, setRevealedKeys] = useState<string[]>(['height']);
+  const [realData, setRealData] = useState<any>({ heightCm: state?.heightCm });
   const [scanComplete, setScanComplete] = useState(false);
   const [scanLineY, setScanLineY] = useState(0);
+  const [useCm, setUseCmState] = useState<boolean>(getUseCm());
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
   const revealTimers = useRef<number[]>([]);
+  const lockTimers = useRef<number[]>([]);
+
+  const toggleUnit = () => {
+    const next = !useCm;
+    setUseCm(next);
+    setUseCmState(next);
+  };
 
   useEffect(() => {
     if (!state?.photos?.front || !state?.photos?.side) {
@@ -81,10 +91,12 @@ const Analyze = () => {
       setScanLineY(eased * 100);
     }, 16);
 
-    const revealInterval = TOTAL_SCAN_TIME / REVEAL_ORDER.length;
-    revealTimers.current = REVEAL_ORDER.map((key, i) =>
+    // Reveal labels (skip 'height' — already shown statically from start)
+    const revealKeys = REVEAL_ORDER.filter(k => k !== 'height');
+    const revealInterval = TOTAL_SCAN_TIME / (revealKeys.length + 1);
+    revealTimers.current = revealKeys.map((key, i) =>
       window.setTimeout(() => {
-        setRevealedKeys(prev => [...prev, key]);
+        setRevealedKeys(prev => prev.includes(key) ? prev : [...prev, key]);
       }, revealInterval * (i + 0.5))
     );
 
@@ -101,6 +113,8 @@ const Analyze = () => {
       clearInterval(scanLineInterval);
       revealTimers.current.forEach(id => window.clearTimeout(id));
       revealTimers.current = [];
+      lockTimers.current.forEach(id => window.clearTimeout(id));
+      lockTimers.current = [];
     };
   }, [state, navigate, user]);
 
@@ -147,11 +161,33 @@ const Analyze = () => {
     }
   };
 
+  const lockedInRef = useRef(false);
+  const staggerLockIn = (data: any, onAllLocked?: () => void) => {
+    if (lockedInRef.current) return;
+    lockedInRef.current = true;
+    const order = REVEAL_ORDER.filter(k => k !== 'height');
+    // Always keep heightCm seeded; reveal each measurement field one-by-one
+    setRealData((prev: any) => ({ ...(prev || {}), heightCm: data.heightCm ?? state?.heightCm }));
+    order.forEach((key, i) => {
+      const id = window.setTimeout(() => {
+        setRealData((prev: any) => ({ ...(prev || {}), [key]: data[key] }));
+        setRevealedKeys(prev => prev.includes(key) ? prev : [...prev, key]);
+      }, 250 + i * 320);
+      lockTimers.current.push(id);
+    });
+    // After all locked in, finalize
+    const finalId = window.setTimeout(() => {
+      setRealData((prev: any) => ({ ...(prev || {}), ...data }));
+      onAllLocked?.();
+    }, 250 + order.length * 320 + 200);
+    lockTimers.current.push(finalId);
+  };
+
   const navigateToResults = (data: any) => {
-    setRealData(data);
     setProgress(100);
-    setRevealedKeys(REVEAL_ORDER);
-    setScanComplete(true);
+    staggerLockIn(data, () => {
+      setScanComplete(true);
+    });
     saveToDatabase(data);
   };
 
@@ -183,8 +219,6 @@ const Analyze = () => {
       if (fnError) throw new Error(fnError.message);
       if (resp?.error) throw new Error(resp.error.message || resp.error);
       const payload = resp?.data ?? resp;
-
-      setRealData(payload);
 
       if (minTimeElapsed.current) {
         navigateToResults(payload);
@@ -230,6 +264,17 @@ const Analyze = () => {
         ✕ ABORT
       </Button>
 
+      {/* CM / IN unit toggle */}
+      <button
+        onClick={toggleUnit}
+        className="absolute top-4 left-4 z-50 font-mono text-[11px] tracking-widest uppercase rounded-full border border-primary/30 bg-background/60 backdrop-blur-md px-3 py-1.5 text-primary/90 active:scale-95 transition"
+        aria-label="Toggle units"
+      >
+        <span className={useCm ? 'text-primary font-bold' : 'opacity-50'}>cm</span>
+        <span className="opacity-40 mx-1">/</span>
+        <span className={!useCm ? 'text-primary font-bold' : 'opacity-50'}>in</span>
+      </button>
+
       <PremiumScanAnimation
         scanLineY={scanLineY}
         revealedKeys={revealedKeys}
@@ -237,6 +282,7 @@ const Analyze = () => {
         revealedCount={revealedKeys.length}
         totalCount={REVEAL_ORDER.length}
         scanComplete={scanComplete}
+        useCm={useCm}
       />
 
       {/* Status text */}
