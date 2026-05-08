@@ -45,14 +45,23 @@ const Analyze = () => {
   const [msgIdx, setMsgIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [revealedKeys, setRevealedKeys] = useState<string[]>([]);
-  const [realData, setRealData] = useState<any>(null);
+  // Height is locked-in from the start; rest reveal as data arrives
+  const [revealedKeys, setRevealedKeys] = useState<string[]>(['height']);
+  const [realData, setRealData] = useState<any>({ heightCm: state?.heightCm });
   const [scanComplete, setScanComplete] = useState(false);
   const [scanLineY, setScanLineY] = useState(0);
+  const [useCm, setUseCmState] = useState<boolean>(getUseCm());
   const minTimeElapsed = useRef(false);
   const resultReady = useRef<any>(null);
   const effectRan = useRef(false);
   const revealTimers = useRef<number[]>([]);
+  const lockTimers = useRef<number[]>([]);
+
+  const toggleUnit = () => {
+    const next = !useCm;
+    setUseCm(next);
+    setUseCmState(next);
+  };
 
   useEffect(() => {
     if (!state?.photos?.front || !state?.photos?.side) {
