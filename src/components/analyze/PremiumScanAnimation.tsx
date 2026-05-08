@@ -389,13 +389,17 @@ const PremiumScanAnimation = ({ scanLineY, revealedKeys, realData, revealedCount
               <p className="text-[7px] font-bold tracking-[0.15em] uppercase text-primary opacity-80">
                 {key}
               </p>
-              {val ? (
+              {isHeight ? (
                 <NeuralDataValue
-                  value={isHeight ? (realData?.heightCm ?? (val as number)) : (val as number | { min: number; max: number })}
-                  isHeight={isHeight}
+                  value={realData?.heightCm ?? null}
+                  isHeight
+                  useCm={useCm}
                 />
               ) : (
-                <NeuralDataValue value={null} isHeight={isHeight} />
+                <NeuralDataValue
+                  value={(val as number | { min: number; max: number } | undefined) ?? null}
+                  useCm={useCm}
+                />
               )}
             </div>
           </motion.div>
