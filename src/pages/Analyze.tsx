@@ -161,11 +161,33 @@ const Analyze = () => {
     }
   };
 
+  const lockedInRef = useRef(false);
+  const staggerLockIn = (data: any, onAllLocked?: () => void) => {
+    if (lockedInRef.current) return;
+    lockedInRef.current = true;
+    const order = REVEAL_ORDER.filter(k => k !== 'height');
+    // Always keep heightCm seeded; reveal each measurement field one-by-one
+    setRealData((prev: any) => ({ ...(prev || {}), heightCm: data.heightCm ?? state?.heightCm }));
+    order.forEach((key, i) => {
+      const id = window.setTimeout(() => {
+        setRealData((prev: any) => ({ ...(prev || {}), [key]: data[key] }));
+        setRevealedKeys(prev => prev.includes(key) ? prev : [...prev, key]);
+      }, 250 + i * 320);
+      lockTimers.current.push(id);
+    });
+    // After all locked in, finalize
+    const finalId = window.setTimeout(() => {
+      setRealData((prev: any) => ({ ...(prev || {}), ...data }));
+      onAllLocked?.();
+    }, 250 + order.length * 320 + 200);
+    lockTimers.current.push(finalId);
+  };
+
   const navigateToResults = (data: any) => {
-    setRealData(data);
     setProgress(100);
-    setRevealedKeys(REVEAL_ORDER);
-    setScanComplete(true);
+    staggerLockIn(data, () => {
+      setScanComplete(true);
+    });
     saveToDatabase(data);
   };
 
