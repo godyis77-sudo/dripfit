@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { compressPhoto } from '@/lib/imageUtils';
 import PremiumScanAnimation from '@/components/analyze/PremiumScanAnimation';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { getUseCm, setUseCm } from '@/lib/session';
 
 const MESSAGES = [
   'Initializing body scan…',
