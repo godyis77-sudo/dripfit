@@ -28,15 +28,7 @@ interface Props {
   revealedCount: number;
   totalCount: number;
   scanComplete?: boolean;
-}
-
-interface Props {
-  scanLineY: number;
-  revealedKeys: string[];
-  realData: MeasurementData | null;
-  revealedCount: number;
-  totalCount: number;
-  scanComplete?: boolean;
+  useCm?: boolean;
 }
 
 // Sleeve moved to right side at top:38% to avoid stacking with chest (top:26% left)
