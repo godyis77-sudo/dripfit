@@ -264,6 +264,17 @@ const Analyze = () => {
         ✕ ABORT
       </Button>
 
+      {/* CM / IN unit toggle */}
+      <button
+        onClick={toggleUnit}
+        className="absolute top-4 left-4 z-50 font-mono text-[11px] tracking-widest uppercase rounded-full border border-primary/30 bg-background/60 backdrop-blur-md px-3 py-1.5 text-primary/90 active:scale-95 transition"
+        aria-label="Toggle units"
+      >
+        <span className={useCm ? 'text-primary font-bold' : 'opacity-50'}>cm</span>
+        <span className="opacity-40 mx-1">/</span>
+        <span className={!useCm ? 'text-primary font-bold' : 'opacity-50'}>in</span>
+      </button>
+
       <PremiumScanAnimation
         scanLineY={scanLineY}
         revealedKeys={revealedKeys}
@@ -271,6 +282,7 @@ const Analyze = () => {
         revealedCount={revealedKeys.length}
         totalCount={REVEAL_ORDER.length}
         scanComplete={scanComplete}
+        useCm={useCm}
       />
 
       {/* Status text */}
