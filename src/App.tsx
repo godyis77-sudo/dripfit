@@ -66,6 +66,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const AdminRetailers = lazy(() => import("./pages/AdminRetailers"));
 const AdminCommissions = lazy(() => import("./pages/AdminCommissions"));
+const AdminCatalogOps = lazy(() => import("./pages/AdminCatalogOps"));
 const AdminTryOnFunnel = lazy(() => import("./pages/AdminTryOnFunnel"));
 const AdminCreatorOutreach = lazy(() => import("./pages/AdminCreatorOutreach"));
 const CreatorDashboard = lazy(() => import("./pages/CreatorDashboard"));
