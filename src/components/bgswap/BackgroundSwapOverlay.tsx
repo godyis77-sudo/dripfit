@@ -425,9 +425,10 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
         )
       );
 
+      const isUuid = (v: string | null) => !!v && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
       const { error: compositeErr } = await supabase.from('saved_composites').insert({
         user_id: user.id,
-        background_id: selectedBgId,
+        background_id: isUuid(selectedBgId) ? selectedBgId : null,
         background_source: selectedBgUrl ? 'search' : 'solid',
         storage_path: path,
       });
