@@ -79,12 +79,13 @@ export const ALL_PRODUCT_CATEGORIES = [
   { key: 'dresses', label: 'Dresses' },
   { key: 'hats', label: 'Hats' },
   { key: 'jewelry', label: 'Jewelry' },
+  { key: 'loungewear', label: 'Loungewear' },
   { key: 'outerwear', label: 'Outerwear' },
   { key: 'shoes', label: 'Shoes' },
   { key: 'sunglasses', label: 'Sunglasses' },
   { key: 'swimwear', label: 'Swimwear' },
   { key: 'tops', label: 'Tops' },
-  
+  { key: 'watches', label: 'Watches' },
 ] as const;
 
 const CAPTION_SUGGESTIONS: Record<string, string[]> = {
