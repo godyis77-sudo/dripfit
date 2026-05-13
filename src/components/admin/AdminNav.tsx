@@ -1,11 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { Users, BarChart3, Store, DollarSign } from "lucide-react";
+import { Users, BarChart3, Store, DollarSign, Database } from "lucide-react";
 
 const ITEMS = [
   { to: "/admin/creator-outreach", label: "Creators", icon: Users },
   { to: "/admin/try-on-funnel", label: "Funnel", icon: BarChart3 },
   { to: "/admin/retailers", label: "Retailers", icon: Store },
   { to: "/admin/commissions", label: "Commissions", icon: DollarSign },
+  { to: "/admin/catalog-ops", label: "Catalog Ops", icon: Database },
 ];
 
 export function AdminNav() {
