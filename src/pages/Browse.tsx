@@ -33,9 +33,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   hats: 'Hats',
   jewelry: 'Jewelry',
   sunglasses: 'Sunglasses',
-  loungewear: 'Loungewear',
-  watches: 'Watches',
-  swimwear: 'Swimwear',
 };
 
 const SORT_OPTIONS = [
