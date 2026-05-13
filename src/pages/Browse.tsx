@@ -301,7 +301,6 @@ const Browse = () => {
                     { key: 'tops', label: 'Tops' },
                     
                     { key: 'vests', label: 'Vests' },
-                    { key: 'watches', label: 'Watches' },
                   ].filter(cat => cat.key === 'all' || isCategoryVisibleForGender(cat.key, genderFilter)).map(cat => (
                     <button
                       key={cat.key}
