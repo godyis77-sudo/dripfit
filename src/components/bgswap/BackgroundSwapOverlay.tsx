@@ -386,8 +386,13 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
   }, [transparentSubject, selectedBgUrl, selectedBgColor, composite, toast]);
 
   const handleSave = useCallback(async () => {
-    if (!transparentSubject || !user) {
-      toast({ title: 'Sign in to save', description: 'Create an account to save to your try-ons.' });
+    console.log('[bgswap] handleSave clicked', { hasSubject: !!transparentSubject, hasUser: !!user, selectedBgId, selectedBgUrl });
+    if (!transparentSubject) {
+      toast({ title: 'Still processing', description: 'Wait for background removal to finish.' });
+      return;
+    }
+    if (!user) {
+      toast({ title: 'Sign in to save', description: 'Create an account to save to your try-ons.', variant: 'destructive' });
       return;
     }
     setSaving(true);
