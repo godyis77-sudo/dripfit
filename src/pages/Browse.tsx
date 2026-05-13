@@ -267,13 +267,11 @@ const Browse = () => {
                 <div className="flex flex-wrap gap-1.5">
                   {[
                     { key: 'all', label: 'All' },
-                    { key: 'accessories', label: 'Accessories' },
                     { key: 'activewear', label: 'Activewear' },
                     { key: 'bags', label: 'Bags' },
                     { key: 'belts', label: 'Belts' },
                     { key: 'blazers', label: 'Blazers' },
                     { key: 'boots', label: 'Boots' },
-                    { key: 'bottom', label: 'Bottoms' },
                     { key: 'coats', label: 'Coats' },
                     { key: 'dresses', label: 'Dresses' },
                     { key: 'hats', label: 'Hats' },
