@@ -386,8 +386,13 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
   }, [transparentSubject, selectedBgUrl, selectedBgColor, composite, toast]);
 
   const handleSave = useCallback(async () => {
-    if (!transparentSubject || !user) {
-      toast({ title: 'Sign in to save', description: 'Create an account to save to your try-ons.' });
+    console.log('[bgswap] handleSave clicked', { hasSubject: !!transparentSubject, hasUser: !!user, selectedBgId, selectedBgUrl });
+    if (!transparentSubject) {
+      toast({ title: 'Still processing', description: 'Wait for background removal to finish.' });
+      return;
+    }
+    if (!user) {
+      toast({ title: 'Sign in to save', description: 'Create an account to save to your try-ons.', variant: 'destructive' });
       return;
     }
     setSaving(true);
@@ -420,9 +425,10 @@ const BackgroundSwapOverlay = ({ resultImageUrl, userPhotoUrl, clothingPhotoUrl,
         )
       );
 
+      const isUuid = (v: string | null) => !!v && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
       const { error: compositeErr } = await supabase.from('saved_composites').insert({
         user_id: user.id,
-        background_id: selectedBgId,
+        background_id: isUuid(selectedBgId) ? selectedBgId : null,
         background_source: selectedBgUrl ? 'search' : 'solid',
         storage_path: path,
       });
