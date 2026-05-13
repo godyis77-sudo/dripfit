@@ -176,6 +176,7 @@ const AnimatedRoutes = () => {
           <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
           <Route path="/admin/retailers" element={<ProtectedRoute><PageTransition><AdminRetailers /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/commissions" element={<ProtectedRoute><PageTransition><AdminCommissions /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/catalog-ops" element={<ProtectedRoute><PageTransition><AdminCatalogOps /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/tryon-funnel" element={<ProtectedRoute><PageTransition><AdminTryOnFunnel /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/creator-outreach" element={<ProtectedRoute><PageTransition><AdminCreatorOutreach /></PageTransition></ProtectedRoute>} />
           <Route path="/creator" element={<ProtectedRoute><PageTransition><CreatorDashboard /></PageTransition></ProtectedRoute>} />
