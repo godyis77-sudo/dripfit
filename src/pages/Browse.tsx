@@ -283,12 +283,10 @@ const Browse = () => {
                     { key: 'jumpsuits', label: 'Jumpsuits' },
                     { key: 'leggings', label: 'Leggings' },
                     { key: 'loafers', label: 'Loafers' },
-                    { key: 'loungewear', label: 'Loungewear' },
                     { key: 'outerwear', label: 'Outerwear' },
                     { key: 'pants', label: 'Pants' },
                     { key: 'polos', label: 'Polos' },
                     { key: 'sandals', label: 'Sandals' },
-                    { key: 'scarves', label: 'Scarves' },
                     { key: 'shirts', label: 'Shirts' },
                     { key: 'shoes', label: 'Shoes' },
                     { key: 'shorts', label: 'Shorts' },
@@ -301,7 +299,6 @@ const Browse = () => {
                     { key: 'tops', label: 'Tops' },
                     
                     { key: 'vests', label: 'Vests' },
-                    { key: 'watches', label: 'Watches' },
                   ].filter(cat => cat.key === 'all' || isCategoryVisibleForGender(cat.key, genderFilter)).map(cat => (
                     <button
                       key={cat.key}
