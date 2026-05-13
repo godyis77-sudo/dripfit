@@ -75,6 +75,7 @@ export const ALL_PRODUCT_CATEGORIES = [
   { key: 'activewear', label: 'Activewear' },
   { key: 'bags', label: 'Bags' },
   { key: 'belts', label: 'Belts' },
+  { key: 'bottoms', label: 'Bottoms' },
   { key: 'dresses', label: 'Dresses' },
   { key: 'hats', label: 'Hats' },
   { key: 'jewelry', label: 'Jewelry' },
