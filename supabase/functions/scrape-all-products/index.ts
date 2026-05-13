@@ -249,6 +249,14 @@ Deno.serve(async (req) => {
       ? Math.max(250, Math.min(5000, Math.floor(dispatchDelayMs)))
       : 1500;
 
+    // Womenswear-priority brands — boost coverage by running these first
+    const WOMEN_PRIORITY = new Set([
+      'shein', 'fashion nova', 'prettylittlething', 'boohoo', 'forever 21',
+      'topshop', 'nastygal', 'mango', 'cos', 'zara', 'hm', 'asos', 'free people',
+      'reformation', 'aritzia', 'revolve', 'anthropologie', 'reiss', 'theory',
+      'tory burch', 'kate spade', 'michael kors', 'sandro', 'ted baker',
+    ]);
+
     // Build all jobs (optionally filtered to thin categories only)
     const allJobs: { brand: string; category: string }[] = [];
     for (const [brand, categories] of Object.entries(BRAND_CATEGORIES)) {
@@ -257,6 +265,12 @@ Deno.serve(async (req) => {
         allJobs.push({ brand, category });
       }
     }
+    // Stable sort: women-priority brands first
+    allJobs.sort((a, b) => {
+      const aw = WOMEN_PRIORITY.has(a.brand) ? 0 : 1;
+      const bw = WOMEN_PRIORITY.has(b.brand) ? 0 : 1;
+      return aw - bw;
+    });
 
     if (thinOnly) {
       console.log(`[scrape-all] thinOnly=true: filtered to ${allJobs.length} thin-category jobs`);
