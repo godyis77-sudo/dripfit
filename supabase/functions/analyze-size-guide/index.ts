@@ -129,6 +129,6 @@ Please analyze the size chart and recommend the best size for me.`;
     return successResponse(recommendation, 200, corsHeaders);
   } catch (e) {
     console.error("analyze-size-guide error:", e);
-    return errorResponse(e instanceof Error ? e.message : "Analysis failed", "INTERNAL_ERROR", 500, getCorsHeaders(req));
+    return errorResponse("Analysis failed. Please try again.", "INTERNAL_ERROR", 500, getCorsHeaders(req));
   }
 });
