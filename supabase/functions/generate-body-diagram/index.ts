@@ -77,6 +77,6 @@ serve(async (req) => {
     return successResponse({ image: imageUrl }, 200, corsHeaders);
   } catch (e) {
     console.error("generate-body-diagram error:", e);
-    return errorResponse(e instanceof Error ? e.message : "Unknown error", "INTERNAL_ERROR", 500, getCorsHeaders(req));
+    return errorResponse("Something went wrong. Please try again.", "INTERNAL_ERROR", 500, getCorsHeaders(req));
   }
 });
