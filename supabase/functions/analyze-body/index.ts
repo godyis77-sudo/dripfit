@@ -202,6 +202,6 @@ serve(async (req) => {
     return successResponse(measurements, 200, corsHeaders);
   } catch (e) {
     console.error("analyze-body error:", e);
-    return errorResponse(e instanceof Error ? e.message : "Analysis failed", "INTERNAL_ERROR", 500, getCorsHeaders(req));
+    return errorResponse("Analysis failed. Please try again.", "INTERNAL_ERROR", 500, getCorsHeaders(req));
   }
 });
