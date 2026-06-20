@@ -15,10 +15,65 @@ const JOBS: { id: Job; title: string; subtitle: string; icon: any }[] = [
   { id: "generate-missing-womens-heroes", title: "GENERATE MISSING WOMENS HEROES", subtitle: "Render hero images for The Grind Edit + The Long Lunch", icon: Sparkles },
 ];
 
+type HeroRow = {
+  id: string;
+  title: string;
+  occasion: string;
+  gender: string;
+  hero_image_url: string | null;
+  is_active: boolean;
+};
+
 export default function AdminCatalogOps() {
   const { toast } = useToast();
   const [busy, setBusy] = useState<Job | null>(null);
   const [log, setLog] = useState<string[]>([]);
+  const [heroes, setHeroes] = useState<HeroRow[]>([]);
+  const [loadingHeroes, setLoadingHeroes] = useState(false);
+
+  const loadHeroes = useCallback(async () => {
+    setLoadingHeroes(true);
+    const { data, error } = await supabase
+      .from("weekly_outfits")
+      .select("id, title, occasion, gender, hero_image_url, is_active")
+      .eq("is_hero", true)
+      .order("gender", { ascending: true })
+      .order("occasion", { ascending: true });
+    if (error) {
+      toast({ title: "Hero load failed", description: error.message, variant: "destructive" });
+    } else {
+      setHeroes((data ?? []) as HeroRow[]);
+    }
+    setLoadingHeroes(false);
+  }, [toast]);
+
+  useEffect(() => { loadHeroes(); }, [loadHeroes]);
+
+  const regenerateOne = async (outfitId: string) => {
+    try {
+      const { error } = await supabase.functions.invoke("generate-outfit-hero", {
+        body: { outfit_id: outfitId, regenerate: true },
+      });
+      if (error) throw error;
+      toast({ title: "Regenerating", description: "Refresh in ~45s to see the new image." });
+    } catch (e: any) {
+      toast({ title: "Failed", description: e.message ?? "Unknown error", variant: "destructive" });
+    }
+  };
+
+  const togglePublish = async (h: HeroRow) => {
+    const next = !h.is_active;
+    const { error } = await supabase
+      .from("weekly_outfits")
+      .update({ is_active: next })
+      .eq("id", h.id);
+    if (error) {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    setHeroes(prev => prev.map(x => x.id === h.id ? { ...x, is_active: next } : x));
+    toast({ title: next ? "Published" : "Unpublished", description: h.title });
+  };
 
   const fire = async (job: Job) => {
     setBusy(job);
@@ -28,6 +83,9 @@ export default function AdminCatalogOps() {
       const stamp = new Date().toLocaleTimeString();
       setLog(prev => [`${stamp} — fired ${job}: ${JSON.stringify(data)}`, ...prev].slice(0, 30));
       toast({ title: "Dispatched", description: `${job} is running in the background.` });
+      if (job === "generate-missing-womens-heroes") {
+        setTimeout(loadHeroes, 60_000);
+      }
     } catch (e: any) {
       toast({ title: "Failed", description: e.message ?? "Unknown error", variant: "destructive" });
     } finally {
