@@ -13,7 +13,8 @@ type JobName =
   | "backfill-descriptions"
   | "scrape-all-products"
   | "scrape-size-charts"
-  | "backfill-images";
+  | "backfill-images"
+  | "generate-outfit-hero";
 
 async function fireJob(name: JobName, body: Record<string, unknown>) {
   const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/${name}`;
@@ -78,6 +79,11 @@ Deno.serve(async (req) => {
       // Manual standalone run — fire two staggered batches
       await fireJob("backfill-images", { batch_size: 200, background: true });
       setTimeout(() => fireJob("backfill-images", { batch_size: 200, background: true }), 90_000);
+    }
+    if (job === "generate-missing-womens-heroes") {
+      // Fire hero generation for the two missing womens heroes
+      await fireJob("generate-outfit-hero", { outfit_id: "aa8606fb-610b-43f2-b951-9b7fc22514f4", regenerate: true });
+      setTimeout(() => fireJob("generate-outfit-hero", { outfit_id: "84e8e754-81d1-4ce6-9bee-2d1f1af74421", regenerate: true }), 5_000);
     }
   };
 
