@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Database, Image as ImageIcon, Ruler, Zap, Sparkles } from "lucide-react";
+import { Loader2, Database, Image as ImageIcon, Ruler, Zap, Sparkles, RefreshCw } from "lucide-react";
 
 type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes";
 
