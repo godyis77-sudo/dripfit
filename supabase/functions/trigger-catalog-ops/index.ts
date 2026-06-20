@@ -14,7 +14,8 @@ type JobName =
   | "scrape-all-products"
   | "scrape-size-charts"
   | "backfill-images"
-  | "generate-outfit-hero";
+  | "generate-outfit-hero"
+  | "curate-weekly-outfits";
 
 async function fireJob(name: JobName, body: Record<string, unknown>) {
   const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/${name}`;
