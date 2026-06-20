@@ -135,6 +135,81 @@ export default function AdminCatalogOps() {
             </div>
           </div>
         )}
+
+        <div className="mt-10">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <div className="text-sm font-bold uppercase tracking-wider text-foreground">HERO PREVIEW</div>
+              <div className="text-[11px] text-muted-foreground font-mono">
+                {heroes.length} heroes · {heroes.filter(h => !h.hero_image_url).length} missing image
+              </div>
+            </div>
+            <button
+              onClick={loadHeroes}
+              disabled={loadingHeroes}
+              className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono px-3 py-1.5 rounded-full border border-border text-foreground hover:border-foreground/40 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3 h-3 ${loadingHeroes ? "animate-spin" : ""}`} />
+              REFRESH
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {heroes.map(h => (
+              <div key={h.id} className="rounded-2xl overflow-hidden border border-border bg-card">
+                <div className="relative aspect-[3/4] bg-muted">
+                  {h.hero_image_url ? (
+                    <img
+                      src={h.hero_image_url}
+                      alt={h.title}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-[10px] uppercase tracking-wider font-mono text-muted-foreground">
+                      NO IMAGE
+                    </div>
+                  )}
+                  <div className={`absolute top-2 left-2 text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded-full ${
+                    h.is_active ? "bg-primary text-primary-foreground" : "bg-background/80 text-muted-foreground border border-border"
+                  }`}>
+                    {h.is_active ? "LIVE" : "DRAFT"}
+                  </div>
+                </div>
+                <div className="p-2.5">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-foreground truncate">{h.title}</div>
+                  <div className="text-[10px] text-muted-foreground font-mono truncate">
+                    {h.gender} · {h.occasion}
+                  </div>
+                  <div className="flex gap-1.5 mt-2">
+                    <button
+                      onClick={() => regenerateOne(h.id)}
+                      className="flex-1 text-[10px] uppercase tracking-wider font-mono px-2 py-1 rounded-full border border-border text-foreground hover:border-foreground/40"
+                    >
+                      REGEN
+                    </button>
+                    <button
+                      onClick={() => togglePublish(h)}
+                      disabled={!h.hero_image_url}
+                      className={`flex-1 text-[10px] uppercase tracking-wider font-mono px-2 py-1 rounded-full disabled:opacity-40 ${
+                        h.is_active
+                          ? "border border-border text-foreground hover:border-foreground/40"
+                          : "bg-primary text-primary-foreground"
+                      }`}
+                    >
+                      {h.is_active ? "UNPUBLISH" : "PUBLISH"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {heroes.length === 0 && !loadingHeroes && (
+              <div className="col-span-2 text-[11px] text-muted-foreground font-mono py-8 text-center">
+                No hero outfits yet.
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
