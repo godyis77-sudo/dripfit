@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 // deno-lint-ignore no-explicit-any
 import { requireServiceRole } from "../_shared/require-service-role.ts";
+import { requireAdminOrService } from "../_shared/require-admin-or-service.ts";
 declare const EdgeRuntime: any;
 
 /**
