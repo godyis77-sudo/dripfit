@@ -14,7 +14,8 @@ type JobName =
   | "scrape-all-products"
   | "scrape-size-charts"
   | "backfill-images"
-  | "generate-outfit-hero";
+  | "generate-outfit-hero"
+  | "curate-weekly-outfits";
 
 async function fireJob(name: JobName, body: Record<string, unknown>) {
   const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/${name}`;
@@ -85,6 +86,14 @@ Deno.serve(async (req) => {
       await fireJob("generate-outfit-hero", { outfit_id: "aa8606fb-610b-43f2-b951-9b7fc22514f4", regenerate: true });
       setTimeout(() => fireJob("generate-outfit-hero", { outfit_id: "84e8e754-81d1-4ce6-9bee-2d1f1af74421", regenerate: true }), 5_000);
     }
+    if (job === "recurate-beach") {
+      // Re-curate beach occasions for both genders. clear_existing:false so we
+      // don't wipe other occasions in the current week.
+      await fireJob("curate-weekly-outfits", {
+        occasions: ["beach_day", "beach_tropical"],
+        clear_existing: false,
+        outfits_per_occasion: 4,
+      });
   };
 
   // @ts-ignore EdgeRuntime is available in Deno Deploy

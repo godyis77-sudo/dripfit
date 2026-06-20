@@ -4,7 +4,7 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Database, Image as ImageIcon, Ruler, Zap, Sparkles, RefreshCw } from "lucide-react";
 
-type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes";
+type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes" | "recurate-beach";
 
 const JOBS: { id: Job; title: string; subtitle: string; icon: any }[] = [
   { id: "all", title: "FIRE ALL", subtitle: "Run every catalog op below in parallel", icon: Zap },
@@ -13,6 +13,7 @@ const JOBS: { id: Job; title: string; subtitle: string; icon: any }[] = [
   { id: "backfill-images", title: "BACKFILL GALLERY IMAGES", subtitle: "Pull additional images for ~5,261 single-image products", icon: ImageIcon },
   { id: "scrape-size-charts", title: "EXPAND SIZE CHARTS", subtitle: "Pull missing brand size charts (74 → ~150 brands)", icon: Ruler },
   { id: "generate-missing-womens-heroes", title: "GENERATE MISSING WOMENS HEROES", subtitle: "Render hero images for The Grind Edit + The Long Lunch", icon: Sparkles },
+  { id: "recurate-beach", title: "RECURATE BEACH OUTFITS", subtitle: "Re-build beach_day + beach_tropical (forces swimwear pieces)", icon: Sparkles },
 ];
 
 type HeroRow = {
