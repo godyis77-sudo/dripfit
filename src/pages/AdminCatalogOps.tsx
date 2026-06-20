@@ -2,9 +2,9 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Database, Image as ImageIcon, Ruler, Zap } from "lucide-react";
+import { Loader2, Database, Image as ImageIcon, Ruler, Zap, Sparkles } from "lucide-react";
 
-type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images";
+type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes";
 
 const JOBS: { id: Job; title: string; subtitle: string; icon: any }[] = [
   { id: "all", title: "FIRE ALL", subtitle: "Run every catalog op below in parallel", icon: Zap },
@@ -12,6 +12,7 @@ const JOBS: { id: Job; title: string; subtitle: string; icon: any }[] = [
   { id: "scrape-all-products", title: "RESTART SCRAPER", subtitle: "Re-scrape all brand × category combos (auto-chains image backfill)", icon: ImageIcon },
   { id: "backfill-images", title: "BACKFILL GALLERY IMAGES", subtitle: "Pull additional images for ~5,261 single-image products", icon: ImageIcon },
   { id: "scrape-size-charts", title: "EXPAND SIZE CHARTS", subtitle: "Pull missing brand size charts (74 → ~150 brands)", icon: Ruler },
+  { id: "generate-missing-womens-heroes", title: "GENERATE MISSING WOMENS HEROES", subtitle: "Render hero images for The Grind Edit + The Long Lunch", icon: Sparkles },
 ];
 
 export default function AdminCatalogOps() {
