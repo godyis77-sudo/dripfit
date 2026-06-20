@@ -4,12 +4,13 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Database, Image as ImageIcon, Ruler, Zap } from "lucide-react";
 
-type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts";
+type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images";
 
 const JOBS: { id: Job; title: string; subtitle: string; icon: any }[] = [
   { id: "all", title: "FIRE ALL", subtitle: "Run every catalog op below in parallel", icon: Zap },
   { id: "backfill-descriptions", title: "BACKFILL DESCRIPTIONS", subtitle: "Fill in missing product descriptions (~5,086 items)", icon: Database },
-  { id: "scrape-all-products", title: "RESTART SCRAPER", subtitle: "Re-scrape all brand × category combos (women-priority)", icon: ImageIcon },
+  { id: "scrape-all-products", title: "RESTART SCRAPER", subtitle: "Re-scrape all brand × category combos (auto-chains image backfill)", icon: ImageIcon },
+  { id: "backfill-images", title: "BACKFILL GALLERY IMAGES", subtitle: "Pull additional images for ~5,261 single-image products", icon: ImageIcon },
   { id: "scrape-size-charts", title: "EXPAND SIZE CHARTS", subtitle: "Pull missing brand size charts (74 → ~150 brands)", icon: Ruler },
 ];
 

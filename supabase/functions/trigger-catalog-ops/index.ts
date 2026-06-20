@@ -1,6 +1,6 @@
 // Admin-gated catalog ops trigger.
 // Verifies caller is an admin (auth.getUser + has_role), then fires the
-// 4 paid backend jobs in the background using the service role key.
+// backend jobs in the background using the service role key.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -9,7 +9,11 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-type JobName = "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts";
+type JobName =
+  | "backfill-descriptions"
+  | "scrape-all-products"
+  | "scrape-size-charts"
+  | "backfill-images";
 
 async function fireJob(name: JobName, body: Record<string, unknown>) {
   const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/${name}`;
@@ -56,16 +60,24 @@ Deno.serve(async (req) => {
   const work = async () => {
     if (job === "all" || job === "backfill-descriptions") {
       await fireJob("backfill-descriptions", { batch_size: 500, background: true });
-      // chain a second batch a bit later for more coverage
       setTimeout(() => fireJob("backfill-descriptions", { batch_size: 500, background: true }), 60_000);
     }
     if (job === "all" || job === "scrape-all-products") {
-      // Two batches so we don't blow the runtime cap
+      // Two scrape batches so we don't blow the runtime cap
       await fireJob("scrape-all-products", { batch: 0, totalBatches: 2, dispatchDelayMs: 1500 });
       setTimeout(() => fireJob("scrape-all-products", { batch: 1, totalBatches: 2, dispatchDelayMs: 1500 }), 5_000);
+      // Auto-chain gallery image backfill ~4 min after scrape kicks off
+      // so newly inserted single-image products get their additional_images populated.
+      setTimeout(() => fireJob("backfill-images", { batch_size: 200, background: true }), 240_000);
+      setTimeout(() => fireJob("backfill-images", { batch_size: 200, background: true }), 360_000);
     }
     if (job === "all" || job === "scrape-size-charts") {
       await fireJob("scrape-size-charts", {});
+    }
+    if (job === "backfill-images") {
+      // Manual standalone run — fire two staggered batches
+      await fireJob("backfill-images", { batch_size: 200, background: true });
+      setTimeout(() => fireJob("backfill-images", { batch_size: 200, background: true }), 90_000);
     }
   };
 
