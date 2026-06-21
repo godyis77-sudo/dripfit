@@ -1282,7 +1282,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const weekId = body.week_id || getCurrentWeekId();
     const gender = body.gender as string | undefined;
-    const outfitsPerOccasion = Math.min(body.outfits_per_occasion || 5, 10);
+    const outfitsPerOccasion = Math.min(body.outfits_per_occasion || 5, 50);
     const occasionCount = Math.min(body.occasion_count || 5, OCCASIONS.length);
     const clearExisting = body.clear_existing ?? true;
     const forcedOccasions = Array.isArray(body.occasions) ? body.occasions as string[] : null;
