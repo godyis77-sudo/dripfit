@@ -4,10 +4,11 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Database, Image as ImageIcon, Ruler, Zap, Sparkles, RefreshCw } from "lucide-react";
 
-type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes" | "recurate-beach" | "summer-blast";
+type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes" | "recurate-beach" | "summer-blast" | "curate-summer-now";
 
 const JOBS: { id: Job; title: string; subtitle: string; icon: any }[] = [
-  { id: "summer-blast", title: "SUMMER BLAST — 300 OUTFITS", subtitle: "Full scrape + rebalance + descriptions + 300 summer outfits & heroes (5 occasions × 2 genders × 30)", icon: Sparkles },
+  { id: "curate-summer-now", title: "CURATE 300 SUMMER NOW", subtitle: "Skip scrape — fire curate immediately (5 occasions × 2 genders × 30) + auto heroes", icon: Sparkles },
+  { id: "summer-blast", title: "SUMMER BLAST — FULL PIPELINE", subtitle: "Scrape + rebalance + descriptions + 300 summer outfits (long-running)", icon: Sparkles },
   { id: "all", title: "FIRE ALL", subtitle: "Run every catalog op below in parallel", icon: Zap },
   { id: "backfill-descriptions", title: "BACKFILL DESCRIPTIONS", subtitle: "Fill in missing product descriptions (~5,086 items)", icon: Database },
   { id: "scrape-all-products", title: "RESTART SCRAPER", subtitle: "Re-scrape all brand × category combos (auto-chains image backfill)", icon: ImageIcon },
