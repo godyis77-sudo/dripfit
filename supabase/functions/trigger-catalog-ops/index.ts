@@ -15,7 +15,8 @@ type JobName =
   | "scrape-size-charts"
   | "backfill-images"
   | "generate-outfit-hero"
-  | "curate-weekly-outfits";
+  | "curate-weekly-outfits"
+  | "categorize-products";
 
 async function fireJob(name: JobName, body: Record<string, unknown>) {
   const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/${name}`;
@@ -94,6 +95,38 @@ Deno.serve(async (req) => {
         clear_existing: false,
         outfits_per_occasion: 4,
       });
+    }
+
+    if (job === "summer-blast") {
+      // FULL summer blast: rescrape catalog, rebalance categories, backfill
+      // descriptions + gallery images, then curate 300 summer outfits across
+      // 5 occasions × 2 genders × 30 each. Heroes auto-trigger from curate.
+
+      // 1) Kick off scrape (2 batches)
+      await fireJob("scrape-all-products", { batch: 0, totalBatches: 2, dispatchDelayMs: 1500 });
+      setTimeout(() => fireJob("scrape-all-products", { batch: 1, totalBatches: 2, dispatchDelayMs: 1500 }), 5_000);
+
+      // 2) Rebalance categories ~3 min in
+      setTimeout(() => fireJob("categorize-products", { batch_size: 500, background: true }), 180_000);
+      setTimeout(() => fireJob("categorize-products", { batch_size: 500, background: true }), 300_000);
+
+      // 3) Backfill gallery images ~5–7 min in
+      setTimeout(() => fireJob("backfill-images", { batch_size: 200, background: true }), 300_000);
+      setTimeout(() => fireJob("backfill-images", { batch_size: 200, background: true }), 420_000);
+
+      // 4) Backfill descriptions ~6–8 min in
+      setTimeout(() => fireJob("backfill-descriptions", { batch_size: 500, background: true }), 360_000);
+      setTimeout(() => fireJob("backfill-descriptions", { batch_size: 500, background: true }), 480_000);
+
+      // 5) Curate 300 summer outfits ~10 min in (after fresh products land).
+      //    5 occasions × 2 genders × 30 = 300. Heroes auto-trigger.
+      setTimeout(() => fireJob("curate-weekly-outfits", {
+        occasions: ["beach_day", "beach_tropical", "patio_evening", "summer_night_out", "festival"],
+        outfits_per_occasion: 30,
+        clear_existing: true,
+        skip_hero: false,
+      }), 600_000);
+    }
   };
 
   // @ts-ignore EdgeRuntime is available in Deno Deploy
