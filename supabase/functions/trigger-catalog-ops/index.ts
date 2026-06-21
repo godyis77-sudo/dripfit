@@ -97,6 +97,17 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (job === "curate-summer-now") {
+      // Fire curate immediately — assumes scrape/backfill already ran.
+      // 5 occasions × 2 genders × 30 = 300 outfits. Heroes auto-trigger inside curate.
+      await fireJob("curate-weekly-outfits", {
+        occasions: ["beach_day", "beach_tropical", "patio_evening", "summer_night_out", "festival"],
+        outfits_per_occasion: 30,
+        clear_existing: true,
+        skip_hero: false,
+      });
+    }
+
     if (job === "summer-blast") {
       // FULL summer blast: rescrape catalog, rebalance categories, backfill
       // descriptions + gallery images, then curate 300 summer outfits across
