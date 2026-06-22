@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { HeroFillProgress } from "@/components/admin/HeroFillProgress";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Database, Image as ImageIcon, Ruler, Zap, Sparkles, RefreshCw } from "lucide-react";
+
 
 type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes" | "generate-all-missing-heroes" | "recurate-beach" | "summer-blast" | "curate-summer-now";
 
@@ -33,8 +35,10 @@ export default function AdminCatalogOps() {
   const { toast } = useToast();
   const [busy, setBusy] = useState<Job | null>(null);
   const [log, setLog] = useState<string[]>([]);
+  const [heroTrackTrigger, setHeroTrackTrigger] = useState<number>(0);
   const [heroes, setHeroes] = useState<HeroRow[]>([]);
   const [loadingHeroes, setLoadingHeroes] = useState(false);
+
 
   const loadHeroes = useCallback(async () => {
     setLoadingHeroes(true);
@@ -88,9 +92,11 @@ export default function AdminCatalogOps() {
       const stamp = new Date().toLocaleTimeString();
       setLog(prev => [`${stamp} — fired ${job}: ${JSON.stringify(data)}`, ...prev].slice(0, 30));
       toast({ title: "Dispatched", description: `${job} is running in the background.` });
-      if (job === "generate-missing-womens-heroes") {
+      if (job === "generate-missing-womens-heroes" || job === "generate-all-missing-heroes") {
+        setHeroTrackTrigger(Date.now());
         setTimeout(loadHeroes, 60_000);
       }
+
     } catch (e: any) {
       toast({ title: "Failed", description: e.message ?? "Unknown error", variant: "destructive" });
     } finally {
@@ -131,6 +137,8 @@ export default function AdminCatalogOps() {
             );
           })}
         </div>
+        <HeroFillProgress autoStartTrigger={heroTrackTrigger} />
+
 
         {log.length > 0 && (
           <div className="mt-8">
