@@ -137,6 +137,8 @@ export default function AdminCatalogOps() {
             );
           })}
         </div>
+        <HeroFillProgress autoStartTrigger={heroTrackTrigger} />
+
 
         {log.length > 0 && (
           <div className="mt-8">
