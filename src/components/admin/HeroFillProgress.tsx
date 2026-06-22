@@ -158,13 +158,25 @@ export function HeroFillProgress({ autoStartTrigger }: { autoStartTrigger?: numb
             Started {elapsedLabel} ago · last check {Math.max(0, Math.floor((Date.now() - lastTick) / 1000))}s
           </div>
         </div>
-        <button
-          onClick={reset}
-          className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono px-3 py-1.5 rounded-full border border-border text-foreground hover:border-foreground/40"
-        >
-          <RotateCcw className="w-3 h-3" />
-          RESET
-        </button>
+        <div className="flex items-center gap-2">
+          {stuckCount > 0 && (
+            <button
+              onClick={() => retryFailed([...stillMissing])}
+              disabled={retrying}
+              className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono px-3 py-1.5 rounded-full bg-primary text-primary-foreground disabled:opacity-50"
+            >
+              {retrying ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+              RETRY {stuckCount}
+            </button>
+          )}
+          <button
+            onClick={reset}
+            className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono px-3 py-1.5 rounded-full border border-border text-foreground hover:border-foreground/40"
+          >
+            <RotateCcw className="w-3 h-3" />
+            RESET
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-2 mb-3">
