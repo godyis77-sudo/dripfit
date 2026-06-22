@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { HeroFillProgress } from "@/components/admin/HeroFillProgress";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Database, Image as ImageIcon, Ruler, Zap, Sparkles, RefreshCw } from "lucide-react";
+
 
 type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes" | "generate-all-missing-heroes" | "recurate-beach" | "summer-blast" | "curate-summer-now";
 
