@@ -92,9 +92,11 @@ export default function AdminCatalogOps() {
       const stamp = new Date().toLocaleTimeString();
       setLog(prev => [`${stamp} — fired ${job}: ${JSON.stringify(data)}`, ...prev].slice(0, 30));
       toast({ title: "Dispatched", description: `${job} is running in the background.` });
-      if (job === "generate-missing-womens-heroes") {
+      if (job === "generate-missing-womens-heroes" || job === "generate-all-missing-heroes") {
+        setHeroTrackTrigger(Date.now());
         setTimeout(loadHeroes, 60_000);
       }
+
     } catch (e: any) {
       toast({ title: "Failed", description: e.message ?? "Unknown error", variant: "destructive" });
     } finally {
