@@ -106,6 +106,13 @@ Deno.serve(async (req) => {
         });
       }
     }
+    if (job === "retry-hero-ids") {
+      const ids: string[] = Array.isArray(body.outfit_ids) ? body.outfit_ids.filter((x: unknown) => typeof x === "string") : [];
+      console.log(`[trigger-catalog-ops] retry-hero-ids dispatching ${ids.length} jobs`);
+      ids.forEach((id, idx) => {
+        setTimeout(() => fireJob("generate-outfit-hero", { outfit_id: id, regenerate: true }), idx * 1500);
+      });
+    }
 
     if (job === "recurate-beach") {
       // Re-curate beach occasions for both genders. clear_existing:false so we
