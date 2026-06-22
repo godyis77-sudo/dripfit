@@ -35,8 +35,10 @@ export default function AdminCatalogOps() {
   const { toast } = useToast();
   const [busy, setBusy] = useState<Job | null>(null);
   const [log, setLog] = useState<string[]>([]);
+  const [heroTrackTrigger, setHeroTrackTrigger] = useState<number>(0);
   const [heroes, setHeroes] = useState<HeroRow[]>([]);
   const [loadingHeroes, setLoadingHeroes] = useState(false);
+
 
   const loadHeroes = useCallback(async () => {
     setLoadingHeroes(true);
