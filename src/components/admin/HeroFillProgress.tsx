@@ -25,7 +25,9 @@ export function HeroFillProgress({ autoStartTrigger }: { autoStartTrigger?: numb
   const [totalMissing, setTotalMissing] = useState<number | null>(null);
   const [polling, setPolling] = useState(false);
   const [lastTick, setLastTick] = useState<number>(Date.now());
+  const [retrying, setRetrying] = useState(false);
   const lastAutoTriggerRef = useRef<number | undefined>(autoStartTrigger);
+  const { toast } = useToast();
 
   const persist = useCallback((snap: Snapshot | null) => {
     if (snap) localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
