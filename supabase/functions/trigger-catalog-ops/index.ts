@@ -87,6 +87,26 @@ Deno.serve(async (req) => {
       await fireJob("generate-outfit-hero", { outfit_id: "aa8606fb-610b-43f2-b951-9b7fc22514f4", regenerate: true });
       setTimeout(() => fireJob("generate-outfit-hero", { outfit_id: "84e8e754-81d1-4ce6-9bee-2d1f1af74421", regenerate: true }), 5_000);
     }
+    if (job === "generate-all-missing-heroes") {
+      // Query all outfits missing a hero image and dispatch generation, staggered
+      const admin = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
+      const { data: rows, error } = await admin
+        .from("weekly_outfits")
+        .select("id")
+        .is("hero_image_url", null);
+      if (error) {
+        console.error("[trigger-catalog-ops] missing-heroes query failed", error);
+      } else {
+        console.log(`[trigger-catalog-ops] dispatching ${rows?.length ?? 0} hero jobs`);
+        (rows ?? []).forEach((row, idx) => {
+          setTimeout(() => fireJob("generate-outfit-hero", { outfit_id: row.id, regenerate: true }), idx * 1500);
+        });
+      }
+    }
+
     if (job === "recurate-beach") {
       // Re-curate beach occasions for both genders. clear_existing:false so we
       // don't wipe other occasions in the current week.
