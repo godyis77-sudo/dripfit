@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Play, RotateCcw, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, Play, RotateCcw, CheckCircle2, AlertTriangle, RefreshCw } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type Snapshot = {
   startedAt: number;
@@ -24,7 +25,9 @@ export function HeroFillProgress({ autoStartTrigger }: { autoStartTrigger?: numb
   const [totalMissing, setTotalMissing] = useState<number | null>(null);
   const [polling, setPolling] = useState(false);
   const [lastTick, setLastTick] = useState<number>(Date.now());
+  const [retrying, setRetrying] = useState(false);
   const lastAutoTriggerRef = useRef<number | undefined>(autoStartTrigger);
+  const { toast } = useToast();
 
   const persist = useCallback((snap: Snapshot | null) => {
     if (snap) localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
@@ -60,6 +63,22 @@ export function HeroFillProgress({ autoStartTrigger }: { autoStartTrigger?: numb
     setTotalMissing(null);
     persist(null);
   }, [persist]);
+
+  const retryFailed = useCallback(async (ids: string[]) => {
+    if (ids.length === 0) return;
+    setRetrying(true);
+    try {
+      const { error } = await supabase.functions.invoke("trigger-catalog-ops", {
+        body: { job: "retry-hero-ids", outfit_ids: ids },
+      });
+      if (error) throw error;
+      toast({ title: "RETRY DISPATCHED", description: `Re-firing ${ids.length} hero job${ids.length === 1 ? "" : "s"}.` });
+    } catch (e) {
+      toast({ title: "RETRY FAILED", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
+    } finally {
+      setRetrying(false);
+    }
+  }, [toast]);
 
   // Auto-start when parent fires a hero-fill job
   useEffect(() => {
@@ -139,13 +158,25 @@ export function HeroFillProgress({ autoStartTrigger }: { autoStartTrigger?: numb
             Started {elapsedLabel} ago · last check {Math.max(0, Math.floor((Date.now() - lastTick) / 1000))}s
           </div>
         </div>
-        <button
-          onClick={reset}
-          className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono px-3 py-1.5 rounded-full border border-border text-foreground hover:border-foreground/40"
-        >
-          <RotateCcw className="w-3 h-3" />
-          RESET
-        </button>
+        <div className="flex items-center gap-2">
+          {stuckCount > 0 && (
+            <button
+              onClick={() => retryFailed([...stillMissing])}
+              disabled={retrying}
+              className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono px-3 py-1.5 rounded-full bg-primary text-primary-foreground disabled:opacity-50"
+            >
+              {retrying ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+              RETRY {stuckCount}
+            </button>
+          )}
+          <button
+            onClick={reset}
+            className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono px-3 py-1.5 rounded-full border border-border text-foreground hover:border-foreground/40"
+          >
+            <RotateCcw className="w-3 h-3" />
+            RESET
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-2 mb-3">
