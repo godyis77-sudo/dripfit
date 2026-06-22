@@ -64,6 +64,22 @@ export function HeroFillProgress({ autoStartTrigger }: { autoStartTrigger?: numb
     persist(null);
   }, [persist]);
 
+  const retryFailed = useCallback(async (ids: string[]) => {
+    if (ids.length === 0) return;
+    setRetrying(true);
+    try {
+      const { error } = await supabase.functions.invoke("trigger-catalog-ops", {
+        body: { job: "retry-hero-ids", outfit_ids: ids },
+      });
+      if (error) throw error;
+      toast({ title: "RETRY DISPATCHED", description: `Re-firing ${ids.length} hero job${ids.length === 1 ? "" : "s"}.` });
+    } catch (e) {
+      toast({ title: "RETRY FAILED", description: e instanceof Error ? e.message : "Unknown error", variant: "destructive" });
+    } finally {
+      setRetrying(false);
+    }
+  }, [toast]);
+
   // Auto-start when parent fires a hero-fill job
   useEffect(() => {
     if (autoStartTrigger && autoStartTrigger !== lastAutoTriggerRef.current) {
