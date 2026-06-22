@@ -4,7 +4,7 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Database, Image as ImageIcon, Ruler, Zap, Sparkles, RefreshCw } from "lucide-react";
 
-type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes" | "recurate-beach" | "summer-blast" | "curate-summer-now";
+type Job = "all" | "backfill-descriptions" | "scrape-all-products" | "scrape-size-charts" | "backfill-images" | "generate-missing-womens-heroes" | "generate-all-missing-heroes" | "recurate-beach" | "summer-blast" | "curate-summer-now";
 
 const JOBS: { id: Job; title: string; subtitle: string; icon: any }[] = [
   { id: "curate-summer-now", title: "CURATE 300 SUMMER NOW", subtitle: "Skip scrape — fire curate immediately (5 occasions × 2 genders × 30) + auto heroes", icon: Sparkles },
@@ -14,9 +14,11 @@ const JOBS: { id: Job; title: string; subtitle: string; icon: any }[] = [
   { id: "scrape-all-products", title: "RESTART SCRAPER", subtitle: "Re-scrape all brand × category combos (auto-chains image backfill)", icon: ImageIcon },
   { id: "backfill-images", title: "BACKFILL GALLERY IMAGES", subtitle: "Pull additional images for ~5,261 single-image products", icon: ImageIcon },
   { id: "scrape-size-charts", title: "EXPAND SIZE CHARTS", subtitle: "Pull missing brand size charts (74 → ~150 brands)", icon: Ruler },
+  { id: "generate-all-missing-heroes", title: "FILL ALL MISSING HEROES", subtitle: "Render hero images for every weekly outfit missing one (staggered 1.5s)", icon: Sparkles },
   { id: "generate-missing-womens-heroes", title: "GENERATE MISSING WOMENS HEROES", subtitle: "Render hero images for The Grind Edit + The Long Lunch", icon: Sparkles },
   { id: "recurate-beach", title: "RECURATE BEACH OUTFITS", subtitle: "Re-build beach_day + beach_tropical (forces swimwear pieces)", icon: Sparkles },
 ];
+
 
 type HeroRow = {
   id: string;
