@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Play, RotateCcw, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, Play, RotateCcw, CheckCircle2, AlertTriangle, RefreshCw } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type Snapshot = {
   startedAt: number;
